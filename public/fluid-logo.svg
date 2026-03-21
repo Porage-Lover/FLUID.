@@ -1,0 +1,15 @@
+<svg xmlns="http://www.开展w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100">
+  <defs>
+    <clipPath id="f-clip">
+      <path d="M 20,20 H 80 V 35 H 35 V 45 H 70 V 60 H 35 V 80 H 20 Z" />
+    </clipPath>
+  </defs>
+  
+  <rect width="100" height="100" fill="#0A0A0F" />
+  
+  <g clip-path="url(#f-clip)">
+    <rect width="100" height="100" fill="#ffffff" />
+    <path d="M 0,60 Q 30,30 50,60 T 100,60 L 100,100 L 0,100 Z" fill="#FF2A5F" />
+  </g>
+  <circle cx="85" cy="80" r="8" fill="#FF2A5F" />
+</svg>
