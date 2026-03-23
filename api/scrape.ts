@@ -280,6 +280,21 @@ async function fetchCalendarData(client: any): Promise<any[]> {
 // Generate pure O(N) matrix Timetable mapping leveraging predefined course batches natively.
 function generateLocalTimetable(attendanceData: any[], isBatchTwo: boolean) {
     const days: any = { "1": [], "2": [], "3": [], "4": [], "5": [] };
+
+    // Pre-process attendanceData into a slot map for O(1) lookup
+    const slotMap = new Map<string, any>();
+    attendanceData.forEach(subj => {
+      if (subj.slot) {
+        if (subj.slot.includes('-')) {
+          subj.slot.split('-').forEach((s: string) => {
+            if (!slotMap.has(s)) slotMap.set(s, subj);
+          });
+        } else {
+          if (!slotMap.has(subj.slot)) slotMap.set(subj.slot, subj);
+        }
+      }
+    });
+
     const batch1Raw = [
       ["A", "A", "F", "F", "G", "P6", "P7", "P8", "P9", "P10"],
       ["P11", "P12", "P13", "P14", "P15", "B", "B", "G", "G", "A"],
@@ -305,9 +320,7 @@ function generateLocalTimetable(attendanceData: any[], isBatchTwo: boolean) {
        
        daySlots.forEach((slotRef, slotIdx) => {
            // Search through attendance data for someone enrolled in this specific slot
-           const matchingSubject = attendanceData.find(subj => 
-             subj.slot && (subj.slot === slotRef || subj.slot.split('-').includes(slotRef))
-           );
+           const matchingSubject = slotMap.get(slotRef);
            
            if (matchingSubject) {
               const etIdx = slotIdx + 1 < tms.length ? slotIdx + 1 : slotIdx;
