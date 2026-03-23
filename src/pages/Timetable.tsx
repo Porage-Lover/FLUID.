@@ -107,7 +107,7 @@ export function Timetable() {
               let isPractical = cls.type === 'Practical' || cls.name?.toLowerCase().includes('practical');
               
               const attendanceRecords = data.attendance.filter(a => a.code === cls.code);
-              let attendanceRecord = attendanceRecords.find((a: any) => a.category?.toLowerCase() === (isPractical ? 'practical' : 'theory')) || attendanceRecords[0];
+              const attendanceRecord = attendanceRecords.find((a: any) => a.category?.toLowerCase() === (isPractical ? 'practical' : 'theory')) || attendanceRecords[0];
               
               if (attendanceRecord) {
                  const vals = Object.values(attendanceRecord);

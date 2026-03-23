@@ -1,0 +1,7 @@
+## 2024-05-18 - App-Wide Light/Dark Mode & SVG Adjustments
+**Learning:** Introducing a light mode theme to a heavily dark-mode-styled app requires careful mapping of dynamic CSS variables (`var(--text-main)`, `var(--card-bg)`), not just for HTML elements, but also for inline SVGs. Specifically, a hardcoded `#ffffff` within an SVG like the FLUID logo will vanish in light mode when the background becomes white or very light.
+**Action:** Always map SVG fills and strokes to CSS custom properties (e.g., `fill="var(--text-main)"`) instead of raw hex values when designing themeable components to ensure they gracefully adapt to both color modes.
+
+## 2024-05-18 - Form Accessibility Enhancements
+**Learning:** Even when custom UI patterns look great visually, failing to link semantic structure (like `<label htmlFor="...">` and `<input id="...">`) forces screen reader users into disjointed navigation experiences. Similarly, interactive "eye" toggles on password inputs must be properly typed buttons (`type="button"`) with `aria-label` attributes instead of raw `div` elements with `onClick`.
+**Action:** Ensure all interactive elements have semantic roles or tags and accessible names (via `aria-label` or visible text linked correctly), especially in foundational components like login forms.

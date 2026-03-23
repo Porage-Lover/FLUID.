@@ -23,6 +23,8 @@ interface DataContextType {
   error: string | null;
   refreshData: () => Promise<void>;
   logout: () => void;
+  theme: 'dark' | 'light';
+  toggleTheme: () => void;
 }
 
 const DataContext = createContext<DataContextType | undefined>(undefined);
@@ -31,6 +33,19 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
   const [data, setData] = useState<AppData>(emptyData);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [theme, setTheme] = useState<'dark' | 'light'>(() => {
+    const saved = localStorage.getItem('fluid_theme');
+    return (saved === 'light' || saved === 'dark') ? saved : 'dark';
+  });
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('fluid_theme', theme);
+  }, [theme]);
+
+  const toggleTheme = () => {
+    setTheme(prev => prev === 'dark' ? 'light' : 'dark');
+  };
 
   const fetchCache = async () => {
     setLoading(true);
@@ -72,7 +87,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <DataContext.Provider value={{ data, loading, error, refreshData: fetchCache, logout }}>
+    <DataContext.Provider value={{ data, loading, error, refreshData: fetchCache, logout, theme, toggleTheme }}>
       {children}
     </DataContext.Provider>
   );
