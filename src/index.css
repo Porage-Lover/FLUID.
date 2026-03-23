@@ -6,10 +6,23 @@
   --card-bg: rgba(20, 20, 25, 0.4);
   --text-main: #FFFFFF;
   --text-muted: rgba(255, 255, 255, 0.6);
+  --glass-border: rgba(255, 255, 255, 0.05);
   
   --accent-crimson: #FF2A5F;
   --accent-cyan: #1DC7D1;
   --accent-purple: #8B1DD1;
+}
+
+[data-theme="light"] {
+  --bg-color: #F8F9FA;
+  --card-bg: rgba(255, 255, 255, 0.7);
+  --text-main: #050508;
+  --text-muted: rgba(5, 5, 8, 0.6);
+  --glass-border: rgba(0, 0, 0, 0.1);
+
+  --accent-crimson: #FF2A5F;
+  --accent-cyan: #0D9AA3;
+  --accent-purple: #6A13A3;
 }
 
 * {

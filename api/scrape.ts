@@ -35,7 +35,7 @@ async function fetchAcademicsData(client: any): Promise<{ attendance: any[], mar
 
   const hexString = parts[1].split("')")[0];
   let cleanedHtml = convertHexToHTML(hexString);
-  cleanedHtml = cleanedHtml.replace(/<td  bgcolor='#E6E6FA' style='text-align:center'> - <\/td>/g, "");
+  cleanedHtml = cleanedHtml.replace(/<td {2}bgcolor='#E6E6FA' style='text-align:center'> - <\/td>/g, "");
 
   // === 0. USER IDENTITY BOUNDS ===
   let studentName = "";
@@ -218,7 +218,7 @@ async function fetchCalendarData(client: any): Promise<any[]> {
       const parts = resp.data.split('zmlvalue="');
       if (parts.length > 1) {
         // Safe quote termination boundary decoding extracting explicit Hex and generic HTML mappings
-        let decoded = parts[1].split('"')[0];
+        const decoded = parts[1].split('"')[0];
         htmlText = decoded.replace(/\\x([0-9a-fA-F]{2})/g, (_: string, hex: string) => String.fromCharCode(parseInt(hex, 16)))
                           .replace(/&lt;/g, '<')
                           .replace(/&gt;/g, '>')

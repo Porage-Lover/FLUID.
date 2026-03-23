@@ -18,7 +18,7 @@ export function Dashboard() {
              <UserCheck size={32} color="var(--accent-cyan)" strokeWidth={2.5} />
            </div>
            <div>
-             <h1 className="heading-fluid" style={{ fontSize: '2.5rem', margin: 0, color: '#fff' }}>{data.user.name}</h1>
+             <h1 className="heading-fluid" style={{ fontSize: '2.5rem', margin: 0, color: 'var(--text-main)' }}>{data.user.name}</h1>
              <span style={{ fontSize: '14px', fontWeight: 800, letterSpacing: '2px', textTransform: 'uppercase', color: 'var(--accent-crimson)' }}>Student Portal</span>
            </div>
         </div>
@@ -27,6 +27,7 @@ export function Dashboard() {
            whileHover={{ scale: 1.1, rotate: 10 }}
            whileTap={{ scale: 0.9 }}
            onClick={logout}
+           aria-label="Log out"
            className="fluid-card"
            style={{ width: '48px', height: '48px', borderRadius: '12px', background: 'rgba(255, 42, 95, 0.1)', color: 'var(--accent-crimson)', border: '1px solid rgba(255, 42, 95, 0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', padding: 0 }}
         >
@@ -63,7 +64,7 @@ export function Dashboard() {
             { label: 'Attendance', icon: UserCheck, color: 'var(--text-main)', path: '/attendance', header: '--accent-cyan' },
             { label: 'Live Timetable', icon: Clock, color: 'var(--text-main)', path: '/timetable', header: '--accent-crimson' },
             { label: 'Marks', icon: Award, color: 'var(--text-main)', path: '/marks', header: '--accent-purple' },
-            { label: 'Calendar', icon: Calendar, color: 'var(--text-main)', path: '/calendar', header: '#fff' },
+            { label: 'Calendar', icon: Calendar, color: 'var(--text-main)', path: '/calendar', header: 'var(--text-main)' },
           ].map((btn, idx) => (
              <FluidCard key={idx} headerColor={btn.header} onClick={() => navigate(btn.path)} innerStyle={{ paddingTop: '24px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
                 <btn.icon size={36} color="var(--text-main)" opacity={0.8} />

@@ -3,11 +3,14 @@ import { motion } from 'framer-motion';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { FluidLogo } from './FluidLogo';
 import { triggerHaptic } from '../utils/haptics';
+import { Sun, Moon } from 'lucide-react';
+import { useData } from '../context/DataContext';
 
 export function FluidNavbar() {
   const navigate = useNavigate();
   const [isVisible, setIsVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
+  const { theme, toggleTheme } = useData();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -52,10 +55,10 @@ export function FluidNavbar() {
         alignItems: 'center',
         padding: '16px 32px',
         zIndex: 9999,
-        background: 'rgba(5, 5, 8, 0.7)',
+        background: theme === 'dark' ? 'rgba(5, 5, 8, 0.7)' : 'rgba(255, 255, 255, 0.8)',
         backdropFilter: 'blur(24px)',
         WebkitBackdropFilter: 'blur(24px)',
-        borderBottom: '1px solid rgba(255, 255, 255, 0.05)'
+        borderBottom: theme === 'dark' ? '1px solid rgba(255, 255, 255, 0.05)' : '1px solid rgba(0, 0, 0, 0.05)'
       }}
     >
       {/* FLUID. Logo */}
@@ -63,8 +66,8 @@ export function FluidNavbar() {
          <FluidLogo width="160px" height="48px" />
       </div>
 
-      {/* Navigation Links */}
-      <div style={{ display: 'flex', gap: '32px' }}>
+      {/* Navigation Links & Theme Toggle */}
+      <div style={{ display: 'flex', gap: '32px', alignItems: 'center' }}>
         {links.map((link) => (
           <NavLink
             key={link.path}
@@ -91,6 +94,27 @@ export function FluidNavbar() {
             )}
           </NavLink>
         ))}
+
+        <button
+          onClick={() => { toggleTheme(); triggerHaptic(20); }}
+          aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+          style={{
+            background: 'transparent',
+            border: 'none',
+            color: 'var(--text-main)',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '8px',
+            borderRadius: '50%',
+            transition: 'background-color 0.3s ease'
+          }}
+          onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--card-bg)'}
+          onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+        >
+          {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
+        </button>
       </div>
     </motion.nav>
   );

@@ -11,8 +11,8 @@ export function FluidLogo({ width = "100%", height = "100%" }: { width?: string,
         </clipPath>
       </defs>
       
-      {/* White Base Text */}
-      <text x="0" y="110" fontFamily="'Montserrat', sans-serif" fontSize="130" fontWeight="900" letterSpacing="-6" fill="#ffffff">FLUID</text>
+      {/* Dynamic Base Text */}
+      <text x="0" y="110" fontFamily="'Montserrat', sans-serif" fontSize="130" fontWeight="900" letterSpacing="-6" fill="var(--text-main)">FLUID</text>
       
       {/* Red Dot (Standalone) */}
       <circle cx="395" cy="100" r="18" fill="var(--accent-crimson)" />

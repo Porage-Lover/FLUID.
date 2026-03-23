@@ -33,7 +33,7 @@ export function Login() {
     } catch (e: any) {
       console.error("Login failure", e);
       // Surface raw scraper trace correctly
-      let traceMsg = e.response?.data?.error || e.message || 'Authentication Failed';
+      const traceMsg = e.response?.data?.error || e.message || 'Authentication Failed';
       setErr(traceMsg);
     } finally {
       setLoading(false);
@@ -68,7 +68,7 @@ export function Login() {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', marginTop: '16px' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', fontFamily: "'Montserrat', sans-serif" }}>
              <span style={{ color: 'var(--accent-crimson)', fontWeight: 900, fontSize: '26px', letterSpacing: '-1px' }}>REVANCED</span>
-             <span style={{ color: '#ffffff', fontWeight: 900, fontSize: '26px', letterSpacing: '-1px' }}>ACADEMIA</span>
+             <span style={{ color: 'var(--text-main)', fontWeight: 900, fontSize: '26px', letterSpacing: '-1px' }}>ACADEMIA</span>
           </div>
         </div>
       </motion.div>
@@ -84,9 +84,9 @@ export function Login() {
           maxWidth: '440px',
           zIndex: 10,
           position: 'relative',
-          background: 'rgba(5, 5, 8, 0.7)',
-          border: '1px solid rgba(255, 255, 255, 0.05)',
-          boxShadow: '0 20px 60px rgba(0,0,0,0.8)'
+          background: 'var(--card-bg)',
+          border: '1px solid var(--glass-border)',
+          boxShadow: '0 20px 60px rgba(0,0,0,0.5)'
         }}
       >
 
@@ -95,6 +95,7 @@ export function Login() {
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             className="brutal-border"
+            role="alert"
             style={{ 
               backgroundColor: '#ffe6e6', 
               color: 'var(--accent-primary)', 
@@ -113,8 +114,9 @@ export function Login() {
 
         <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
           <div>
-            <label style={{ display: 'block', fontWeight: 800, marginBottom: '8px', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '2px', color: 'var(--text-muted)' }}>University ID</label>
+            <label htmlFor="email" style={{ display: 'block', fontWeight: 800, marginBottom: '8px', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '2px', color: 'var(--text-muted)' }}>University ID</label>
             <input
+              id="email"
               type="email"
               placeholder="netid@srmist.edu.in"
               value={email}
@@ -137,9 +139,10 @@ export function Login() {
           </div>
 
           <div>
-            <label style={{ display: 'block', fontWeight: 800, marginBottom: '8px', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '2px', color: 'var(--text-muted)' }}>Password</label>
+            <label htmlFor="password" style={{ display: 'block', fontWeight: 800, marginBottom: '8px', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '2px', color: 'var(--text-muted)' }}>Password</label>
             <div style={{ position: 'relative' }}>
               <input
+                id="password"
                 type={showPassword ? "text" : "password"}
                 placeholder="••••••••"
                 value={password}
@@ -160,12 +163,14 @@ export function Login() {
                 onBlur={(e) => e.target.style.borderColor = 'rgba(255,255,255,0.1)'}
                 required
               />
-              <div 
+              <button
+                type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                style={{ position: 'absolute', right: '16px', top: '50%', transform: 'translateY(-50%)', cursor: 'pointer', opacity: 0.5, display: 'flex', color: 'var(--text-main)' }}
+                aria-label={showPassword ? "Hide password" : "Show password"}
+                style={{ position: 'absolute', right: '16px', top: '50%', transform: 'translateY(-50%)', cursor: 'pointer', opacity: 0.5, display: 'flex', color: 'var(--text-main)', background: 'none', border: 'none' }}
               >
                  {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-              </div>
+              </button>
             </div>
           </div>
 
