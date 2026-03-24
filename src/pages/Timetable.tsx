@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FluidCard } from '../components/FluidCard';
 import { useData } from '../context/DataContext';
@@ -12,6 +12,16 @@ export function Timetable() {
   const [isTodayHoliday, setIsTodayHoliday] = useState(false);
   const [holidayName, setHolidayName] = useState("University Holiday");
   const { data } = useData();
+
+  const attendanceMap = useMemo(() => {
+    const map = new Map<string, any[]>();
+    data.attendance.forEach(record => {
+      const list = map.get(record.code) || [];
+      list.push(record);
+      map.set(record.code, list);
+    });
+    return map;
+  }, [data.attendance]);
 
   useEffect(() => {
     if (data.calendar && data.calendar.length > 0) {
@@ -106,7 +116,7 @@ export function Timetable() {
               let exactRoom = cls.room || 'TBD';
               let isPractical = cls.type === 'Practical' || cls.name?.toLowerCase().includes('practical');
               
-              const attendanceRecords = data.attendance.filter(a => a.code === cls.code);
+              const attendanceRecords = attendanceMap.get(cls.code) || [];
               const attendanceRecord = attendanceRecords.find((a: any) => a.category?.toLowerCase() === (isPractical ? 'practical' : 'theory')) || attendanceRecords[0];
               
               if (attendanceRecord) {
