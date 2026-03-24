@@ -1,0 +1,3 @@
+## 2024-03-24 - [React Component Extraction for State Isolation]
+**Learning:** Found a severe performance bottleneck in `Marks.tsx` where local state (`globalInternal` for a slider) was placed at the top level of the parent component. Because the parent also rendered computationally heavy `recharts` LineCharts in a `.map()` loop, moving the slider forced full re-renders of the entire chart list, causing massive input latency.
+**Action:** Always scrutinize React state placement. If a state variable only affects a specific section of UI (like a predictor slider), extract that section into its own component to push the state down. This completely isolates the re-renders and drastically improves responsiveness.
