@@ -477,7 +477,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   } catch (error: any) {
     console.error('Vercel Scraping Root Error Stack:', error.stack || error.message);
-    const trace = String(error.stack || error.message);
-    return res.status(500).json({ error: 'Failed to negotiate authentication sequence with SRM.', trace });
+    return res.status(500).json({ error: 'Failed to negotiate authentication sequence with SRM.' });
   }
 }
