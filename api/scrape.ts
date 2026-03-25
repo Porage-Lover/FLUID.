@@ -5,12 +5,32 @@ import { createClient } from '@supabase/supabase-js';
 import { wrapper } from 'axios-cookiejar-support';
 import { CookieJar } from 'tough-cookie';
 
+// ------------- LOGGER SETUP -------------
+const logger = {
+  error: (message: string, meta?: any) => {
+    console.error(JSON.stringify({
+      level: 'error',
+      timestamp: new Date().toISOString(),
+      message,
+      ...meta
+    }));
+  },
+  info: (message: string, meta?: any) => {
+    console.info(JSON.stringify({
+      level: 'info',
+      timestamp: new Date().toISOString(),
+      message,
+      ...meta
+    }));
+  }
+};
+
 // 🛡️ Sentinel: Using SERVICE_ROLE key for secure backend upserts (bypassing RLS)
 const supabaseUrl = process.env.VITE_SUPABASE_URL || '';
 const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
 
 if (!supabaseUrl || !supabaseKey) {
-  console.error('🛡️ Sentinel: Missing Supabase environment variables');
+  logger.error('🛡️ Sentinel: Missing Supabase environment variables');
 }
 
 const supabase = createClient(supabaseUrl, supabaseKey);
@@ -277,8 +297,8 @@ async function fetchCalendarData(client: any): Promise<any[]> {
     });
 
     return calendarEvents;
-  } catch (e) {
-    console.error("Calendar parser crash:", e);
+  } catch (e: any) {
+    logger.error("Calendar parser crash", { error: e.message, stack: e.stack });
     return [];
   }
 }
@@ -477,7 +497,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   } catch (error: any) {
     // 🛡️ Sentinel: Removed trace from response to prevent stack trace leakage
-    console.error('Vercel Scraping Root Error Stack:', error.stack || error.message);
+    logger.error('Vercel Scraping Root Error', { error: error.message, stack: error.stack });
     return res.status(500).json({ error: 'Failed to negotiate authentication sequence with SRM.' });
   }
 }
