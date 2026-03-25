@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, Outlet, Navigate, useLocation } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Outlet, Navigate, useLocation } from 'react-router-dom';
 import { DataProvider } from './context/DataContext';
 import { Dashboard } from './pages/Dashboard';
 import { Attendance } from './pages/Attendance';
@@ -40,7 +40,7 @@ function ProtectedLayout() {
 function App() {
   return (
     <DataProvider>
-      <Router>
+      <BrowserRouter>
         <ScrollReset />
         <GlobalWave />
         <Routes>
@@ -54,7 +54,7 @@ function App() {
             <Route path="/" element={<Navigate to="/dashboard" replace />} />
           </Route>
         </Routes>
-      </Router>
+      </BrowserRouter>
     </DataProvider>
   );
 }
