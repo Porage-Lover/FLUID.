@@ -373,9 +373,23 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
+  // 🛡️ Sentinel: Safe body destructuring preventing null object access crashes
+  if (!req.body || typeof req.body !== 'object') {
+    return res.status(400).json({ error: 'Invalid request payload' });
+  }
+
   const { regNo, password } = req.body;
   if (!regNo || !password) {
     return res.status(400).json({ error: 'Missing credentials' });
+  }
+
+  // 🛡️ Sentinel: Enforce strict type and length limits to prevent TypeError crashes and large input DoS
+  if (typeof regNo !== 'string' || typeof password !== 'string') {
+    return res.status(400).json({ error: 'Invalid credential format' });
+  }
+
+  if (regNo.length > 100 || password.length > 100) {
+    return res.status(400).json({ error: 'Credentials exceed maximum length' });
   }
 
   // Build the live SRM username format natively
