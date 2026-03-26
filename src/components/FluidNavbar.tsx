@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { FluidLogo } from './FluidLogo';
@@ -9,28 +9,35 @@ import { useData } from '../context/DataContext';
 export function FluidNavbar() {
   const navigate = useNavigate();
   const [isVisible, setIsVisible] = useState(true);
-  const [lastScrollY, setLastScrollY] = useState(0);
+
+  // ⚡ Bolt Optimization:
+  // Replacing useState with useRef for tracking lastScrollY.
+  // Previously, every single scroll event tick caused a state update,
+  // triggering a full component re-render and re-attaching the event listener continuously.
+  // Impact: Eliminates massive amounts of unnecessary re-renders during scrolling,
+  // significantly smoothing out scroll performance.
+  const lastScrollY = useRef(0);
   const { theme, toggleTheme } = useData();
 
   useEffect(() => {
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
       if ((window as any).isProgrammaticScroll) {
-        setLastScrollY(currentScrollY);
+        lastScrollY.current = currentScrollY;
         return;
       }
       
-      if (currentScrollY > lastScrollY && currentScrollY > 80) {
+      if (currentScrollY > lastScrollY.current && currentScrollY > 80) {
         setIsVisible(false); // scrolling down
       } else {
         setIsVisible(true);  // scrolling up
       }
-      setLastScrollY(currentScrollY);
+      lastScrollY.current = currentScrollY;
     };
 
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
-  }, [lastScrollY]);
+  }, []); // Empty dependency array as we no longer depend on state updates to attach the listener
 
   const links = [
     { name: 'HOME', path: '/dashboard' },
