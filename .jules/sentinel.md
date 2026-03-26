@@ -12,3 +12,8 @@
 **Vulnerability:** Found `error.stack` details being sent back to the client in the JSON response of `api/scrape.ts` when an exception occurred.
 **Learning:** Sending full stack traces to the client exposes internal architectural details and potentially sensitive variables to users or malicious actors.
 **Prevention:** Always log the full error stack internally (e.g., using `console.error`), but return a generic, safe error message to the client without the `stack` or `trace` details.
+
+## 2024-05-24 - [Input Validation and Security Headers]
+**Vulnerability:** Missing input validation in `api/scrape.ts` could allow arbitrary payload types (e.g. arrays or objects instead of strings) or excessively long strings to be passed. This causes backend `TypeError` crashes or potential Denial of Service (DoS). Additionally, the application lacked standard HTTP security headers, leaving it open to clickjacking and MIME-sniffing attacks.
+**Learning:** Blindly destructuring `req.body` and executing string methods like `.includes()` or `.length` without type checking causes 500 crashes when unexpected inputs are supplied. Also, deploying apps without security headers leaves them susceptible to easily mitigated web vulnerabilities.
+**Prevention:** Always validate both the presence and explicit type (`typeof === 'string'`) of expected input parameters. Implement sensible length limits for credentials. Furthermore, enforce basic HTTP security headers (e.g., `X-Content-Type-Options`, `X-Frame-Options`, `Strict-Transport-Security`) at the proxy or infrastructure level (like `vercel.json`).
