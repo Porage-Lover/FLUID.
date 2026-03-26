@@ -393,6 +393,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
+  // 🛡️ Sentinel: Prevent simple-request CSRF via form submissions
+  const contentType = req.headers['content-type'] || '';
+  if (!contentType.includes('application/json')) {
+    return res.status(415).json({ error: 'Unsupported Media Type: Expected application/json' });
+  }
+
   // 🛡️ Sentinel: Safe body destructuring preventing null object access crashes
   if (!req.body || typeof req.body !== 'object') {
     return res.status(400).json({ error: 'Invalid request payload' });
@@ -422,6 +428,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       jar, 
       withCredentials: true,
       maxRedirects: 10,
+      timeout: 15000, // 🛡️ Sentinel: Prevent serverless function hangs / Resource Exhaustion
       headers: {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
       }
