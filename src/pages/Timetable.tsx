@@ -23,6 +23,54 @@ export function Timetable() {
     return map;
   }, [data.attendance]);
 
+  // ⚡ Bolt Optimization:
+  // Memoizing the expensive O(N*M) timetable room/category resolution logic.
+  // Previously, Regex tests and Object.values() iteration ran inline inside the map()
+  // function during every render, especially thrashing when toggling `selectedDay` tabs.
+  // Impact: Tab switching is now instant as the heavy lifting is pushed to a one-time setup pass.
+  const processedTimetable = useMemo(() => {
+    if (!data?.timetable) return {};
+
+    const processed: any = {};
+
+    Object.keys(data.timetable).forEach(dayNumber => {
+       const dayData = (data.timetable as any)[dayNumber];
+       if (!dayData || dayData === "holiday" || dayData.length === 0) {
+          processed[dayNumber] = dayData;
+          return;
+       }
+
+       processed[dayNumber] = dayData.map((cls: any) => {
+          let exactRoom = cls.room || 'TBD';
+          let isPractical = cls.type === 'Practical' || cls.name?.toLowerCase().includes('practical');
+
+          const attendanceRecords = attendanceMap.get(cls.code) || [];
+          const attendanceRecord = attendanceRecords.find((a: any) => a.category?.toLowerCase() === (isPractical ? 'practical' : 'theory')) || attendanceRecords[0];
+
+          if (attendanceRecord) {
+             const vals = Object.values(attendanceRecord);
+             const foundRoom = vals.find(v => typeof v === 'string' && (v.includes('TP') || v.includes('LAB') || /^[A-Z]{2,3}\s*\d{2,3}$/i.test(v)));
+
+             if (foundRoom && cls.room === 'Campus') exactRoom = foundRoom;
+             else if ((attendanceRecord as any).room && cls.room === 'Campus') exactRoom = (attendanceRecord as any).room;
+             else if ((attendanceRecord as any).roomNo && cls.room === 'Campus') exactRoom = (attendanceRecord as any).roomNo;
+
+             const foundCategory = vals.find(v => typeof v === 'string' && (v.toLowerCase() === 'theory' || v.toLowerCase() === 'practical'));
+             if (foundCategory && !cls.type) {
+                isPractical = (foundCategory as string).toLowerCase() === 'practical';
+             } else if ((attendanceRecord as any).category && !cls.type) {
+                isPractical = (attendanceRecord as any).category.toLowerCase() === 'practical';
+             }
+          }
+
+          if (exactRoom === 'Campus') exactRoom = 'TBD (Update Scraper)';
+
+          return { ...cls, exactRoom, isPractical };
+       });
+    });
+    return processed;
+  }, [data.timetable, attendanceMap]);
+
   useEffect(() => {
     if (data.calendar && data.calendar.length > 0) {
       const today = new Date();
@@ -103,7 +151,7 @@ export function Timetable() {
               );
             }
 
-            const dayData = (data.timetable as any)[String(selectedDay)];
+            const dayData = processedTimetable[String(selectedDay)];
             if (!dayData || dayData === "holiday" || dayData.length === 0) {
               return (
                 <FluidCard style={{ padding: '80px 40px', minWidth: '300px', textAlign: 'center' }} headerColor="--accent-crimson">
@@ -113,37 +161,13 @@ export function Timetable() {
               );
             }
             return dayData.map((cls: any, idx: number) => {
-              let exactRoom = cls.room || 'TBD';
-              let isPractical = cls.type === 'Practical' || cls.name?.toLowerCase().includes('practical');
-              
-              const attendanceRecords = attendanceMap.get(cls.code) || [];
-              const attendanceRecord = attendanceRecords.find((a: any) => a.category?.toLowerCase() === (isPractical ? 'practical' : 'theory')) || attendanceRecords[0];
-              
-              if (attendanceRecord) {
-                 const vals = Object.values(attendanceRecord);
-                 const foundRoom = vals.find(v => typeof v === 'string' && (v.includes('TP') || v.includes('LAB') || /^[A-Z]{2,3}\s*\d{2,3}$/i.test(v)));
-                 // Only allow attendance matching logic to override exactRoom if it was generically set to Campus
-                 if (foundRoom && cls.room === 'Campus') exactRoom = foundRoom;
-                 else if ((attendanceRecord as any).room && cls.room === 'Campus') exactRoom = (attendanceRecord as any).room;
-                 else if ((attendanceRecord as any).roomNo && cls.room === 'Campus') exactRoom = (attendanceRecord as any).roomNo;
-                 
-                 const foundCategory = vals.find(v => typeof v === 'string' && (v.toLowerCase() === 'theory' || v.toLowerCase() === 'practical'));
-                 if (foundCategory && !cls.type) {
-                    isPractical = (foundCategory as string).toLowerCase() === 'practical';
-                 } else if ((attendanceRecord as any).category && !cls.type) {
-                    isPractical = (attendanceRecord as any).category.toLowerCase() === 'practical';
-                 }
-              }
-              // Surface upstream scraper miss natively to UI so they know Room was completely omitted
-              if (exactRoom === 'Campus') exactRoom = 'TBD (Update Scraper)';
-
               return (
               <motion.div key={idx} layout style={{ width: '100%' }}>
                 <FluidCard style={{ padding: 0, height: 'auto', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }} headerColor={idx % 2 === 0 ? '--accent-cyan' : '--accent-crimson'}>
                    <div style={{ padding: '32px 24px', display: 'flex', flexDirection: 'column', height: '100%' }}>
                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '16px' }}>
                         <h3 style={{ fontSize: '24px', fontWeight: 800, color: 'var(--text-main)', lineHeight: 1.1, paddingRight: '12px' }}>{cls.name?.replace(/\s*\((Theory|Practical)\)\s*/i, '')}</h3>
-                        {isPractical ? (
+                        {cls.isPractical ? (
                            <span style={{ fontSize: '10px', fontWeight: 900, padding: '4px 8px', borderRadius: '8px', backgroundColor: 'rgba(255, 42, 95, 0.15)', color: 'var(--accent-crimson)', border: '1px solid var(--accent-crimson)', textTransform: 'uppercase', letterSpacing: '1px' }}>Practical</span>
                         ) : (
                            <span style={{ fontSize: '10px', fontWeight: 900, padding: '4px 8px', borderRadius: '8px', backgroundColor: 'rgba(29, 199, 209, 0.15)', color: 'var(--accent-cyan)', border: '1px solid var(--accent-cyan)', textTransform: 'uppercase', letterSpacing: '1px' }}>Theory</span>
@@ -162,7 +186,7 @@ export function Timetable() {
                            </div>
                            <div style={{ display: 'flex', flexDirection: 'column' }}>
                               <span style={{ fontSize: '11px', opacity: 0.5, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '2px' }}>Location</span>
-                              <span style={{ fontSize: '13px', fontWeight: 600, padding: '6px 16px', backgroundColor: 'rgba(255,255,255,0.05)', borderRadius: '4px', border: '1px solid rgba(255,255,255,0.1)', width: 'fit-content' }}>{exactRoom}</span>
+                              <span style={{ fontSize: '13px', fontWeight: 600, padding: '6px 16px', backgroundColor: 'rgba(255,255,255,0.05)', borderRadius: '4px', border: '1px solid rgba(255,255,255,0.1)', width: 'fit-content' }}>{cls.exactRoom}</span>
                            </div>
                         </div>
                      </div>
