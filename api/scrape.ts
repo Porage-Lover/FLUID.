@@ -418,6 +418,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(400).json({ error: 'Credentials exceed maximum length' });
   }
 
+  // 🛡️ Sentinel: Input Sanitization - Validate that regNo contains only allowed characters
+  // This prevents injection of arbitrary characters or malformed payloads into downstream requests
+  if (!/^[a-zA-Z0-9.@_-]+$/.test(regNo)) {
+    logger.error('🛡️ Sentinel: Invalid character detected in regNo payload', { regNo: regNo.substring(0, 10) });
+    return res.status(400).json({ error: 'Invalid registration number format' });
+  }
+
   // Build the live SRM username format natively
   const fullUsername = regNo.includes('@') ? regNo : `${regNo}@srmist.edu.in`;
 
