@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FluidCard } from '../components/FluidCard';
 import { useData } from '../context/DataContext';
@@ -9,9 +9,36 @@ export function Timetable() {
      const d = new Date().getDay();
      return (d >= 1 && d <= 5) ? d : 1;
   });
-  const [isTodayHoliday, setIsTodayHoliday] = useState(false);
-  const [holidayName, setHolidayName] = useState("University Holiday");
+  const [prevCalendar, setPrevCalendar] = useState<any[] | undefined>(undefined);
   const { data } = useData();
+
+  const todayNode = useMemo(() => {
+    if (!data.calendar || data.calendar.length === 0) return null;
+    const today = new Date();
+    const searchMonth = `${today.toLocaleString('en-US', { month: 'short' })} '${today.getFullYear().toString().slice(-2)}`;
+    const searchDate = today.getDate().toString();
+    return data.calendar.find(c => c.month === searchMonth && c.date === searchDate);
+  }, [data.calendar]);
+
+  const isTodayHoliday = todayNode?.type === 'holiday';
+  const holidayName = isTodayHoliday ? todayNode.title : "University Holiday";
+
+  // ⚡ Bolt Optimization:
+  // Adjusting state while rendering to avoid cascading renders from useEffect.
+  // When calendar data loads asynchronously, we immediately calculate and sync
+  // the initial selected day in the render phase, skipping the paint cycle delay.
+  // This completely eliminates the `react-hooks/set-state-in-effect` performance issue.
+  if (data.calendar !== prevCalendar) {
+    setPrevCalendar(data.calendar);
+    if (todayNode) {
+      if (todayNode.type === 'holiday') {
+        setSelectedDay('holiday');
+      } else if (todayNode.type === 'working') {
+        const match = todayNode.title.match(/Day Order (\d+)/);
+        if (match) setSelectedDay(parseInt(match[1]));
+      }
+    }
+  }
 
   const attendanceMap = useMemo(() => {
     const map = new Map<string, any[]>();
@@ -70,26 +97,6 @@ export function Timetable() {
     });
     return processed;
   }, [data.timetable, attendanceMap]);
-
-  useEffect(() => {
-    if (data.calendar && data.calendar.length > 0) {
-      const today = new Date();
-      const searchMonth = `${today.toLocaleString('en-US', { month: 'short' })} '${today.getFullYear().toString().slice(-2)}`;
-      const searchDate = today.getDate().toString();
-
-      const todayNode = data.calendar.find(c => c.month === searchMonth && c.date === searchDate);
-      if (todayNode) {
-        if (todayNode.type === 'holiday') {
-          setIsTodayHoliday(true);
-          setHolidayName(todayNode.title);
-          setSelectedDay('holiday');
-        } else if (todayNode.type === 'working') {
-          const match = todayNode.title.match(/Day Order (\d+)/);
-          if (match) setSelectedDay(parseInt(match[1]));
-        }
-      }
-    }
-  }, [data.calendar]);
 
   const tabs: Array<number | 'holiday'> = isTodayHoliday ? ['holiday', 1, 2, 3, 4, 5] : [1, 2, 3, 4, 5];
 
