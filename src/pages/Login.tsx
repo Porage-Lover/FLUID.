@@ -20,14 +20,15 @@ export function Login() {
     try {
       if (!email.includes('@srmist.edu.in')) throw new Error("Invalid University Mail ID. Please use @srmist.edu.in");
 
-      await axios.post('/api/scrape', {
+      const response = await axios.post('/api/scrape', {
         regNo: email,
         password: password
       });
 
       // Valid session natively stored via Proxy endpoint inside Supabase.
+      // 🛡️ Sentinel: Store the securely hashed academiaId to prevent IDOR vulnerabilities.
       // We bind the global reference ID and force a structural reload to trigger `DataContext` fetching.
-      localStorage.setItem('academia_id', email);
+      localStorage.setItem('academia_id', response.data.academiaId);
       window.location.href = '/dashboard';
 
     } catch (e: any) {
