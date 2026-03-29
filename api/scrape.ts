@@ -1,6 +1,7 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import axios from 'axios';
 import * as cheerio from 'cheerio';
+import crypto from 'crypto';
 import { createClient } from '@supabase/supabase-js';
 import { wrapper } from 'axios-cookiejar-support';
 import { CookieJar } from 'tough-cookie';
@@ -515,13 +516,17 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     };
 
     // 4. UPSERT securely into Supabase `academia_cache`
+    // 🛡️ Sentinel: Generate a secure hash to prevent IDOR vulnerabilities
+    // instead of storing plaintext emails that can be manipulated in localStorage
+    const secureId = crypto.createHmac('sha256', supabaseKey).update(regNo).digest('hex');
+
     const { error: dbError } = await supabase
       .from('academia_cache')
-      .upsert({ id: regNo, data: fetchedPayload });
+      .upsert({ id: secureId, data: fetchedPayload });
 
     if (dbError) throw dbError;
 
-    return res.status(200).json({ success: true, data: fetchedPayload });
+    return res.status(200).json({ success: true, data: fetchedPayload, academiaId: secureId });
 
   } catch (error: any) {
     // 🛡️ Sentinel: Removed trace from response to prevent stack trace leakage
