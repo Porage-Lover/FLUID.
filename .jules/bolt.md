@@ -9,3 +9,7 @@
 ## 2024-03-26 - [Expensive Render Loop Object Resolution]
 **Learning:** Found a severe performance bottleneck in `Timetable.tsx` where expensive `Object.values()` iterations and Regex `.find()` matching were happening inline during the React render loop (`.map()` array iteration). This caused UI thrashing every time a user toggled `selectedDay` tabs.
 **Action:** Extract heavy, complex data restructuring, matching, and property resolution from the JSX render loop into a `useMemo` block that pre-processes the data when the dependencies update. This ensures UI interaction (like tab switching) is instant.
+
+## 2024-03-27 - [Cascading Renders via useEffect State Setting]
+**Learning:** Found a major performance and linting issue in `Timetable.tsx` where `useEffect` was being used to compute values (`isTodayHoliday`, `holidayName`) and update state based on prop/context changes. Calling `setState` synchronously within an effect body causes cascading renders (the component renders, the effect runs, sets state, and forces a second render).
+**Action:** Avoid `react-hooks/set-state-in-effect`. Instead of using `useEffect` to derive state from props, use `useMemo` for derived values. For updating true state (like `selectedDay`), use the "Adjusting state while rendering" pattern by tracking the previous value (`prevCalendar`) and calling `setState` directly in the render phase. This skips the extra paint cycle and eliminates the cascading render issue.
