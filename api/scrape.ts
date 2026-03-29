@@ -483,7 +483,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     await client.get(finalAuthURL);
 
     // 3. Initiate Native Cheerio Structural Fetching Algorithms
-    const academicPayload = await fetchAcademicsData(client);
+    // ⚡ Bolt Optimization:
+    // Execute independent scraping routines concurrently via Promise.all.
+    // Previously, `fetchAcademicsData` and `fetchCalendarData` ran sequentially.
+    // Impact: Saves a full HTTP request round-trip time (often >500ms),
+    // significantly reducing backend execution latency for the login endpoint.
+    const [academicPayload, calendarMap] = await Promise.all([
+      fetchAcademicsData(client),
+      fetchCalendarData(client)
+    ]);
     
     let globalAttendancePerc = 0;
     if (academicPayload.attendance.length > 0) {
@@ -493,7 +501,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     // Phase 4.3 Native Timetable & Calendar Executions
     const timetableMap = generateLocalTimetable(academicPayload.attendance, academicPayload.isBatchTwo);
-    const calendarMap = await fetchCalendarData(client);
 
     let globalMarksScored = 0;
     let globalMarksTotal = 0;

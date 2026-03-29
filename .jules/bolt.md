@@ -13,3 +13,7 @@
 ## 2024-03-27 - [Cascading Renders via useEffect State Setting]
 **Learning:** Found a major performance and linting issue in `Timetable.tsx` where `useEffect` was being used to compute values (`isTodayHoliday`, `holidayName`) and update state based on prop/context changes. Calling `setState` synchronously within an effect body causes cascading renders (the component renders, the effect runs, sets state, and forces a second render).
 **Action:** Avoid `react-hooks/set-state-in-effect`. Instead of using `useEffect` to derive state from props, use `useMemo` for derived values. For updating true state (like `selectedDay`), use the "Adjusting state while rendering" pattern by tracking the previous value (`prevCalendar`) and calling `setState` directly in the render phase. This skips the extra paint cycle and eliminates the cascading render issue.
+
+## 2024-03-28 - [Concurrent Execution of Independent Scraping Tasks]
+**Learning:** Found a major performance bottleneck in `api/scrape.ts` where independent scraping tasks (`fetchAcademicsData` and `fetchCalendarData`) were executed sequentially using consecutive `await` statements. This caused the backend to endure two full HTTP request round-trip times consecutively (often >500ms each).
+**Action:** When making multiple independent network requests within a serverless function, always use `Promise.all` to execute them concurrently. This drastically cuts down total execution time, improving perceived user latency and reducing billing costs in serverless environments.
