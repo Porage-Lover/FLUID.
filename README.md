@@ -1,50 +1,44 @@
-# Welcome to your Expo app 👋
+# **FLUID.** 🌊
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+A hyper-modern, cyberspace-inspired frontend overlay transforming the default Academia student portal into an animated, fluid, and aggressively responsive native web app.
 
-## Get started
+[**Live Edge Deployment**](https://fluid-gamma.vercel.app/)
 
-1. Install dependencies
+## ⚡ The Stack
+- **Frontend Core:** React, Vite, TypeScript
+- **State & DOM Math:** React Router, Framer Motion
+- **Visuals & Metrics:** Recharts (monotone geometry), Vanilla CSS (Cyberspace Aesthetic)
+- **Backend Bypass:** Vercel Edge Serverless Functions (`api/scrape.ts`), Axios, Cheerio
+- **Persistence:** Supabase (PostgreSQL Upserts)
 
+## 🌌 Core Aesthetics & UX
+FLUID. completely eradicates the archaic tables of the original system:
+- **Global SVG Immersion:** Pure CSS `@keyframes` map an infinite, 15-second tracking vector rendering dual crimson/cyan waves beneath the entire routing architecture flawlessly.
+- **Glassmorphism Metrics:** Absolute 0-bound monotone vectors calculate exact attendance margins predicting exactly how many classes you can skip before dropping under threshold limitations natively without rigid blocks.
+- **Swipe Navigations:** Floating minimal UI tracking haptic responses mimicking deep proprietary OS animations natively.
+- **Dynamic Practical Injections:** Native backend interceptors that mathematically bind missing internal 'Practical' or 'LAB' room descriptors explicitly overriding faulty upstream arrays automatically.
+
+## 🚀 Setup & Execution 
+*FLUID is built entirely for Edge compilation natively tracking zero backend binaries.*
+
+1. **Install Modules**
    ```bash
    npm install
    ```
-
-2. Start the app
-
+2. **Environment Targets**
+   Ensure your `.env` is initialized safely with Supabase limits.
+   ```env
+   VITE_SUPABASE_URL=your-project-url
+   VITE_SUPABASE_KEY=your-anon-key
+   SUPABASE_SERVICE_KEY=your-service-key
+   ```
+3. **Run Local Sandbox**
    ```bash
-   npx expo start
+   npm run dev
    ```
 
-In the output, you'll find options to open the app in a
+## 🔒 Upstream Scraping Security
+Because FLUID handles raw credentials scaling proxy layers targeting the Academic portal, *none* of the complex `Cheerio` HTML traversing algorithms or precise CSRF cookie bypass architectures are documented publicly here to avoid patch triggers.
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
-
-```bash
-npm run reset-project
-```
-
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
-
-## Learn more
-
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+---
+*Built aggressively for the Web.*

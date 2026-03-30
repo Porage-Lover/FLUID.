@@ -1,0 +1,207 @@
+{
+  "attendance": [
+    {
+      "name": "Probability and Queueing Theory",
+      "code": "21MAB204T",
+      "slot": "A",
+      "room": "TP 503",
+      "category": "Theory",
+      "present": 36,
+      "absent": 6,
+      "total": 42,
+      "percentage": 85.71428571428571
+    },
+    {
+      "name": "Design and Analysis of Algorithms (Theory)",
+      "code": "21CSC204J",
+      "slot": "B",
+      "room": "TP 503",
+      "category": "Theory",
+      "present": 27,
+      "absent": 5,
+      "total": 32,
+      "percentage": 84.375
+    },
+    {
+      "name": "ERP Solutions for Digital Enterprises",
+      "code": "21IPE312P",
+      "slot": "C",
+      "room": "TP 605",
+      "category": "Theory",
+      "present": 28,
+      "absent": 3,
+      "total": 31,
+      "percentage": 90.32258064516128
+    },
+    {
+      "name": "Database Management Systems",
+      "code": "21CSC205P",
+      "slot": "D",
+      "room": "TP 503",
+      "category": "Theory",
+      "present": 34,
+      "absent": 4,
+      "total": 38,
+      "percentage": 89.47368421052632
+    },
+    {
+      "name": "Social Engineering",
+      "code": "21PDH209T",
+      "slot": "E",
+      "room": "TP 503",
+      "category": "Theory",
+      "present": 16,
+      "absent": 4,
+      "total": 20,
+      "percentage": 80
+    },
+    {
+      "name": "Artificial Intelligence",
+      "code": "21CSC206T",
+      "slot": "F",
+      "room": "TP 503",
+      "category": "Theory",
+      "present": 26,
+      "absent": 5,
+      "total": 31,
+      "percentage": 83.87096774193549
+    },
+    {
+      "name": "Design Thinking and Methodology",
+      "code": "21DCS201P",
+      "slot": "G",
+      "room": "TP 503",
+      "category": "Theory",
+      "present": 25,
+      "absent": 7,
+      "total": 32,
+      "percentage": 78.125
+    },
+    {
+      "name": "Design and Analysis of Algorithms (Practical)",
+      "code": "21CSC204J",
+      "slot": "LAB",
+      "room": "TP710",
+      "category": "Practical",
+      "present": 18,
+      "absent": 2,
+      "total": 20,
+      "percentage": 90
+    },
+    {
+      "name": "Analytical and Logical Thinking Skills",
+      "code": "21PDM301L",
+      "slot": "LAB",
+      "room": "NA",
+      "category": "Practical",
+      "present": 18,
+      "absent": 0,
+      "total": 18,
+      "percentage": 100
+    }
+  ],
+  "marks": [
+    {
+      "name": "ERP Solutions for Digital Enterprises",
+      "code": "21IPE312P",
+      "total": "24.00 / 30.00",
+      "graph": [
+        {
+          "name": "FP-I",
+          "val": 6
+        },
+        {
+          "name": "PBL-I",
+          "val": 18
+        }
+      ]
+    },
+    {
+      "name": "Probability and Queueing Theory",
+      "code": "21MAB204T",
+      "total": "19.10 / 20.00",
+      "graph": [
+        {
+          "name": "FT-II",
+          "val": 14.1
+        },
+        {
+          "name": "FT-I",
+          "val": 5
+        }
+      ]
+    },
+    {
+      "name": "Design and Analysis of Algorithms",
+      "code": "21CSC204J",
+      "total": "16.08 / 22.00",
+      "graph": [
+        {
+          "name": "FJ-I",
+          "val": 10.68
+        },
+        {
+          "name": "LLJ-I",
+          "val": 5.4
+        }
+      ]
+    },
+    {
+      "name": "Database Management Systems",
+      "code": "21CSC205P",
+      "total": "27.60 / 30.00",
+      "graph": [
+        {
+          "name": "FP-I",
+          "val": 7.6
+        },
+        {
+          "name": "PBL-I",
+          "val": 20
+        }
+      ]
+    },
+    {
+      "name": "Artificial Intelligence",
+      "code": "21CSC206T",
+      "total": "16.10 / 20.00",
+      "graph": [
+        {
+          "name": "FT-II",
+          "val": 12.6
+        },
+        {
+          "name": "FT-I",
+          "val": 3.5
+        }
+      ]
+    },
+    {
+      "name": "Social Engineering",
+      "code": "21PDH209T",
+      "total": "20.00 / 20.00",
+      "graph": [
+        {
+          "name": "FT-II",
+          "val": 15
+        },
+        {
+          "name": "FT-I",
+          "val": 5
+        }
+      ]
+    },
+    {
+      "name": "Design Thinking and Methodology",
+      "code": "21DCS201P",
+      "total": "0.00 / 0.00",
+      "graph": []
+    },
+    {
+      "name": "Analytical and Logical Thinking Skills",
+      "code": "21PDM301L",
+      "total": "0.00 / 0.00",
+      "graph": []
+    }
+  ]
+}

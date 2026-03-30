@@ -1,0 +1,62 @@
+import { useEffect } from 'react';
+import { BrowserRouter, Routes, Route, Outlet, Navigate, useLocation } from 'react-router-dom';
+import { DataProvider } from './context/DataContext';
+import { Dashboard } from './pages/Dashboard';
+import { Attendance } from './pages/Attendance';
+import { Timetable } from './pages/Timetable';
+import { Marks } from './pages/Marks';
+import { Calendar } from './pages/Calendar';
+import { Login } from './pages/Login';
+import { FluidNavbar } from './components/FluidNavbar';
+import { BottomGeometry } from './components/BottomGeometry';
+import { ScrollToTop } from './components/ScrollToTop';
+import { GlobalWave } from './components/GlobalWave';
+
+function ScrollReset() {
+  const { pathname } = useLocation();
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+  return null;
+}
+
+function ProtectedLayout() {
+  const isAuth = !!localStorage.getItem('academia_id');
+  if (!isAuth) {
+    return <Navigate to="/login" replace />;
+  }
+  return (
+    <div style={{ position: 'relative', minHeight: '100vh', paddingBottom: '140px', paddingTop: '80px' }}>
+      <FluidNavbar />
+      <div style={{ flex: 1, paddingBottom: '20vh', zIndex: 10, position: 'relative' }}>
+         <Outlet />
+      </div>
+      <BottomGeometry />
+      <ScrollToTop />
+    </div>
+  );
+}
+
+function App() {
+  return (
+    <DataProvider>
+      <BrowserRouter>
+        <ScrollReset />
+        <GlobalWave />
+        <Routes>
+          <Route path="/login" element={<Login />} />
+          <Route element={<ProtectedLayout />}>
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/attendance" element={<Attendance />} />
+            <Route path="/timetable" element={<Timetable />} />
+            <Route path="/marks" element={<Marks />} />
+            <Route path="/calendar" element={<Calendar />} />
+            <Route path="/" element={<Navigate to="/dashboard" replace />} />
+          </Route>
+        </Routes>
+      </BrowserRouter>
+    </DataProvider>
+  );
+}
+
+export default App;
