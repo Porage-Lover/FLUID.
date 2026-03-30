@@ -2,7 +2,7 @@
 
 A hyper-modern, cyberspace-inspired frontend overlay transforming the default Academia student portal into an animated, fluid, and aggressively responsive native web app.
 
-[**Live Edge Deployment**](https://fluid-gamma.vercel.app/)
+[**Live Edge Deployment**](https://fluid-psi.vercel.app/)
 
 ## ⚡ The Stack
 - **Frontend Core:** React, Vite, TypeScript
