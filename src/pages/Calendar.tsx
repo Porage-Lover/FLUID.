@@ -24,10 +24,7 @@ export function Calendar() {
   const scrollToToday = () => {
     const el = document.getElementById('today-event');
     if (el) {
-       (window as any).isProgrammaticScroll = true;
-       const y = el.getBoundingClientRect().top + window.scrollY - 100;
-       window.scrollTo({ top: y, behavior: 'smooth' });
-       setTimeout(() => { (window as any).isProgrammaticScroll = false; }, 800);
+       el.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
   };
 

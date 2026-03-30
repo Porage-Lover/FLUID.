@@ -60,13 +60,9 @@ export function FluidNavbar() {
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center',
-        padding: '16px 32px',
-        zIndex: 9999,
-        background: theme === 'dark' ? 'rgba(5, 5, 8, 0.7)' : 'rgba(255, 255, 255, 0.8)',
-        backdropFilter: 'blur(24px)',
-        WebkitBackdropFilter: 'blur(24px)',
         borderBottom: theme === 'dark' ? '1px solid rgba(255, 255, 255, 0.05)' : '1px solid rgba(0, 0, 0, 0.05)'
       }}
+      className="nav-container"
     >
       {/* FLUID. Logo */}
       <div style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', marginLeft: '-12px' }} onClick={() => navigate('/dashboard')}>
@@ -74,16 +70,17 @@ export function FluidNavbar() {
       </div>
 
       {/* Navigation Links & Theme Toggle */}
-      <div style={{ display: 'flex', gap: '32px', alignItems: 'center' }}>
+      <div className="nav-links-row">
         {links.map((link) => (
           <NavLink
             key={link.path}
             to={link.path}
             onClick={() => triggerHaptic(30)}
+            onMouseEnter={() => triggerHaptic(10)}
+            className="nav-link-item"
             style={({ isActive }) => ({
               textDecoration: 'none',
               fontWeight: 800,
-              fontSize: '13px',
               fontFamily: "'Montserrat', sans-serif",
               letterSpacing: '2px',
               color: isActive ? 'var(--accent-crimson)' : 'var(--text-main)',
@@ -105,6 +102,8 @@ export function FluidNavbar() {
         <button
           onClick={() => { toggleTheme(); triggerHaptic(20); }}
           aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+          onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'var(--card-bg)'; triggerHaptic(10); }}
+          onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
           style={{
             background: 'transparent',
             border: 'none',
@@ -117,8 +116,6 @@ export function FluidNavbar() {
             borderRadius: '50%',
             transition: 'background-color 0.3s ease'
           }}
-          onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--card-bg)'}
-          onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
         >
           {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
         </button>

@@ -50,6 +50,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
   const fetchCache = async () => {
     setLoading(true);
     const academiaId = localStorage.getItem('academia_id');
+    const localPayloadStr = localStorage.getItem('academia_cache');
     
     if (!academiaId) {
       setLoading(false);
@@ -57,6 +58,16 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
     }
 
     try {
+      if (localPayloadStr) {
+        const parsed = JSON.parse(localPayloadStr);
+        if (parsed) {
+          setData(parsed);
+          setLoading(false);
+          return;
+        }
+      }
+      
+      // Secondary fallback ensuring legacy sessions recover gracefully
       const { data: dbData, error: dbError } = await supabase
         .from('academia_cache')
         .select('data')
@@ -69,7 +80,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
         setData(dbData.data as AppData);
       }
     } catch (err: any) {
-      console.error('Supabase fetch failed:', err.message);
+      console.error('Data pull failed:', err.message);
       setError(err.message);
       setData(emptyData); // Empty fallback ensuring UI doesn't visually crash
     } finally {

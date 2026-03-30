@@ -26,15 +26,26 @@ export function Login() {
       });
 
       // Valid session natively stored via Proxy endpoint inside Supabase.
-      // 🛡️ Sentinel: Store the securely hashed academiaId to prevent IDOR vulnerabilities.
-      // We bind the global reference ID and force a structural reload to trigger `DataContext` fetching.
+      // 🛡️ Sentinel: Bypassing Supabase fetch fragility by directly projecting the API JSON 
+      // payload into client memory natively allowing immediate instantaneous Dashboard builds!
       localStorage.setItem('academia_id', response.data.academiaId);
+      localStorage.setItem('academia_cache', JSON.stringify(response.data.data));
       window.location.href = '/dashboard';
 
     } catch (e: any) {
       console.error("Login failure", e);
-      // Surface raw scraper trace correctly
-      const traceMsg = e.response?.data?.error || e.message || 'Authentication Failed';
+      // Defensively parse nested error structures thrown natively by Vercel edge proxy timeouts
+      let traceMsg = 'Authentication Failed';
+      const rawError = e.response?.data?.error;
+      
+      if (typeof rawError === 'string') {
+        traceMsg = rawError;
+      } else if (rawError?.message) {
+        traceMsg = rawError.message;
+      } else if (e.message) {
+        traceMsg = e.message;
+      }
+
       setErr(traceMsg);
     } finally {
       setLoading(false);
