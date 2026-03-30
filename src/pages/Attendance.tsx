@@ -45,7 +45,7 @@ export function Attendance() {
 
   return (
     <div style={{ maxWidth: '800px', margin: '0 auto', padding: '0 32px 200px 32px' }}>
-      <ScrollHideHeader style={{ backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)', backgroundColor: 'transparent' }}>
+      <ScrollHideHeader>
         <h1 className="heading-fluid glow-cyan" style={{ color: 'var(--accent-cyan)', margin: 0, fontSize: '2rem' }}>Attendance</h1>
       </ScrollHideHeader>
 

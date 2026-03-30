@@ -13,7 +13,7 @@ export function Dashboard() {
   return (
     <div style={{ maxWidth: '800px', margin: '0 auto', padding: '0 32px 200px 32px' }}>
       {/* Header */}
-      <ScrollHideHeader style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)', backgroundColor: 'transparent' }}>
+      <ScrollHideHeader style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
            <div className="fluid-card" style={{ width: '64px', height: '64px', borderRadius: '50%', background: 'rgba(29, 199, 209, 0.1)', border: '1px solid var(--accent-cyan)', boxShadow: '0 0 20px rgba(29, 199, 209, 0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
              <UserCheck size={32} color="var(--accent-cyan)" strokeWidth={2.5} />

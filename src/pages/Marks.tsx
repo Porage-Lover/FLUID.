@@ -13,7 +13,7 @@ export function Marks() {
 
   return (
     <div style={{ maxWidth: '800px', margin: '0 auto', padding: '0 32px 120px 32px' }}>
-      <ScrollHideHeader style={{ backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)', backgroundColor: 'transparent' }}>
+      <ScrollHideHeader>
         <h1 className="heading-fluid glow-crimson" style={{ color: 'var(--accent-crimson)', margin: 0, fontSize: '2rem' }}>Metrics</h1>
       </ScrollHideHeader>
 

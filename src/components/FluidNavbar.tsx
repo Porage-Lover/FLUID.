@@ -60,9 +60,9 @@ export function FluidNavbar() {
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center',
-        borderBottom: theme === 'dark' ? '1px solid rgba(255, 255, 255, 0.05)' : '1px solid rgba(0, 0, 0, 0.05)'
+        zIndex: 9999,
       }}
-      className="nav-container"
+      className="nav-container frosted-glass navbar-glass"
     >
       {/* FLUID. Logo */}
       <div style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', marginLeft: '-12px' }} onClick={() => navigate('/dashboard')}>
