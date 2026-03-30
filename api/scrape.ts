@@ -563,7 +563,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   } catch (error: any) {
     // 🛡️ Sentinel: Removed trace from response to prevent stack trace leakage
+    // Additionally, prevent raw error.message leakage to client which might contain Base64 DOM dumps
     logger.error('Vercel Scraping Root Error', { error: error.message, stack: error.stack });
-    return res.status(500).json({ error: error.message || 'Fatal scraping termination.' });
+    return res.status(500).json({ error: 'Fatal scraping termination. Please try again later.' });
   }
 }
