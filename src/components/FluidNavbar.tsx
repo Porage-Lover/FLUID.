@@ -60,6 +60,7 @@ export function FluidNavbar() {
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center',
+        zIndex: 9999,
       }}
       className="nav-container frosted-glass navbar-glass"
     >
