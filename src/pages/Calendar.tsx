@@ -39,7 +39,7 @@ export function Calendar() {
 
   return (
     <div style={{ maxWidth: '800px', margin: '0 auto', padding: '0 32px 200px 32px' }}>
-      <ScrollHideHeader style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)', backgroundColor: 'transparent' }}>
+      <ScrollHideHeader style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
            <CalendarIcon size={40} color="var(--accent-crimson)" strokeWidth={2.5} />
            <h1 className="heading-fluid glow-crimson" style={{ color: 'var(--accent-crimson)', margin: 0, fontSize: '2rem' }}>Agenda</h1>

@@ -39,13 +39,12 @@ export function ScrollHideHeader({ children, style }: { children: React.ReactNod
       transition={{ type: 'spring', stiffness: 300, damping: 30 }}
       style={{
         position: 'sticky',
-        top: '80px',
+        top: '100px',
         zIndex: 100,
-        paddingTop: '40px',
-        paddingBottom: '20px',
-        marginBottom: '20px',
+        marginBottom: '24px',
         ...style
       }}
+      className="frosted-glass header-glass"
     >
       {children}
     </motion.div>

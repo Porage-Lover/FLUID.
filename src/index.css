@@ -202,3 +202,29 @@ input[type=range]::-webkit-slider-runnable-track {
     padding: 12px 0 !important;
   }
 }
+
+/* Glass Header System */
+.frosted-glass {
+  background: rgba(15, 15, 20, 0.75);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+[data-theme="light"] .frosted-glass {
+  background: rgba(255, 255, 255, 0.85);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+}
+
+.navbar-glass {
+  border-left: none;
+  border-right: none;
+  border-top: none;
+}
+
+.header-glass {
+  border-radius: 16px;
+  padding: 16px 24px;
+}
