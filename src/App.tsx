@@ -21,7 +21,7 @@ function ScrollReset() {
 }
 
 function ProtectedLayout() {
-  const isAuth = !!localStorage.getItem('academia_id');
+  const isAuth = !!sessionStorage.getItem('academia_id') || !!localStorage.getItem('academia_id');
   if (!isAuth) {
     return <Navigate to="/login" replace />;
   }
