@@ -8,7 +8,7 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "test": "node --experimental-strip-types src/utils/haptics.test.ts"
+    "test": "node --experimental-strip-types src/utils/haptics.test.ts && npx tsx --tsconfig tsconfig.app.json src/components/SubjectCard.test.tsx"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.99.3",
@@ -34,6 +34,7 @@
     "eslint-plugin-react-hooks": "^7.0.1",
     "eslint-plugin-react-refresh": "^0.5.2",
     "globals": "^17.4.0",
+    "tsx": "^4.21.0",
     "typescript": "~5.9.3",
     "typescript-eslint": "^8.57.0",
     "vite": "^8.0.1"
