@@ -37,3 +37,8 @@
 **Vulnerability:** The application's logout functionality only cleared the authentication token (`academia_id`) from `localStorage`, but left behind sensitive cached academic data (`academia_cache` containing attendance, marks, and timetable).
 **Learning:** Incomplete session termination on shared or public devices can allow subsequent users to view the previous user's sensitive data by inspecting local storage or if the frontend optimistically loads cached state before re-authenticating.
 **Prevention:** Ensure that all sensitive data, including caches and temporary state, is explicitly wiped from client-side storage mechanisms (like `localStorage`, `sessionStorage`, or IndexedDB) during the logout process.
+
+## 2026-03-31 - [Move Sensitive Cache to SessionStorage and Encrypt]
+**Vulnerability:** Cleartext Storage of Sensitive Information in Local Storage. Sensitive academic data (attendance, marks, timetable) was stored in plaintext in `localStorage`, making it persistent on disk and vulnerable to XSS or physical device access.
+**Learning:** Storing sensitive data in `sessionStorage` instead of `localStorage` ensures that the data is wiped when the browser tab is closed. Adding an obfuscation layer (e.g., XOR-based) prevents casual inspection of the data-at-rest in the browser.
+**Prevention:** Use `sessionStorage` for sensitive session-bound data and apply obfuscation/encryption to prevent cleartext exposure. Implement legacy cleanup to remove old sensitive data from `localStorage`.
