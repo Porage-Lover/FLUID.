@@ -37,3 +37,8 @@
 **Vulnerability:** The application's logout functionality only cleared the authentication token (`academia_id`) from `localStorage`, but left behind sensitive cached academic data (`academia_cache` containing attendance, marks, and timetable).
 **Learning:** Incomplete session termination on shared or public devices can allow subsequent users to view the previous user's sensitive data by inspecting local storage or if the frontend optimistically loads cached state before re-authenticating.
 **Prevention:** Ensure that all sensitive data, including caches and temporary state, is explicitly wiped from client-side storage mechanisms (like `localStorage`, `sessionStorage`, or IndexedDB) during the logout process.
+
+## 2024-05-24 - [Remove Stack Trace & Error Message Leakage]
+**Vulnerability:** Found `error.stack` details being sent back to the client previously, and now `error.stack` and raw `error.message` being logged internally in `api/scrape.ts` when exceptions occurred. This could leak database connection strings or Base64 DOM dumps to the server logs.
+**Learning:** Logging full stack traces and raw error messages from external dependencies (like Supabase or Axios) internally can expose sensitive credentials, URLs, or inner system workings to log management systems.
+**Prevention:** Sanitize errors before logging them. Omit `error.stack` entirely, and strictly avoid logging raw `error.message` strings directly, instead using safe fallbacks (like `error.name` or generic sanitized strings) to prevent Database Connection String / Configuration leakage.
