@@ -93,7 +93,9 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const logout = () => {
+    // 🛡️ Sentinel: Ensure all sensitive academic data is wiped from memory on logout
     localStorage.removeItem('academia_id');
+    localStorage.removeItem('academia_cache');
     window.location.href = '/login';
   };
 

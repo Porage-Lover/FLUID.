@@ -32,3 +32,8 @@
 **Vulnerability:** Insecure Direct Object Reference (IDOR) where the backend used the plaintext user email (`regNo`) as the primary cache ID in Supabase. Because the frontend fetched this data using an `anon` key passing the email via `localStorage`, an attacker could easily change their local `academia_id` to any other student's email and access their sensitive academic data without re-authenticating.
 **Learning:** Never use guessable, deterministic identifiers (like emails or sequential IDs) for data access checks when row-level security or authorization depends solely on client-provided IDs.
 **Prevention:** Use cryptographically secure, unguessable identifiers. In this case, creating an HMAC-SHA256 hash of the email using a secure server-side secret (`SUPABASE_SERVICE_ROLE_KEY`) ensures that only authenticated users holding the specific capability token (`secureId`) can access their data.
+
+## 2024-05-24 - [Insecure Session Termination / Cache Wiping]
+**Vulnerability:** The application's logout functionality only cleared the authentication token (`academia_id`) from `localStorage`, but left behind sensitive cached academic data (`academia_cache` containing attendance, marks, and timetable).
+**Learning:** Incomplete session termination on shared or public devices can allow subsequent users to view the previous user's sensitive data by inspecting local storage or if the frontend optimistically loads cached state before re-authenticating.
+**Prevention:** Ensure that all sensitive data, including caches and temporary state, is explicitly wiped from client-side storage mechanisms (like `localStorage`, `sessionStorage`, or IndexedDB) during the logout process.
