@@ -1,5 +1,4 @@
-import { test } from 'node:test';
-import assert from 'node:assert';
+import { test, expect } from 'vitest';
 import { triggerHaptic } from './haptics.ts';
 
 // Helper to mock navigator
@@ -31,7 +30,7 @@ test('triggerHaptic calls navigator.vibrate with correct duration', () => {
   setupNavigator(mockVibrate);
 
   triggerHaptic(100);
-  assert.strictEqual(calledDuration, 100);
+  expect(calledDuration).toBe(100);
 });
 
 test('triggerHaptic uses default duration of 50ms', () => {
@@ -44,7 +43,7 @@ test('triggerHaptic uses default duration of 50ms', () => {
   setupNavigator(mockVibrate);
 
   triggerHaptic();
-  assert.strictEqual(calledDuration, 50);
+  expect(calledDuration).toBe(50);
 });
 
 test('triggerHaptic silently catches vibration errors', () => {
