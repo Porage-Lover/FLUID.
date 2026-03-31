@@ -69,7 +69,7 @@ async function fetchAcademicsData(client: any): Promise<{ attendance: any[], mar
   } else if (htmlBytes.includes("zmlvalue=")) {
       const zmlMatches = [...htmlBytes.matchAll(/zmlvalue=['"]([^'"]+)['"]/gi)];
       for (const match of zmlMatches) {
-          let decoded = match[1].replace(/\\x([0-9a-fA-F]{2})/g, (_: string, hex: string) => String.fromCharCode(parseInt(hex, 16)))
+          const decoded = match[1].replace(/\\x([0-9a-fA-F]{2})/g, (_: string, hex: string) => String.fromCharCode(parseInt(hex, 16)))
                     .replace(/&lt;/g, '<')
                     .replace(/&gt;/g, '>')
                     .replace(/&amp;/g, '&')
@@ -129,7 +129,7 @@ async function fetchAcademicsData(client: any): Promise<{ attendance: any[], mar
       const tds = $(tr).find("td, th");
       if (tds.length === 0) return;
 
-      let codeText = tds.eq(0).text().replace(/\u00a0/g, ' ').replace(/Regular/gi, "").trim();
+      const codeText = tds.eq(0).text().replace(/\u00a0/g, ' ').replace(/Regular/gi, "").trim();
       // Bypass standard header rows smoothly without failing on elective asterisks (*) or hyphenated unio course patterns
       if (!codeText || codeText.toLowerCase().includes("course code") || codeText.toLowerCase().includes("subject code")) return;
 
@@ -320,9 +320,19 @@ async function fetchCalendarData(client: any): Promise<any[]> {
        });
     });
 
+    // ⚡ Bolt Optimization:
+    // Pre-calculate month indices natively using a Map. By resolving `validMonths.findIndex()`
+    // iteratively once per header string outside the `.sort()` callback instead of inside
+    // it for every comparison step (O(N*logN)), sorting becomes near-instant (O(1) lookups).
+    // Impact: Avoids ~O(N*logN * 12) repetitive array lookups per event sort loop natively!
+    const monthIdMap = new Map<string, number>();
+    monthHeaders.forEach(mHeader => {
+       monthIdMap.set(mHeader, validMonths.findIndex(m => mHeader.includes(m)));
+    });
+
     calendarEvents.sort((a, b) => {
-       const mIdA = validMonths.findIndex(m => a.month.includes(m));
-       const mIdB = validMonths.findIndex(m => b.month.includes(m));
+       const mIdA = monthIdMap.get(a.month) ?? 0;
+       const mIdB = monthIdMap.get(b.month) ?? 0;
        if (mIdA !== mIdB) return mIdA - mIdB;
        return parseInt(a.date) - parseInt(b.date);
     });
