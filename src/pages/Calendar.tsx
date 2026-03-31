@@ -1,4 +1,3 @@
-import { useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { FluidCard } from '../components/FluidCard';
 import { useData } from '../context/DataContext';
@@ -30,15 +29,6 @@ export function Calendar() {
     }
   };
 
-
-  useEffect(() => {
-     // A slight delay guarantees DOM painting completion
-     const t = setTimeout(() => {
-        scrollToToday();
-     }, 100);
-     return () => clearTimeout(t);
-  }, [data.calendar]);
-
   return (
     <div style={{ maxWidth: '800px', margin: '0 auto', padding: '0 32px 200px 32px' }}>
       <ScrollHideHeader style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -64,7 +54,7 @@ export function Calendar() {
         </button>
       </ScrollHideHeader>
 
-      <motion.div variants={containerVariants} initial="hidden" animate="show" style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+      <motion.div variants={containerVariants} initial="hidden" animate="show" onAnimationComplete={scrollToToday} style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
         {data.calendar && data.calendar.length > 0 ? data.calendar.map((item, idx) => {
             const isHoliday = item.type === 'holiday';
             const isToday = item.month === searchMonth && item.date === searchDate;
