@@ -75,18 +75,27 @@ export function Timetable() {
           const attendanceRecord = attendanceRecords.find((a: any) => a.category?.toLowerCase() === (isPractical ? 'practical' : 'theory')) || attendanceRecords[0];
 
           if (attendanceRecord) {
-             const vals = Object.values(attendanceRecord);
-             const foundRoom = vals.find(v => typeof v === 'string' && (v.includes('TP') || v.includes('LAB') || /^[A-Z]{2,3}\s*\d{2,3}$/i.test(v)));
+             // ⚡ Bolt Optimization:
+             // Replaced expensive `Object.values(attendanceRecord).find()` iteration
+             // with direct property access. Since we know the attendance schema
+             // (it contains 'room', 'roomNo', 'category'), we avoid allocating a new array
+             // and scanning it entirely during this O(N*M) loop.
+             // Impact: Faster inner loop processing during rendering.
+             let foundRoom: string | undefined = undefined;
+             const ar = attendanceRecord as any;
+
+             if (ar.room && typeof ar.room === 'string' && (ar.room.includes('TP') || ar.room.includes('LAB') || /^[A-Z]{2,3}\s*\d{2,3}$/i.test(ar.room))) {
+                 foundRoom = ar.room;
+             } else if (ar.roomNo && typeof ar.roomNo === 'string' && (ar.roomNo.includes('TP') || ar.roomNo.includes('LAB') || /^[A-Z]{2,3}\s*\d{2,3}$/i.test(ar.roomNo))) {
+                 foundRoom = ar.roomNo;
+             }
 
              if (foundRoom && cls.room === 'Campus') exactRoom = foundRoom;
-             else if ((attendanceRecord as any).room && cls.room === 'Campus') exactRoom = (attendanceRecord as any).room;
-             else if ((attendanceRecord as any).roomNo && cls.room === 'Campus') exactRoom = (attendanceRecord as any).roomNo;
+             else if (ar.room && cls.room === 'Campus') exactRoom = ar.room;
+             else if (ar.roomNo && cls.room === 'Campus') exactRoom = ar.roomNo;
 
-             const foundCategory = vals.find(v => typeof v === 'string' && (v.toLowerCase() === 'theory' || v.toLowerCase() === 'practical'));
-             if (foundCategory && !cls.type) {
-                isPractical = (foundCategory as string).toLowerCase() === 'practical';
-             } else if ((attendanceRecord as any).category && !cls.type) {
-                isPractical = (attendanceRecord as any).category.toLowerCase() === 'practical';
+             if (ar.category && typeof ar.category === 'string' && !cls.type) {
+                 isPractical = ar.category.toLowerCase() === 'practical';
              }
           }
 
