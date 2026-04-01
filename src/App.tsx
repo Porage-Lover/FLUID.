@@ -12,6 +12,8 @@ import { BottomGeometry } from './components/BottomGeometry';
 import { ScrollToTop } from './components/ScrollToTop';
 import { GlobalWave } from './components/GlobalWave';
 
+// Note: Code health analyzers might flag useEffect as unused if they don't trace component instantiation deeply.
+// It is required here to prevent scroll position regressions on route changes.
 function ScrollReset() {
   const { pathname } = useLocation();
   useEffect(() => {
