@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react';
+import type { ReactNode, CSSProperties } from 'react';
 import { motion } from 'framer-motion';
 import type { HTMLMotionProps } from 'framer-motion';
 
@@ -7,7 +7,7 @@ interface FluidCardProps extends HTMLMotionProps<"div"> {
   headerColor?: string;
   actionIcon?: ReactNode;
   onActionClick?: () => void;
-  innerStyle?: React.CSSProperties;
+  innerStyle?: CSSProperties;
 }
 
 export function FluidCard({ children, style, headerColor = '#d62828', actionIcon, onActionClick, innerStyle, onClick, ...props }: FluidCardProps) {
