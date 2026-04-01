@@ -4,6 +4,7 @@ import { ArrowRight, AlertCircle, Eye, EyeOff } from 'lucide-react';
 import axios from 'axios';
 import { FluidLogo } from '../components/FluidLogo';
 import { triggerHaptic } from '../utils/haptics';
+import { encryptData } from '../utils/security';
 
 export function Login() {
   const [email, setEmail] = useState('');
@@ -28,8 +29,9 @@ export function Login() {
       // Valid session natively stored via Proxy endpoint inside Supabase.
       // 🛡️ Sentinel: Bypassing Supabase fetch fragility by directly projecting the API JSON 
       // payload into client memory natively allowing immediate instantaneous Dashboard builds!
-      localStorage.setItem('academia_id', response.data.academiaId);
-      localStorage.setItem('academia_cache', JSON.stringify(response.data.data));
+      // Using sessionStorage and encryption to prevent cleartext storage and ensure data is wiped on tab close.
+      sessionStorage.setItem('academia_id', response.data.academiaId);
+      sessionStorage.setItem('academia_cache', encryptData(JSON.stringify(response.data.data)));
       window.location.href = '/dashboard';
 
     } catch (e: any) {

@@ -42,3 +42,8 @@
 **Vulnerability:** Found `error.stack` details being sent back to the client previously, and now `error.stack` and raw `error.message` being logged internally in `api/scrape.ts` when exceptions occurred. This could leak database connection strings or Base64 DOM dumps to the server logs.
 **Learning:** Logging full stack traces and raw error messages from external dependencies (like Supabase or Axios) internally can expose sensitive credentials, URLs, or inner system workings to log management systems.
 **Prevention:** Sanitize errors before logging them. Omit `error.stack` entirely, and strictly avoid logging raw `error.message` strings directly, instead using safe fallbacks (like `error.name` or generic sanitized strings) to prevent Database Connection String / Configuration leakage.
+
+## 2026-03-31 - [Move Sensitive Cache to SessionStorage and Encrypt]
+**Vulnerability:** Cleartext Storage of Sensitive Information in Local Storage. Sensitive academic data (attendance, marks, timetable) was stored in plaintext in `localStorage`, making it persistent on disk and vulnerable to XSS or physical device access.
+**Learning:** Storing sensitive data in `sessionStorage` instead of `localStorage` ensures that the data is wiped when the browser tab is closed. Adding an obfuscation layer (e.g., XOR-based) prevents casual inspection of the data-at-rest in the browser.
+**Prevention:** Use `sessionStorage` for sensitive session-bound data and apply obfuscation/encryption to prevent cleartext exposure. Implement legacy cleanup to remove old sensitive data from `localStorage`.

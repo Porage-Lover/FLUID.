@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { supabase } from '../lib/supabaseClient';
+import { decryptData } from '../utils/security';
 
 export type AppData = {
   user: { name: string; overallAttendance: number; overallMarks: string; };
@@ -49,8 +50,8 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
 
   const fetchCache = async () => {
     setLoading(true);
-    const academiaId = localStorage.getItem('academia_id');
-    const localPayloadStr = localStorage.getItem('academia_cache');
+    const academiaId = sessionStorage.getItem('academia_id');
+    const localPayloadStr = sessionStorage.getItem('academia_cache');
     
     if (!academiaId) {
       setLoading(false);
@@ -59,11 +60,14 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
 
     try {
       if (localPayloadStr) {
-        const parsed = JSON.parse(localPayloadStr);
-        if (parsed) {
-          setData(parsed);
-          setLoading(false);
-          return;
+        const decrypted = decryptData(localPayloadStr);
+        if (decrypted) {
+          const parsed = JSON.parse(decrypted);
+          if (parsed) {
+            setData(parsed);
+            setLoading(false);
+            return;
+          }
         }
       }
       
@@ -90,10 +94,20 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     fetchCache();
+
+    // 🛡️ Sentinel: Legacy Cleanup - Remove plaintext sensitive data from localStorage if it exists
+    if (localStorage.getItem('academia_id') || localStorage.getItem('academia_cache')) {
+      localStorage.removeItem('academia_id');
+      localStorage.removeItem('academia_cache');
+      console.log('🛡️ Sentinel: Legacy plaintext storage cleared.');
+    }
   }, []);
 
   const logout = () => {
     // 🛡️ Sentinel: Ensure all sensitive academic data is wiped from memory on logout
+    // We clear both sessionStorage (current) and localStorage (legacy/theme) to be safe
+    sessionStorage.removeItem('academia_id');
+    sessionStorage.removeItem('academia_cache');
     localStorage.removeItem('academia_id');
     localStorage.removeItem('academia_cache');
     window.location.href = '/login';
