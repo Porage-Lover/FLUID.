@@ -339,7 +339,7 @@ async function fetchCalendarData(client: any): Promise<any[]> {
 
     return calendarEvents;
   } catch (e: any) {
-    logger.error("Calendar parser crash", { error: e.message, stack: e.stack });
+    logger.error("Calendar parser crash", { error: e.name || 'UnknownError' });
     return [];
   }
 }
@@ -579,7 +579,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   } catch (error: any) {
     // 🛡️ Sentinel: Removed trace from response to prevent stack trace leakage
     // Additionally, prevent raw error.message leakage to client which might contain Base64 DOM dumps
-    logger.error('Vercel Scraping Root Error', { error: error.message, stack: error.stack });
+    // We strictly avoid logging error.stack or unmodified error.message here to prevent Database Connection String / Configuration leakage
+    const safeErrorMessage = error.name === 'Error' && error.message ? 'Scraping Execution Failed' : 'Unknown Error';
+    logger.error('Vercel Scraping Root Error', { error: safeErrorMessage });
     return res.status(500).json({ error: 'Fatal scraping termination. Please try again later.' });
   }
 }
