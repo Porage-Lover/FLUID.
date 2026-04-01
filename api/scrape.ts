@@ -579,7 +579,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       .upsert({ id: secureId, data: fetchedPayload });
 
     if (dbError) {
-       logger.error('🛡️ Sentinel: Supabase UPSERT blocked natively (Likely RLS configuration missing). Bypassing globally.', { error: dbError.message });
+       // 🛡️ Sentinel: Prevent raw error.message leakage to internal logs
+       // Raw Supabase errors can contain internal database structures, query context, or connection details
+       logger.error('🛡️ Sentinel: Supabase UPSERT blocked natively (Likely RLS configuration missing). Bypassing globally.', { error: 'Database Upsert Error' });
        // We DO NOT throw the error to prevent the login stream from crashing. The React Frontend local cache handles state.
     }
 

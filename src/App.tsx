@@ -25,6 +25,8 @@ function ScrollReset() {
 function ProtectedLayout() {
   const isAuth = !!sessionStorage.getItem('academia_id') || !!localStorage.getItem('academia_id');
   if (!isAuth) {
+    // 🛡️ Sentinel: Ensure stale/unauthorized caches are wiped if auth is lost
+    sessionStorage.removeItem('academia_cache');
     return <Navigate to="/login" replace />;
   }
   return (
