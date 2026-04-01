@@ -47,3 +47,8 @@
 **Vulnerability:** Cleartext Storage of Sensitive Information in Local Storage. Sensitive academic data (attendance, marks, timetable) was stored in plaintext in `localStorage`, making it persistent on disk and vulnerable to XSS or physical device access.
 **Learning:** Storing sensitive data in `sessionStorage` instead of `localStorage` ensures that the data is wiped when the browser tab is closed. Adding an obfuscation layer (e.g., XOR-based) prevents casual inspection of the data-at-rest in the browser.
 **Prevention:** Use `sessionStorage` for sensitive session-bound data and apply obfuscation/encryption to prevent cleartext exposure. Implement legacy cleanup to remove old sensitive data from `localStorage`.
+
+## 2026-03-31 - [Remove Predictable HMAC Key Fallback]
+**Vulnerability:** The backend endpoint `api/scrape.ts` used `process.env.VITE_SUPABASE_ANON_KEY` as a fallback secret to generate the `secureId` HMAC hash for Supabase IDOR protection. Since `VITE_SUPABASE_ANON_KEY` is exposed to the frontend, an attacker could extract it and trivially compute the HMAC hash for any student's email, completely bypassing the IDOR mitigation intended to protect the `academia_cache` table.
+**Learning:** Fallbacks for server-side cryptographic secrets must never degrade to using public or client-exposed variables. Using public keys for HMAC defeats the purpose of server-side data obfuscation.
+**Prevention:** Strictly enforce the presence of `SUPABASE_SERVICE_ROLE_KEY` (or a dedicated server-only secret) for generating sensitive hashes. If the secure key is missing, fail securely with a 500 status rather than silently downgrading the protection mechanism.

@@ -29,15 +29,17 @@ const logger = {
 // 🛡️ Sentinel: Maximize Vercel proxy bounds to 60s protecting against high SRM latency
 export const maxDuration = 60;
 
-// 🛡️ Sentinel: Using SERVICE_ROLE key or generic ANON key for secure backend upserts
+// 🛡️ Sentinel: Using SERVICE_ROLE key or strictly internal backend keys for secure upserts
 const supabaseUrl = process.env.VITE_SUPABASE_URL || '';
-const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.VITE_SUPABASE_ANON_KEY || '';
+// 🚨 CRITICAL: Never fallback to VITE_SUPABASE_ANON_KEY for HMAC generation as it is public
+const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
 
 if (!supabaseUrl || !supabaseKey) {
-  logger.error('🛡️ Sentinel: Missing Supabase environment variables');
+  logger.error('🛡️ Sentinel: Missing Supabase Service Role Key');
 }
 
-const supabase = createClient(supabaseUrl, supabaseKey);
+// Proceed only if supabase credentials are valid to avoid downstream crashes or predictable empty-key hashes
+const supabase = (supabaseUrl && supabaseKey) ? createClient(supabaseUrl, supabaseKey) : null;
 
 // ------------- SCRAPER UTILS -------------
 function convertHexToHTML(hexString: string): string {
@@ -450,6 +452,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(400).json({ error: 'Missing credentials' });
   }
 
+  // 🛡️ Sentinel: Fail securely if the backend lacks the secret capability key
+  if (!supabase) {
+    logger.error('🛡️ Sentinel: Supabase initialization failed. Cannot process request securely.');
+    return res.status(500).json({ error: 'Internal Server Error: Secure Context Unavailable' });
+  }
+
   // 🛡️ Sentinel: Enforce strict type and length limits to prevent TypeError crashes and large input DoS
   if (typeof regNo !== 'string' || typeof password !== 'string') {
     return res.status(400).json({ error: 'Invalid credential format' });
@@ -563,7 +571,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     // 4. UPSERT securely into Supabase `academia_cache`
     // 🛡️ Sentinel: Generate a secure hash to prevent IDOR vulnerabilities
     // instead of storing plaintext emails that can be manipulated in localStorage
-    const secureId = crypto.createHmac('sha256', supabaseKey).update(regNo).digest('hex');
+    // Convert to lower case to ensure case-insensitive IDOR protections and no duplicate cache entries
+    const secureId = crypto.createHmac('sha256', supabaseKey).update(regNo.toLowerCase()).digest('hex');
 
     const { error: dbError } = await supabase
       .from('academia_cache')
