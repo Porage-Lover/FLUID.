@@ -1,4 +1,13 @@
+import { useData } from '../context/DataContext';
+import { GlobalShader } from './GlobalShader';
+
 export function GlobalWave() {
+  const { theme } = useData();
+
+  if (theme === 'monochrome') {
+    return <GlobalShader />;
+  }
+
   return (
     <div style={{ position: 'fixed', bottom: 0, left: 0, width: '200vw', height: '40vh', pointerEvents: 'none', zIndex: -1, animation: 'fluidWave 15s linear alternate infinite', opacity: 0.6 }}>
       <svg viewBox="0 0 2880 320" preserveAspectRatio="none" style={{ width: '100%', height: '100%' }}>
