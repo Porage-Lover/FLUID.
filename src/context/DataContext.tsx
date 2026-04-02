@@ -24,8 +24,8 @@ interface DataContextType {
   error: string | null;
   refreshData: () => Promise<void>;
   logout: () => void;
-  theme: 'dark' | 'light';
-  toggleTheme: () => void;
+  theme: 'dark' | 'light' | 'monochrome';
+  setTheme: (theme: 'dark' | 'light' | 'monochrome') => void;
 }
 
 const DataContext = createContext<DataContextType | undefined>(undefined);
@@ -34,9 +34,9 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
   const [data, setData] = useState<AppData>(emptyData);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [theme, setTheme] = useState<'dark' | 'light'>(() => {
+  const [theme, setTheme] = useState<'dark' | 'light' | 'monochrome'>(() => {
     const saved = localStorage.getItem('fluid_theme');
-    return (saved === 'light' || saved === 'dark') ? saved : 'dark';
+    return (saved === 'light' || saved === 'dark' || saved === 'monochrome') ? saved : 'dark';
   });
 
   useEffect(() => {
@@ -44,9 +44,6 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
     localStorage.setItem('fluid_theme', theme);
   }, [theme]);
 
-  const toggleTheme = () => {
-    setTheme(prev => prev === 'dark' ? 'light' : 'dark');
-  };
 
   const fetchCache = async () => {
     setLoading(true);
@@ -114,7 +111,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <DataContext.Provider value={{ data, loading, error, refreshData: fetchCache, logout, theme, toggleTheme }}>
+    <DataContext.Provider value={{ data, loading, error, refreshData: fetchCache, logout, theme, setTheme }}>
       {children}
     </DataContext.Provider>
   );
