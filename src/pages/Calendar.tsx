@@ -21,24 +21,21 @@ export function Calendar() {
   const searchDate = today.getDate().toString();
 
   const scrollToToday = () => {
-    // ⚡ Bolt Optimization: Decoupling Framer's render loop from DOM structural painting bounds. 
-    // Using explicit mathematical scroll calculations bounded to a 150ms delay guarantees fluid transition.
-    setTimeout(() => {
-       const el = document.getElementById('today-event');
-       if (el) {
-          (window as any).isProgrammaticScroll = true;
-          const headerOffset = 120; 
-          const elementPosition = el.getBoundingClientRect().top;
-          const offsetPosition = elementPosition + window.scrollY - headerOffset;
+    // ⚡ Bolt Optimization: Using explicit mathematical scroll calculations natively mapped to DOM bounds guaranteeing perfect layout transition without structural stuttering. 
+    const el = document.getElementById('today-event');
+    if (el) {
+       (window as any).isProgrammaticScroll = true;
+       const headerOffset = 120; 
+       const elementPosition = el.getBoundingClientRect().top;
+       const offsetPosition = elementPosition + window.scrollY - headerOffset;
 
-          window.scrollTo({
-               top: offsetPosition,
-               behavior: "smooth"
-          });
-          
-          setTimeout(() => { (window as any).isProgrammaticScroll = false; }, 1000);
-       }
-    }, 150);
+       window.scrollTo({
+            top: offsetPosition,
+            behavior: "smooth"
+       });
+       
+       setTimeout(() => { (window as any).isProgrammaticScroll = false; }, 1000);
+    }
   };
 
   return (

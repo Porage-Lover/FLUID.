@@ -74,10 +74,10 @@ body {
   color: #fff;
 }
 .logo-part-crimson {
-  color: var(--accent-crimson);
+  color: #FF2A5F !important;
 }
 .logo-dot {
-  color: var(--accent-crimson);
+  color: #FF2A5F !important;
 }
 
 /* Glassmorphism Cards */
@@ -89,7 +89,8 @@ body {
   border-radius: 12px;
   overflow: hidden;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-  transition: all 0.3s ease;
+  transition: box-shadow 0.3s ease, border-color 0.3s ease, transform 0.3s ease;
+  will-change: transform, backdrop-filter;
 }
 
 .fluid-card:hover {

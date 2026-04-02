@@ -8,7 +8,6 @@ import { Marks } from './pages/Marks';
 import { Calendar } from './pages/Calendar';
 import { Login } from './pages/Login';
 import { FluidNavbar } from './components/FluidNavbar';
-import { BottomGeometry } from './components/BottomGeometry';
 import { ScrollToTop } from './components/ScrollToTop';
 import { GlobalWave } from './components/GlobalWave';
 
@@ -35,7 +34,6 @@ function ProtectedLayout() {
       <div style={{ flex: 1, paddingBottom: '20vh', zIndex: 10, position: 'relative' }}>
          <Outlet />
       </div>
-      <BottomGeometry />
       <ScrollToTop />
     </div>
   );

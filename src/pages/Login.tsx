@@ -72,8 +72,7 @@ export function Login() {
       overflow: 'hidden'
     }}>
       
-      {/* Background Ambience (Wave handles rendering globally) */}
-      <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, background: 'radial-gradient(circle at center 40%, rgba(255, 42, 95, 0.05), transparent 70%)', zIndex: 0 }} />
+      {/* Removed Ambient Static Bound entirely to match sleek architectural layouts */}
 
       {/* Huge Logo Hero Area modeled after the reference */}
       <motion.div 
