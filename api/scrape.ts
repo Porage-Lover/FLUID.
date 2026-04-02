@@ -34,6 +34,10 @@ const supabaseUrl = process.env.VITE_SUPABASE_URL || '';
 // 🚨 CRITICAL: Never fallback to VITE_SUPABASE_ANON_KEY for HMAC generation as it is public
 const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
 
+// 🛡️ Sentinel: Generate a secure random fallback secret on module load to ensure determinism
+// for local proxy mode without using guessable/hardcoded public secrets.
+const statelessFallbackSecret = crypto.randomBytes(32).toString('hex');
+
 if (!supabaseUrl || !supabaseKey) {
   logger.error('🛡️ Sentinel: Missing Supabase Service Role Key');
 }
@@ -572,7 +576,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     // 🛡️ Sentinel: Generate a secure hash to prevent IDOR vulnerabilities
     // instead of storing plaintext emails that can be manipulated in localStorage
     // Convert to lower case to ensure case-insensitive IDOR protections and no duplicate cache entries
-    const secureId = crypto.createHmac('sha256', supabaseKey || process.env.VITE_SUPABASE_ANON_KEY || 'LOCAL_FALLBACK_SECRET_123').update(regNo.toLowerCase()).digest('hex');
+    const secureId = crypto.createHmac('sha256', supabaseKey || statelessFallbackSecret).update(regNo.toLowerCase()).digest('hex');
 
     if (supabase) {
        const { error: dbError } = await supabase
