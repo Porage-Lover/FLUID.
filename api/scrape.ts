@@ -352,7 +352,22 @@ function generateLocalTimetable(attendanceData: any[], isBatchTwo: boolean) {
 
     // Pre-process attendanceData into a slot map for O(1) lookup
     const slotMap = new Map<string, any>();
+
+    // ⚡ Bolt Optimization:
+    // Hoisted expensive .find() array searches out of the nested activeBatch loop.
+    // By resolving dbmsId and daaId during this initial O(N) pre-processing pass,
+    // we prevent redundant linear scans over attendanceData.
+    let dbmsId: any = undefined;
+    let daaId: any = undefined;
+
     attendanceData.forEach(subj => {
+      if (!dbmsId && subj.name?.toLowerCase().includes('database management systems')) {
+         dbmsId = subj;
+      }
+      if (!daaId && subj.name?.toLowerCase().includes('design and analysis') && (subj.category?.toLowerCase() === 'practical' || subj.name?.toLowerCase().includes('practical'))) {
+         daaId = subj;
+      }
+
       if (subj.slot) {
         if (subj.slot.includes('-')) {
           subj.slot.split('-').forEach((s: string) => {
@@ -406,7 +421,6 @@ function generateLocalTimetable(attendanceData: any[], isBatchTwo: boolean) {
 
        // Force Custom User Timetable Injections natively filling API voids
        if (dayNumber === '4') {
-          const dbmsId = attendanceData.find(s => s.name?.toLowerCase().includes('database management systems'));
           if (dbmsId) {
              days['4'] = days['4'].filter((c: any) => !(c.st === '08:00 AM' || c.st === '08:50 AM'));
              days['4'].unshift(
@@ -417,7 +431,6 @@ function generateLocalTimetable(attendanceData: any[], isBatchTwo: boolean) {
        }
 
        if (dayNumber === '5') {
-          const daaId = attendanceData.find(s => s.name?.toLowerCase().includes('design and analysis') && (s.category?.toLowerCase() === 'practical' || s.name?.toLowerCase().includes('practical')));
           if (daaId) {
              days['5'] = days['5'].filter((c: any) => !(c.st === '08:00 AM' || c.st === '08:50 AM'));
              days['5'].unshift(
