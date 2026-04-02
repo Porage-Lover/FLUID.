@@ -15,13 +15,13 @@ export function FluidLogo({ width = "100%", height = "100%" }: { width?: string,
       <text x="0" y="110" fontFamily="'Montserrat', sans-serif" fontSize="130" fontWeight="900" letterSpacing="-6" fill="var(--text-main)">FLUID</text>
       
       {/* Red Dot (Standalone) */}
-      <circle cx="395" cy="100" r="18" fill="var(--accent-crimson)" />
+      <circle cx="395" cy="100" r="18" fill="#FF2A5F" />
       
       {/* Wavy Red Fill Clipped to Text */}
       <g clipPath={`url(#${clipId})`}>
         <path 
            d="M-20,70 C30,40 70,110 120,80 C170,50 210,110 260,75 C310,40 370,95 400,75 L400,150 L-20,150 Z" 
-           fill="var(--accent-crimson)" 
+           fill="#FF2A5F" 
         />
         {/* Add a subtle second overlapping wave layer for depth inside the text */}
         <path 
