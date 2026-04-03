@@ -408,28 +408,6 @@ function generateLocalTimetable(attendanceData: any[], isBatchTwo: boolean) {
            }
        });
 
-       // Force Custom User Timetable Injections natively filling API voids
-       if (dayNumber === '4') {
-          const dbmsId = attendanceData.find(s => s.name?.toLowerCase().includes('database management systems'));
-          if (dbmsId) {
-             days['4'] = days['4'].filter((c: any) => !(c.st === '08:00 AM' || c.st === '08:50 AM'));
-             days['4'].unshift(
-                { code: dbmsId.code, name: dbmsId.name, room: 'LAB', type: 'Practical', st: '08:00 AM', et: '08:50 AM' },
-                { code: dbmsId.code, name: dbmsId.name, room: 'LAB', type: 'Practical', st: '08:50 AM', et: '09:40 AM' }
-             );
-          }
-       }
-
-       if (dayNumber === '5') {
-          const daaId = attendanceData.find(s => s.name?.toLowerCase().includes('design and analysis') && (s.category?.toLowerCase() === 'practical' || s.name?.toLowerCase().includes('practical')));
-          if (daaId) {
-             days['5'] = days['5'].filter((c: any) => !(c.st === '08:00 AM' || c.st === '08:50 AM'));
-             days['5'].unshift(
-                { code: daaId.code, name: daaId.name, room: daaId.room || 'LAB', type: 'Practical', st: '08:00 AM', et: '08:50 AM' },
-                { code: daaId.code, name: daaId.name, room: daaId.room || 'LAB', type: 'Practical', st: '08:50 AM', et: '09:40 AM' }
-             );
-          }
-       }
     });
     
     return days;
