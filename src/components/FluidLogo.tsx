@@ -6,9 +6,9 @@ export function FluidLogo({ width = "100%", height = "100%" }: { width?: string,
   const { theme } = useData();
 
   const isPacman = theme === 'pacman';
-  const logoFont = isPacman ? "'Press Start 2P', monospace" : "'Montserrat', sans-serif";
-  const logoSize = isPacman ? "80" : "130";
-  const logoY = isPacman ? "100" : "110";
+  const logoFont = isPacman ? "'Pixelify Sans', sans-serif" : "'Montserrat', sans-serif";
+  const logoSize = "130";
+  const logoY = "110";
   
   return (
     <svg viewBox="0 0 450 140" width={width} height={height} style={{ overflow: 'visible', filter: 'drop-shadow(0px 10px 20px rgba(0,0,0,0.5))' }}>

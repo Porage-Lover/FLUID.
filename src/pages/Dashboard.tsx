@@ -8,7 +8,7 @@ import { triggerHaptic } from '../utils/haptics';
 
 export function Dashboard() {
   const navigate = useNavigate();
-  const { data, logout, theme } = useData();
+  const { data, logout } = useData();
 
   return (
     <div style={{ maxWidth: '800px', margin: '0 auto', padding: '0 32px 200px 32px' }}>
@@ -19,7 +19,7 @@ export function Dashboard() {
              <UserCheck size={32} color="var(--accent-cyan)" strokeWidth={2.5} />
            </div>
            <div>
-             <h1 className="heading-fluid" style={{ fontSize: theme === 'pacman' ? '1.2rem' : '2.5rem', margin: 0, color: 'var(--text-main)', overflow: 'hidden', textOverflow: 'ellipsis' }}>{data.user.name}</h1>
+             <h1 className="heading-fluid" style={{ fontSize: '2.5rem', margin: 0, color: 'var(--text-main)', overflow: 'hidden', textOverflow: 'ellipsis' }}>{data.user.name}</h1>
              <span style={{ fontSize: '14px', fontWeight: 800, letterSpacing: '2px', textTransform: 'uppercase', color: 'var(--accent-crimson)' }}>Student Portal</span>
            </div>
         </div>
@@ -41,19 +41,19 @@ export function Dashboard() {
         
         {/* Your Standings */}
         <motion.div layout>
-           <h2 className="heading-fluid" style={{ fontSize: theme === 'pacman' ? '1.2rem' : '2rem', marginBottom: '24px', display: 'flex', alignItems: 'center', gap: '12px', color: 'var(--text-main)' }}>
+           <h2 className="heading-fluid" style={{ fontSize: '2rem', marginBottom: '24px', display: 'flex', alignItems: 'center', gap: '12px', color: 'var(--text-main)' }}>
              <span style={{ color: 'var(--accent-cyan)' }}>/</span> ANALYTICS
            </h2>
            <div className="dashboard-grid">
               <FluidCard headerColor="--accent-cyan" actionIcon={<Play size={20} color="#fff" fill="#fff" />} onClick={() => { triggerHaptic(30); navigate('/attendance'); }} onMouseEnter={() => triggerHaptic(10)} style={{ textAlign: 'center' }}>
-                 <div style={{ fontSize: theme === 'pacman' ? '28px' : '48px', fontWeight: 800, marginBottom: '8px', color: 'var(--text-main)', letterSpacing: '-2px' }}>
-                   {data.user.overallAttendance.toFixed(2)}<span style={{ fontSize: theme === 'pacman' ? '16px' : '24px', color: 'var(--accent-cyan)' }}>%</span>
+                 <div style={{ fontSize: '48px', fontWeight: 800, marginBottom: '8px', color: 'var(--text-main)', letterSpacing: '-2px' }}>
+                   {data.user.overallAttendance.toFixed(2)}<span style={{ fontSize: '24px', color: 'var(--accent-cyan)' }}>%</span>
                  </div>
                  <div style={{ fontSize: '13px', color: 'var(--accent-cyan)', fontWeight: 800, letterSpacing: '2px', textTransform: 'uppercase' }}>Attendance</div>
               </FluidCard>
               <FluidCard headerColor="--accent-crimson" actionIcon={<Play size={20} color="#fff" fill="#fff" />} onClick={() => { triggerHaptic(30); navigate('/marks'); }} onMouseEnter={() => triggerHaptic(10)} style={{ textAlign: 'center' }}>
-                 <div style={{ fontSize: theme === 'pacman' ? '28px' : '48px', fontWeight: 800, marginBottom: '8px', color: 'var(--text-main)', letterSpacing: '-2px' }}>
-                   {data.user.overallMarks.split('/')[0]}<span style={{ fontSize: theme === 'pacman' ? '16px' : '24px', color: 'var(--text-muted)' }}>/{data.user.overallMarks.split('/')[1]}</span>
+                 <div style={{ fontSize: '48px', fontWeight: 800, marginBottom: '8px', color: 'var(--text-main)', letterSpacing: '-2px' }}>
+                   {data.user.overallMarks.split('/')[0]}<span style={{ fontSize: '24px', color: 'var(--text-muted)' }}>/{data.user.overallMarks.split('/')[1]}</span>
                  </div>
                  <div style={{ fontSize: '13px', color: 'var(--accent-crimson)', fontWeight: 800, letterSpacing: '2px', textTransform: 'uppercase' }}>Total Marks</div>
               </FluidCard>

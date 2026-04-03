@@ -49,14 +49,12 @@
 [data-theme="pacman"] body,
 [data-theme="pacman"] button,
 [data-theme="pacman"] input {
-  font-family: 'Press Start 2P', monospace !important;
-  font-size: 0.70rem;
+  font-family: 'Pixelify Sans', sans-serif !important;
 }
 
 [data-theme="pacman"] .heading-fluid {
-  font-family: 'Press Start 2P', monospace !important;
+  font-family: 'Pixelify Sans', sans-serif !important;
   letter-spacing: 0px;
-  font-size: 0.85em;
   text-shadow: 2px 2px 0px rgba(237, 210, 76, 0.5), -2px -2px 0px rgba(77, 184, 255, 0.5);
 }
 
