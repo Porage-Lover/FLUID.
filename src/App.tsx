@@ -9,7 +9,12 @@ import { Calendar } from './pages/Calendar';
 import { Login } from './pages/Login';
 import { FluidNavbar } from './components/FluidNavbar';
 import { ScrollToTop } from './components/ScrollToTop';
-import { GlobalWave } from './components/GlobalWave';
+import React, { Suspense } from 'react';
+
+// ⚡ LCP Bolt Optimization: 
+// The massive 300KB+ Three.JS 'engine' chunk previously forced the browser to freeze executing it sequentially before parsing the Login Page DOM.
+// We explicitly lazy-load the complex GlobalWave matrices wrapping it into an unsuspending parallel loop structurally allowing LCP mapping instantly.
+const GlobalWave = React.lazy(() => import('./components/GlobalWave').then(m => ({ default: m.GlobalWave })));
 
 // Note: Code health analyzers might flag useEffect as unused if they don't trace component instantiation deeply.
 // It is required here to prevent scroll position regressions on route changes.
@@ -44,7 +49,9 @@ function App() {
     <DataProvider>
       <BrowserRouter>
         <ScrollReset />
-        <GlobalWave />
+        <Suspense fallback={null}>
+           <GlobalWave />
+        </Suspense>
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route element={<ProtectedLayout />}>
