@@ -11,6 +11,9 @@
   --accent-crimson: #FF2A5F;
   --accent-cyan: #1DC7D1;
   --accent-purple: #8B1DD1;
+
+  --logo-primary: #FF2A5F;
+  --logo-secondary: #d41b47;
 }
 
 [data-theme="light"] {
@@ -23,6 +26,9 @@
   --accent-crimson: #FF2A5F;
   --accent-cyan: #0D9AA3;
   --accent-purple: #6A13A3;
+
+  --logo-primary: #FF2A5F;
+  --logo-secondary: #d41b47;
 }
 
 [data-theme="vapourware"] {
@@ -35,6 +41,9 @@
   --accent-crimson: #FF00FF;
   --accent-cyan: #00FFFF;
   --accent-purple: #8A2BE2;
+
+  --logo-primary: #FF00FF;
+  --logo-secondary: #8A2BE2;
 }
 
 [data-theme="vapourware"] body,
