@@ -13,8 +13,8 @@ export function GlobalShader() {
       <Shader style={{ width: '100%', height: '100%', pointerEvents: 'none' }}>
         <RadialGradient
           center={{ x: 0.83, y: 0.2 }}
-          colorA="#0d0221"
-          colorB="#050117"
+          colorA="#030d2b"
+          colorB="#010f14"
           colorSpace="oklch"
           radius={1.37} 
         />
@@ -25,26 +25,26 @@ export function GlobalShader() {
           spacing={1}
         >
           <Godrays
-            backgroundColor="#050117"
+            backgroundColor="#b59318"
             center={{ x: 0.85, y: 0.15 }}
             density={0.3}
             intensity={0.96}
-            rayColor="#FF00FF"
+            rayColor="#fcfeff"
             speed={1}
             spotty={1} 
           />
           <CursorTrail
-            colorA="#00FFFF"
-            colorB="#050117"
+            colorA="#ffffff"
+            colorB="#000000"
             colorSpace="linear"
             length={1}
             radius={0.5}
             shrink={5} />
           <Tritone
             blendMid={0.73}
-            colorA="#0d0221"
-            colorB="#B000FF"
-            colorC="#00FFFF"
+            colorA="#070b1f"
+            colorB="#2600ff"
+            colorC="#ffee03"
             colorSpace="oklch"
             visible={true} 
           />
