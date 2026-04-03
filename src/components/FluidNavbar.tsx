@@ -93,7 +93,8 @@ export function FluidNavbar() {
             style={({ isActive }) => ({
               textDecoration: 'none',
               fontWeight: 800,
-              fontFamily: "'Montserrat', sans-serif",
+              fontFamily: theme === 'pacman' ? "'Press Start 2P', monospace" : "'Montserrat', sans-serif",
+              fontSize: theme === 'pacman' ? '9px' : '13px',
               letterSpacing: '2px',
               color: isActive ? 'var(--accent-crimson)' : 'var(--text-main)',
               transition: 'all 0.3s ease',
@@ -177,9 +178,9 @@ export function FluidNavbar() {
                     color: theme === t.id ? 'var(--bg-color)' : 'var(--text-main)',
                     cursor: 'pointer',
                     textAlign: 'left',
-                    fontSize: '13px',
+                    fontSize: theme === 'pacman' ? '10px' : '13px',
                     fontWeight: 700,
-                    fontFamily: "'Montserrat', sans-serif",
+                    fontFamily: theme === 'pacman' ? "'Press Start 2P', monospace" : "'Montserrat', sans-serif",
                     letterSpacing: '1px',
                     transition: 'all 0.2s ease'
                   }}

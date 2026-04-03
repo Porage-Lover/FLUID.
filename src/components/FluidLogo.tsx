@@ -1,18 +1,25 @@
 import { useId } from "react";
+import { useData } from "../context/DataContext";
 
 export function FluidLogo({ width = "100%", height = "100%" }: { width?: string, height?: string }) {
   const clipId = useId();
+  const { theme } = useData();
+
+  const isPacman = theme === 'pacman';
+  const logoFont = isPacman ? "'Press Start 2P', monospace" : "'Montserrat', sans-serif";
+  const logoSize = isPacman ? "80" : "130";
+  const logoY = isPacman ? "100" : "110";
   
   return (
     <svg viewBox="0 0 450 140" width={width} height={height} style={{ overflow: 'visible', filter: 'drop-shadow(0px 10px 20px rgba(0,0,0,0.5))' }}>
       <defs>
         <clipPath id={clipId}>
-          <text x="0" y="110" fontFamily="'Montserrat', sans-serif" fontSize="130" fontWeight="900" letterSpacing="-6">FLUID</text>
+          <text x="0" y={logoY} fontFamily={logoFont} fontSize={logoSize} fontWeight="900" letterSpacing="-6">FLUID</text>
         </clipPath>
       </defs>
       
       {/* Dynamic Base Text */}
-      <text x="0" y="110" fontFamily="'Montserrat', sans-serif" fontSize="130" fontWeight="900" letterSpacing="-6" fill="var(--text-main)">FLUID</text>
+      <text x="0" y={logoY} fontFamily={logoFont} fontSize={logoSize} fontWeight="900" letterSpacing="-6" fill="var(--text-main)">FLUID</text>
       
       {/* Red Dot (Standalone) */}
       <circle cx="395" cy="100" r="18" fill="var(--logo-primary, #FF2A5F)" />
