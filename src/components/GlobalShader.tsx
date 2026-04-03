@@ -21,13 +21,13 @@ export function GlobalShader() {
         <Ascii
           cellSize={30}
           characters="||||"
-          fontFamily="monospace"
+          fontFamily="Space Mono"
           spacing={1}
         >
           <Godrays
             backgroundColor="#050117"
             center={{ x: 0.85, y: 0.15 }}
-            density={0.4}
+            density={0.3}
             intensity={0.96}
             rayColor="#FF00FF"
             speed={1}
