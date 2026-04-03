@@ -31,31 +31,31 @@
   --logo-secondary: #d41b47;
 }
 
-[data-theme="vapourware"] {
-  --bg-color: #0d0221;
-  --card-bg: rgba(38, 20, 71, 0.6);
+[data-theme="pacman"] {
+  --bg-color: #000000;
+  --card-bg: rgba(0, 0, 0, 0.7);
   --text-main: #FFFFFF;
   --text-muted: rgba(255, 255, 255, 0.7);
-  --glass-border: rgba(255, 0, 255, 0.3);
+  --glass-border: rgba(41, 128, 185, 0.3);
 
-  --accent-crimson: #FF00FF;
-  --accent-cyan: #00FFFF;
-  --accent-purple: #8A2BE2;
+  --accent-crimson: #EDD24C;
+  --accent-cyan: #4DB8FF;
+  --accent-purple: #E74C3C;
 
-  --logo-primary: #FF00FF;
-  --logo-secondary: #8A2BE2;
+  --logo-primary: #EDD24C;
+  --logo-secondary: #E74C3C;
 }
 
-[data-theme="vapourware"] body,
-[data-theme="vapourware"] button,
-[data-theme="vapourware"] input {
-  font-family: 'Space Grotesk', sans-serif !important;
+[data-theme="pacman"] body,
+[data-theme="pacman"] button,
+[data-theme="pacman"] input {
+  font-family: 'Press Start 2P', monospace !important;
 }
 
-[data-theme="vapourware"] .heading-fluid {
-  font-family: 'Space Grotesk', sans-serif !important;
-  letter-spacing: 2px;
-  text-shadow: 2px 2px 0px rgba(255, 0, 255, 0.5), -2px -2px 0px rgba(0, 255, 255, 0.5);
+[data-theme="pacman"] .heading-fluid {
+  font-family: 'Press Start 2P', monospace !important;
+  letter-spacing: 0px;
+  text-shadow: 2px 2px 0px rgba(237, 210, 76, 0.5), -2px -2px 0px rgba(77, 184, 255, 0.5);
 }
 
 * {
@@ -252,10 +252,11 @@ input[type=range]::-webkit-slider-runnable-track {
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
 }
 
-[data-theme="vapourware"] .frosted-glass {
-  background: rgba(13, 2, 33, 0.85);
-  border: 1px solid rgba(255, 0, 255, 0.25);
-  box-shadow: 0 10px 30px rgba(255, 0, 255, 0.1);
+[data-theme="pacman"] .frosted-glass {
+  background: rgba(0, 0, 0, 0.85);
+  border: 3px solid rgba(41, 128, 185, 0.5);
+  border-radius: 8px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
 }
 
 .navbar-glass {

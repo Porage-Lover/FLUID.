@@ -24,8 +24,8 @@ interface DataContextType {
   error: string | null;
   refreshData: () => Promise<void>;
   logout: () => void;
-  theme: 'dark' | 'light' | 'vapourware';
-  setTheme: (theme: 'dark' | 'light' | 'vapourware') => void;
+  theme: 'dark' | 'light' | 'pacman';
+  setTheme: (theme: 'dark' | 'light' | 'pacman') => void;
 }
 
 const DataContext = createContext<DataContextType | undefined>(undefined);
@@ -34,9 +34,9 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
   const [data, setData] = useState<AppData>(emptyData);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [theme, setTheme] = useState<'dark' | 'light' | 'vapourware'>(() => {
+  const [theme, setTheme] = useState<'dark' | 'light' | 'pacman'>(() => {
     const saved = localStorage.getItem('fluid_theme');
-    return (saved === 'light' || saved === 'dark' || saved === 'vapourware') ? saved : 'dark';
+    return (saved === 'light' || saved === 'dark' || saved === 'pacman') ? saved : 'dark';
   });
 
   useEffect(() => {

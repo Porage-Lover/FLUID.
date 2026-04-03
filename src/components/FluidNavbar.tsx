@@ -160,7 +160,7 @@ export function FluidNavbar() {
               {[
                 { id: 'dark', icon: Moon, label: 'Dark' },
                 { id: 'light', icon: Sun, label: 'Light' },
-                { id: 'vapourware', icon: Square, label: 'Vapourware' }
+                { id: 'pacman', icon: Square, label: 'Pacman' }
               ].map((t) => (
                 <button
                   key={t.id}
