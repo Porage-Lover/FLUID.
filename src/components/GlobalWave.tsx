@@ -4,7 +4,7 @@ import { GlobalShader } from './GlobalShader';
 export function GlobalWave() {
   const { theme } = useData();
 
-  if (theme === 'monochrome') {
+  if (theme === 'vapourware') {
     return <GlobalShader />;
   }
 
