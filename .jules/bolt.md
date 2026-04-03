@@ -25,3 +25,7 @@
 ## 2024-03-29 - [Inefficient Repeated Array Search Inside Render/Sort Loops]
 **Learning:** Found a performance bottleneck in `api/scrape.ts` where sorting the `calendarEvents` array redundantly searched for matching substring criteria using `validMonths.findIndex()` inside the `.sort()` comparator callback. This forced O(12 * N*logN) loop iterations unnecessarily, wasting compute on repeated string searches for already resolved header formats.
 **Action:** Extract expensive iterative matching outside of deep comparator or render loop cycles. Precompute stable values (like parsing month indices from headers) into a `Map` structure upfront. The comparator can then safely perform O(1) key lookups instead, massively optimizing scaling sort and iterative matching algorithms.
+
+## 2024-03-30 - [Redundant Nested Loop Iterations via array `.find()`]
+**Learning:** Found a performance bottleneck in `api/scrape.ts` where generating a local timetable unnecessarily called array `.find()` inside a nested array iteration loop (`activeBatch.forEach`). This repeated multiple O(N) array traversals (with expensive object string property Regex matchings) for static targets (`dbmsId` and `daaId`) that do not change during the rendering iteration.
+**Action:** Extract expensive single-target lookups (`.find`, `.filter`) outside of iterative rendering or data-processing nested loops. Pre-calculating them once beforehand prevents exponential redundancy and guarantees a single O(N) traversal.

@@ -387,6 +387,14 @@ function generateLocalTimetable(attendanceData: any[], isBatchTwo: boolean) {
       ["P41", "P42", "P43", "P44", "P45", "E", "E", "C", "F", "D"]
     ] : batch1Raw;
 
+    // ⚡ Bolt Optimization:
+    // Extracting expensive iterative array `.find()` logic outside of the nested
+    // O(N*M) loop to prevent redundant string matching computations per day.
+    // Impact: Avoids multiple linear scans of `attendanceData` array and object regex tests
+    // inside the timetable rendering loop.
+    const dbmsId = attendanceData.find(s => s.name?.toLowerCase().includes('database management systems'));
+    const daaId = attendanceData.find(s => s.name?.toLowerCase().includes('design and analysis') && (s.category?.toLowerCase() === 'practical' || s.name?.toLowerCase().includes('practical')));
+
     // Loop through the days
     activeBatch.forEach((daySlots, dayIndex) => {
        const dayNumber = (dayIndex + 1).toString();
@@ -410,7 +418,6 @@ function generateLocalTimetable(attendanceData: any[], isBatchTwo: boolean) {
 
        // Force Custom User Timetable Injections natively filling API voids
        if (dayNumber === '4') {
-          const dbmsId = attendanceData.find(s => s.name?.toLowerCase().includes('database management systems'));
           if (dbmsId) {
              days['4'] = days['4'].filter((c: any) => !(c.st === '08:00 AM' || c.st === '08:50 AM'));
              days['4'].unshift(
@@ -421,7 +428,6 @@ function generateLocalTimetable(attendanceData: any[], isBatchTwo: boolean) {
        }
 
        if (dayNumber === '5') {
-          const daaId = attendanceData.find(s => s.name?.toLowerCase().includes('design and analysis') && (s.category?.toLowerCase() === 'practical' || s.name?.toLowerCase().includes('practical')));
           if (daaId) {
              days['5'] = days['5'].filter((c: any) => !(c.st === '08:00 AM' || c.st === '08:50 AM'));
              days['5'].unshift(
