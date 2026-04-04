@@ -1,5 +1,4 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { supabase } from '../lib/supabaseClient';
 import { decryptData } from '../utils/security';
 import { THEMES } from '../utils/themes';
 
@@ -70,6 +69,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
       }
       
       // Secondary fallback ensuring legacy sessions recover gracefully
+      const { supabase } = await import('../lib/supabaseClient');
       const { data: dbData, error: dbError } = await supabase
         .from('academia_cache')
         .select('data')

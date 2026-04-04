@@ -1,19 +1,20 @@
-import { useEffect } from 'react';
+import React, { Suspense, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Outlet, Navigate, useLocation } from 'react-router-dom';
 import { DataProvider } from './context/DataContext';
-import { Dashboard } from './pages/Dashboard';
-import { Attendance } from './pages/Attendance';
-import { Timetable } from './pages/Timetable';
-import { Marks } from './pages/Marks';
-import { Calendar } from './pages/Calendar';
-import { Login } from './pages/Login';
 import { FluidNavbar } from './components/FluidNavbar';
 import { ScrollToTop } from './components/ScrollToTop';
-import React, { Suspense } from 'react';
 
-// ⚡ LCP Bolt Optimization: 
-// The massive 300KB+ Three.JS 'engine' chunk previously forced the browser to freeze executing it sequentially before parsing the Login Page DOM.
-// We explicitly lazy-load the complex GlobalWave matrices wrapping it into an unsuspending parallel loop structurally allowing LCP mapping instantly.
+// ⚡ LCP Bolt Optimization: Route-Level Code Splitting
+// Decouples massive application bundles ensuring instantaneous initial loads on the /login route.
+const Dashboard = React.lazy(() => import('./pages/Dashboard').then(m => ({ default: m.Dashboard })));
+const Attendance = React.lazy(() => import('./pages/Attendance').then(m => ({ default: m.Attendance })));
+const Timetable = React.lazy(() => import('./pages/Timetable').then(m => ({ default: m.Timetable })));
+const Marks = React.lazy(() => import('./pages/Marks').then(m => ({ default: m.Marks })));
+const Calendar = React.lazy(() => import('./pages/Calendar').then(m => ({ default: m.Calendar })));
+const Login = React.lazy(() => import('./pages/Login').then(m => ({ default: m.Login })));
+
+// Global wave aesthetic decoupled to prevent render blocking.
+// (GlobalShader is now decoupled from GlobalWave, so this is just a lightweight SVG wrapper)
 const GlobalWave = React.lazy(() => import('./components/GlobalWave').then(m => ({ default: m.GlobalWave })));
 
 // Note: Code health analyzers might flag useEffect as unused if they don't trace component instantiation deeply.
@@ -37,7 +38,9 @@ function ProtectedLayout() {
     <div style={{ position: 'relative', minHeight: '100vh', paddingBottom: '140px', paddingTop: '80px' }}>
       <FluidNavbar />
       <div style={{ flex: 1, paddingBottom: '20vh', zIndex: 10, position: 'relative' }}>
-         <Outlet />
+         <Suspense fallback={null}>
+           <Outlet />
+         </Suspense>
       </div>
       <ScrollToTop />
     </div>
@@ -50,19 +53,21 @@ function App() {
       <BrowserRouter>
         <ScrollReset />
         <Suspense fallback={null}>
-           <GlobalWave />
+          <GlobalWave />
         </Suspense>
-        <Routes>
-          <Route path="/login" element={<Login />} />
-          <Route element={<ProtectedLayout />}>
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/attendance" element={<Attendance />} />
-            <Route path="/timetable" element={<Timetable />} />
-            <Route path="/marks" element={<Marks />} />
-            <Route path="/calendar" element={<Calendar />} />
-            <Route path="/" element={<Navigate to="/dashboard" replace />} />
-          </Route>
-        </Routes>
+        <Suspense fallback={null}>
+          <Routes>
+            <Route path="/login" element={<Login />} />
+            <Route element={<ProtectedLayout />}>
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/attendance" element={<Attendance />} />
+              <Route path="/timetable" element={<Timetable />} />
+              <Route path="/marks" element={<Marks />} />
+              <Route path="/calendar" element={<Calendar />} />
+              <Route path="/" element={<Navigate to="/dashboard" replace />} />
+            </Route>
+          </Routes>
+        </Suspense>
       </BrowserRouter>
     </DataProvider>
   );

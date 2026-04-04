@@ -7,16 +7,5 @@ export default defineConfig({
   build: {
     modulePreload: false,
     sourcemap: true,
-    rollupOptions: {
-      output: {
-        manualChunks(id) {
-          if (id.includes('node_modules')) {
-            if (id.includes('three') || id.includes('shaders')) return 'engine';
-            if (id.includes('framer-motion') || id.includes('lucide-react') || id.includes('recharts')) return 'ui';
-            return 'vendor';
-          }
-        }
-      }
-    }
   }
 })

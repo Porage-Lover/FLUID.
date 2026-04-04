@@ -1,17 +1,28 @@
+import React, { Suspense } from 'react';
 import { useData } from '../context/DataContext';
-import { GlobalShader } from './GlobalShader';
 import { getThemeDef } from '../utils/themes';
+
+// ⚡ Extreme Main Thread Optimization:
+// The heavy 1.3MB+ Three.js Shader engine is ONLY downloaded and evaluated 
+// if the user actively switches to a theme that requires it.
+const GlobalShader = React.lazy(() => import('./GlobalShader').then(m => ({ default: m.GlobalShader })));
 
 export function GlobalWave() {
   const { theme } = useData();
   const themeDef = getThemeDef(theme);
 
   if (themeDef.isSpecialShader) {
-    return <GlobalShader />;
+    return (
+      <Suspense fallback={null}>
+        <GlobalShader />
+      </Suspense>
+    );
   }
 
+  // Adding transform: translateZ(0) and willChange to force the browser to composite this in a dedicated GPU layer,
+  // completely eliminating main-thread rasterization sluggishness during the CSS animation.
   return (
-    <div style={{ position: 'fixed', bottom: 0, left: 0, width: '200vw', height: '40vh', pointerEvents: 'none', zIndex: -1, animation: 'fluidWave 15s linear alternate infinite', opacity: 0.6 }}>
+    <div style={{ position: 'fixed', bottom: 0, left: 0, width: '200vw', height: '40vh', pointerEvents: 'none', zIndex: -1, animation: 'fluidWave 15s linear alternate infinite', opacity: 0.6, transform: 'translateZ(0)', willChange: 'transform' }}>
       <svg viewBox="0 0 2880 320" preserveAspectRatio="none" style={{ width: '100%', height: '100%' }}>
         <path fill="rgba(255, 42, 95, 0.4)" d="M0,192L60,197.3C120,203,240,213,360,208C480,203,600,181,720,186.7C840,192,960,224,1080,224C1200,224,1320,192,1380,186.7L1440,181L1500,186.7C1560,192,1680,203,1800,208C1920,213,2040,224,2160,224C2280,224,2400,192,2520,186.7L2580,181L2880,181L2880,320L0,320Z"></path>
         <path fill="#FF2A5F" d="M0,224L60,229.3C120,235,240,245,360,229.3C480,213,600,171,720,165.3C840,160,960,192,1080,208C1200,224,1320,224,1380,224L1440,224L1500,229.3C1560,235,1680,245,1800,229.3C1920,213,2040,171,2160,165.3C2280,160,2400,192,2520,208L2580,224L2880,224L2880,320L0,320Z"></path>
@@ -19,3 +30,4 @@ export function GlobalWave() {
     </div>
   );
 }
+
