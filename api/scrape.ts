@@ -508,6 +508,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return res.status(401).json({ error: 'Missing OAuth tokens inside valid payload.' });
     }
 
+    // 🛡️ Sentinel: Prevent Server-Side Request Forgery (SSRF) by strictly validating the OAuth redirect URI
+    if (typeof oauthorize_uri !== 'string' || !oauthorize_uri.startsWith('https://academia.srmist.edu.in/')) {
+      logger.error('🛡️ Sentinel: Blocked potential SSRF attempt via malformed OAuth URI', { uri: oauthorize_uri });
+      return res.status(502).json({ error: 'Invalid upstream gateway response' });
+    }
+
     // 2. Resolve OAuth Gateways (Redirect chasing securing JSESSIONID natively)
     const finalAuthURL = `${oauthorize_uri}&access_token=${access_token}`;
     await client.get(finalAuthURL);
