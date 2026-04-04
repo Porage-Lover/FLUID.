@@ -46,14 +46,30 @@ function ProtectedLayout() {
   );
 }
 
+function DelayedGlobalWave() {
+  const [show, setShow] = React.useState(false);
+  useEffect(() => {
+    // ⚡ LCP Bolt Optimization: Defer the massive 350KB+ Three.js payload.
+    // By pushing this to the next idle tick, the browser focuses entirely on rendering
+    // the Login UI instantly without downloading heavy graphics concurrently.
+    const timer = setTimeout(() => setShow(true), 250);
+    return () => clearTimeout(timer);
+  }, []);
+  
+  if (!show) return null;
+  return (
+    <Suspense fallback={null}>
+      <GlobalWave />
+    </Suspense>
+  );
+}
+
 function App() {
   return (
     <DataProvider>
       <BrowserRouter>
         <ScrollReset />
-        <Suspense fallback={null}>
-           <GlobalWave />
-        </Suspense>
+        <DelayedGlobalWave />
         <Suspense fallback={null}>
           <Routes>
             <Route path="/login" element={<Login />} />
