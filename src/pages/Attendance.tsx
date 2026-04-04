@@ -33,27 +33,45 @@ export function Attendance() {
 
   // 3. CORE PREDICTOR CALCULATION MATRIX
   const processedAttendance = useMemo(() => {
+    // ⚡ Bolt Optimization:
+    // Precompute global day simulation adjustments per subject outside the O(N) course map loop.
+    // Replaces O(N * M) nested loops and expensive repeated Regex tests/Array.find() with O(N + M) processing.
+    // Impact: Prevents UI thrashing during complex component renders by using a pre-populated Map lookup.
+    const globalAdjustments = new Map<string, { attend: number, bunk: number }>();
+
+    Object.entries(daySimulations).forEach(([dateKey, action]) => {
+      const dayEvent = futureWorkingDays.find(d => d.date + d.month === dateKey);
+      if (dayEvent) {
+          const dayOrderMatch = dayEvent.title.match(/Day Order (\d)/i);
+          if (dayOrderMatch) {
+              const dayOrderStr = dayOrderMatch[1];
+              const subjectsThatDay = data.timetable[dayOrderStr];
+              if (Array.isArray(subjectsThatDay)) {
+                  subjectsThatDay.forEach((s: any) => {
+                      if (!s.code) return;
+                      const current = globalAdjustments.get(s.code) || { attend: 0, bunk: 0 };
+                      if (action === 'attend') {
+                          current.attend += 1;
+                      } else {
+                          current.bunk += 1;
+                      }
+                      globalAdjustments.set(s.code, current);
+                  });
+              }
+          }
+      }
+    });
+
     return data.attendance.map(course => {
       let simPresent = course.present;
       let simTotal = course.total;
 
       // Global Day Predictor Overlay Sequence
-      Object.entries(daySimulations).forEach(([dateKey, action]) => {
-         const dayEvent = futureWorkingDays.find(d => d.date + d.month === dateKey);
-         if (dayEvent) {
-             const dayOrderMatch = dayEvent.title.match(/Day Order (\d)/i);
-             if (dayOrderMatch) {
-                 const dayOrderStr = dayOrderMatch[1];
-                 const subjectsThatDay = data.timetable[dayOrderStr];
-                 const periods = Array.isArray(subjectsThatDay) ? subjectsThatDay.filter((s: any) => s.code === course.code).length : 0;
-                 
-                 simTotal += periods;
-                 if (action === 'attend') {
-                    simPresent += periods;
-                 }
-             }
-         }
-      });
+      const globAdj = globalAdjustments.get(course.code);
+      if (globAdj) {
+         simTotal += (globAdj.attend + globAdj.bunk);
+         simPresent += globAdj.attend;
+      }
 
       // Local Subject Sandbox Overlay Sequence
       const locSim = subjectSimulations[course.code];
