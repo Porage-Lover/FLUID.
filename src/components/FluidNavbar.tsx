@@ -3,8 +3,9 @@ import { motion } from 'framer-motion';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { FluidLogo } from './FluidLogo';
 import { triggerHaptic } from '../utils/haptics';
-import { Sun, Moon, Square, ChevronDown } from 'lucide-react';
+import { ChevronDown } from 'lucide-react';
 import { useData } from '../context/DataContext';
+import { THEMES, getThemeDef } from '../utils/themes';
 
 export function FluidNavbar() {
   const navigate = useNavigate();
@@ -20,6 +21,9 @@ export function FluidNavbar() {
   const { theme, setTheme } = useData();
   const [isThemeOpen, setIsThemeOpen] = useState(false);
   const themeRef = useRef<HTMLDivElement>(null);
+
+  const activeThemeDef = getThemeDef(theme);
+  const ActiveThemeIcon = activeThemeDef.icon;
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -93,7 +97,7 @@ export function FluidNavbar() {
             style={({ isActive }) => ({
               textDecoration: 'none',
               fontWeight: 800,
-              fontFamily: theme === 'pacman' ? "'Pixelify Sans', sans-serif" : "'Montserrat', sans-serif",
+              fontFamily: activeThemeDef.fontFamily || "'Montserrat', sans-serif",
               letterSpacing: '2px',
               color: isActive ? 'var(--accent-crimson)' : 'var(--text-main)',
               transition: 'all 0.3s ease',
@@ -129,7 +133,7 @@ export function FluidNavbar() {
               gap: '6px'
             }}
           >
-            {theme === 'dark' ? <Moon size={18} /> : theme === 'light' ? <Sun size={18} /> : <Square size={18} />}
+            <ActiveThemeIcon size={18} />
             <ChevronDown size={14} style={{ transform: isThemeOpen ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.3s ease' }} />
           </button>
 
@@ -157,14 +161,10 @@ export function FluidNavbar() {
                 zIndex: 10000
               }}
             >
-              {[
-                { id: 'dark', icon: Moon, label: 'Dark' },
-                { id: 'light', icon: Sun, label: 'Light' },
-                { id: 'pacman', icon: Square, label: 'Pacman' }
-              ].map((t) => (
+              {THEMES.map((t) => (
                 <button
                   key={t.id}
-                  onClick={() => { setTheme(t.id as any); setIsThemeOpen(false); triggerHaptic(20); }}
+                  onClick={() => { setTheme(t.id); setIsThemeOpen(false); triggerHaptic(20); }}
                   style={{
                     display: 'flex',
                     alignItems: 'center',
@@ -179,7 +179,7 @@ export function FluidNavbar() {
                     textAlign: 'left',
                     fontSize: '13px',
                     fontWeight: 700,
-                    fontFamily: theme === 'pacman' ? "'Pixelify Sans', sans-serif" : "'Montserrat', sans-serif",
+                    fontFamily: t.fontFamily || "'Montserrat', sans-serif",
                     letterSpacing: '1px',
                     transition: 'all 0.2s ease'
                   }}

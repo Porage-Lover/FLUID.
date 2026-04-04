@@ -1,12 +1,13 @@
 import { useId } from "react";
 import { useData } from "../context/DataContext";
+import { getThemeDef } from "../utils/themes";
 
 export function FluidLogo({ width = "100%", height = "100%" }: { width?: string, height?: string }) {
   const clipId = useId();
   const { theme } = useData();
 
-  const isPacman = theme === 'pacman';
-  const logoFont = isPacman ? "'Pixelify Sans', sans-serif" : "'Montserrat', sans-serif";
+  const themeDef = getThemeDef(theme);
+  const logoFont = themeDef.fontFamily || "'Montserrat', sans-serif";
   const logoSize = "130";
   const logoY = "110";
   
