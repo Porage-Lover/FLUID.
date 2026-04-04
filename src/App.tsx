@@ -13,7 +13,8 @@ const Marks = React.lazy(() => import('./pages/Marks').then(m => ({ default: m.M
 const Calendar = React.lazy(() => import('./pages/Calendar').then(m => ({ default: m.Calendar })));
 const Login = React.lazy(() => import('./pages/Login').then(m => ({ default: m.Login })));
 
-// Global wave aesthetic decoupled to prevent render blocking
+// Global wave aesthetic decoupled to prevent render blocking.
+// (GlobalShader is now decoupled from GlobalWave, so this is just a lightweight SVG wrapper)
 const GlobalWave = React.lazy(() => import('./components/GlobalWave').then(m => ({ default: m.GlobalWave })));
 
 // Note: Code health analyzers might flag useEffect as unused if they don't trace component instantiation deeply.
@@ -46,41 +47,14 @@ function ProtectedLayout() {
   );
 }
 
-function DelayedGlobalWave() {
-  const [show, setShow] = React.useState(false);
-  useEffect(() => {
-    // ⚡ Extreme LCP Bolt Optimization: Wait for the main thread to become entirely idle
-    // and the window to fully load before initializing the massive 3D background engine.
-    const initWave = () => {
-      if ('requestIdleCallback' in window) {
-        (window as any).requestIdleCallback(() => setShow(true), { timeout: 2000 });
-      } else {
-        setTimeout(() => setShow(true), 1500);
-      }
-    };
-
-    if (document.readyState === 'complete') {
-      initWave();
-    } else {
-      window.addEventListener('load', initWave);
-      return () => window.removeEventListener('load', initWave);
-    }
-  }, []);
-  
-  if (!show) return null;
-  return (
-    <Suspense fallback={null}>
-      <GlobalWave />
-    </Suspense>
-  );
-}
-
 function App() {
   return (
     <DataProvider>
       <BrowserRouter>
         <ScrollReset />
-        <DelayedGlobalWave />
+        <Suspense fallback={null}>
+          <GlobalWave />
+        </Suspense>
         <Suspense fallback={null}>
           <Routes>
             <Route path="/login" element={<Login />} />
