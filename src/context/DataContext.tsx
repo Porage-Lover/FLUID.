@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { supabase } from '../lib/supabaseClient';
 import { decryptData } from '../utils/security';
+import { THEMES } from '../utils/themes';
 
 export type AppData = {
   user: { name: string; overallAttendance: number; overallMarks: string; };
@@ -24,8 +25,8 @@ interface DataContextType {
   error: string | null;
   refreshData: () => Promise<void>;
   logout: () => void;
-  theme: 'dark' | 'light' | 'pacman';
-  setTheme: (theme: 'dark' | 'light' | 'pacman') => void;
+  theme: string;
+  setTheme: (theme: string) => void;
 }
 
 const DataContext = createContext<DataContextType | undefined>(undefined);
@@ -34,9 +35,9 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
   const [data, setData] = useState<AppData>(emptyData);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [theme, setTheme] = useState<'dark' | 'light' | 'pacman'>(() => {
+  const [theme, setTheme] = useState<string>(() => {
     const saved = localStorage.getItem('fluid_theme');
-    return (saved === 'light' || saved === 'dark' || saved === 'pacman') ? saved : 'dark';
+    return THEMES.find(t => t.id === saved) ? saved! : THEMES[0].id;
   });
 
   useEffect(() => {

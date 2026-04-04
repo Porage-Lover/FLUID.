@@ -1,10 +1,12 @@
 import { useData } from '../context/DataContext';
 import { GlobalShader } from './GlobalShader';
+import { getThemeDef } from '../utils/themes';
 
 export function GlobalWave() {
   const { theme } = useData();
+  const themeDef = getThemeDef(theme);
 
-  if (theme === 'pacman') {
+  if (themeDef.isSpecialShader) {
     return <GlobalShader />;
   }
 
