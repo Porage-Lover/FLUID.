@@ -17,3 +17,7 @@
 ## 2026-04-04 - [Nested Array Searches Inside Component Render Loop]
 **Learning:** Found a major performance bottleneck in `Attendance.tsx` where global simulated state (`daySimulations`) was mapped over and processed _inside_ the main data loop processing subjects. This caused `O(N * M)` operations, including an array `.find()` scan and expensive regex matching within every subject iteration.
 **Action:** To optimize nested array scans and Regex tests in loops, hoist them outside the `map()` operation. Precompute expensive values and index them using a `Map` structure for `O(1)` key lookups during the main array traversal.
+
+## 2026-04-05 - [O(N*M) Array Scanning in render loops]
+**Learning:** Found a performance bottleneck in `Attendance.tsx` where nested array methods (`.filter` combined with an inner `findIndex`) were repeatedly traversing arrays and allocating new memory on every re-render loop, causing unnecessary CPU load and potential render blocking.
+**Action:** Replaced the O(N*M) nested array iterations with a single-pass O(N) loop and pre-computed an O(1) `Record` map to do property lookups. Always pre-compute known reference maps (like months or days) and perform single-pass iterations instead of chaining multiple array functions.
