@@ -21,3 +21,7 @@
 ## 2026-04-05 - [O(N*M) Array Scanning in render loops]
 **Learning:** Found a performance bottleneck in `Attendance.tsx` where nested array methods (`.filter` combined with an inner `findIndex`) were repeatedly traversing arrays and allocating new memory on every re-render loop, causing unnecessary CPU load and potential render blocking.
 **Action:** Replaced the O(N*M) nested array iterations with a single-pass O(N) loop and pre-computed an O(1) `Record` map to do property lookups. Always pre-compute known reference maps (like months or days) and perform single-pass iterations instead of chaining multiple array functions.
+
+## 2026-04-06 - [O(N) Scan inside Simulation Loop]
+**Learning:** Found a major performance bottleneck in `Attendance.tsx` where a global simulation map iterated through simulated days and executed an `O(N)` `Array.find()` coupled with an expensive Regex match `/Day Order (\d)/i` inside the iteration loop. Because simulations inherently stack exponentially upon multiple selections, iterating nested lookups blocks the main thread.
+**Action:** Extracted the `Array.find()` into a pre-computed `O(1)` Map indexed by unique date keys. Kept the existing regex matcher but optimized the surrounding array traversals, massively improving baseline compute times without risking formatting regressions on edge-case data.

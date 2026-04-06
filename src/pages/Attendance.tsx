@@ -52,32 +52,50 @@ export function Attendance() {
   const processedAttendance = useMemo(() => {
     // ⚡ Bolt Optimization:
     // Precompute global day simulation adjustments per subject outside the O(N) course map loop.
-    // Replaces O(N * M) nested loops and expensive repeated Regex tests/Array.find() with O(N + M) processing.
-    // Impact: Prevents UI thrashing during complex component renders by using a pre-populated Map lookup.
+    // Extracted the O(N) Array.find() into an O(1) Map pre-computation.
+    // Impact: Avoids nested linear scanning and repeated array traversals during state changes,
+    // drastically reducing simulation computation time and preventing UI blockages when day arrays scale.
     const globalAdjustments = new Map<string, { attend: number, bunk: number }>();
 
-    Object.entries(daySimulations).forEach(([dateKey, action]) => {
-      const dayEvent = futureWorkingDays.find(d => d.date + d.month === dateKey);
+    const futureDaysMap = new Map<string, any>();
+    for (let i = futureWorkingDays.length - 1; i >= 0; i--) {
+       const d = futureWorkingDays[i];
+       futureDaysMap.set(d.date + d.month, d);
+    }
+
+    const simKeys = Object.keys(daySimulations);
+    for (let i = 0; i < simKeys.length; i++) {
+      const dateKey = simKeys[i];
+      const action = daySimulations[dateKey];
+      const dayEvent = futureDaysMap.get(dateKey);
+
       if (dayEvent) {
           const dayOrderMatch = dayEvent.title.match(/Day Order (\d)/i);
           if (dayOrderMatch) {
               const dayOrderStr = dayOrderMatch[1];
               const subjectsThatDay = data.timetable[dayOrderStr];
+
               if (Array.isArray(subjectsThatDay)) {
-                  subjectsThatDay.forEach((s: any) => {
-                      if (!s.code) return;
-                      const current = globalAdjustments.get(s.code) || { attend: 0, bunk: 0 };
+                  for (let j = 0; j < subjectsThatDay.length; j++) {
+                      const s = subjectsThatDay[j];
+                      if (!s.code) continue;
+
+                      let current = globalAdjustments.get(s.code);
+                      if (!current) {
+                          current = { attend: 0, bunk: 0 };
+                          globalAdjustments.set(s.code, current);
+                      }
+
                       if (action === 'attend') {
                           current.attend += 1;
                       } else {
                           current.bunk += 1;
                       }
-                      globalAdjustments.set(s.code, current);
-                  });
+                  }
               }
           }
       }
-    });
+    }
 
     return data.attendance.map(course => {
       let simPresent = course.present;
