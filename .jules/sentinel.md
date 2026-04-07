@@ -37,3 +37,8 @@
 **Vulnerability:** The backend endpoint `api/scrape.ts` extracted an `oauthorize_uri` directly from an upstream JSON response and immediately performed an HTTP GET request to it without validation. This created a Server-Side Request Forgery (SSRF) vulnerability.
 **Learning:** Blindly trusting and requesting URLs provided by external data sources (even seemingly trusted upstream APIs) can allow attackers to pivot through the server to access internal network resources or metadata endpoints (like AWS IMDS or Vercel internal services).
 **Prevention:** Always strictly validate and sanitize URLs before passing them to HTTP clients (e.g., Axios). Enforce a strict domain allowlist (e.g., `startsWith('https://academia.srmist.edu.in/')`) to guarantee the server only communicates with the intended target.
+
+## 2026-04-07 - [Prevent Sensitive API Payload Caching]
+**Vulnerability:** Backend API `api/scrape.ts` returning sensitive student data (attendance, marks) lacked strict cache prevention headers, allowing browsers and intermediate Vercel edge proxies to potentially cache the cleartext JSON payload.
+**Learning:** Even when requests are over HTTPS and require authentication (or credentials in body), omitting cache headers on responses containing PII can lead to data leakage if devices are shared or edge proxies are misconfigured.
+**Prevention:** Always explicitly set `Cache-Control: no-store`, `Pragma: no-cache`, and `Surrogate-Control: no-store` headers on serverless endpoints returning sensitive user data.

@@ -572,6 +572,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
        }
     }
 
+    // 🛡️ Sentinel: Prevent sensitive academic data from being cached by browsers or edge proxies
+    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+    res.setHeader('Pragma', 'no-cache');
+    res.setHeader('Expires', '0');
+    res.setHeader('Surrogate-Control', 'no-store');
+
     return res.status(200).json({ success: true, data: fetchedPayload, academiaId: secureId });
 
   } catch (error: any) {
