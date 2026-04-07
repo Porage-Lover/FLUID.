@@ -32,3 +32,8 @@
 **Vulnerability:** Insecure Direct Object Reference (IDOR) where the backend used the plaintext user email (`regNo`) as the primary cache ID in Supabase. Because the frontend fetched this data using an `anon` key passing the email via `localStorage`, an attacker could easily change their local `academia_id` to any other student's email and access their sensitive academic data without re-authenticating.
 **Learning:** Never use guessable, deterministic identifiers (like emails or sequential IDs) for data access checks when row-level security or authorization depends solely on client-provided IDs.
 **Prevention:** Use cryptographically secure, unguessable identifiers. In this case, creating an HMAC-SHA256 hash of the email using a secure server-side secret (`SUPABASE_SERVICE_ROLE_KEY`) ensures that only authenticated users holding the specific capability token (`secureId`) can access their data.
+
+## 2026-04-04 - [Prevent SSRF in OAuth Gateway Resolution]
+**Vulnerability:** The backend endpoint `api/scrape.ts` extracted an `oauthorize_uri` directly from an upstream JSON response and immediately performed an HTTP GET request to it without validation. This created a Server-Side Request Forgery (SSRF) vulnerability.
+**Learning:** Blindly trusting and requesting URLs provided by external data sources (even seemingly trusted upstream APIs) can allow attackers to pivot through the server to access internal network resources or metadata endpoints (like AWS IMDS or Vercel internal services).
+**Prevention:** Always strictly validate and sanitize URLs before passing them to HTTP clients (e.g., Axios). Enforce a strict domain allowlist (e.g., `startsWith('https://academia.srmist.edu.in/')`) to guarantee the server only communicates with the intended target.
