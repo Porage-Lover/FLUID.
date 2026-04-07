@@ -13,3 +13,11 @@
 ## 2024-03-27 - [Cascading Renders via useEffect State Setting]
 **Learning:** Found a major performance and linting issue in `Timetable.tsx` where `useEffect` was being used to compute values (`isTodayHoliday`, `holidayName`) and update state based on prop/context changes. Calling `setState` synchronously within an effect body causes cascading renders (the component renders, the effect runs, sets state, and forces a second render).
 **Action:** Avoid `react-hooks/set-state-in-effect`. Instead of using `useEffect` to derive state from props, use `useMemo` for derived values. For updating true state (like `selectedDay`), use the "Adjusting state while rendering" pattern by tracking the previous value (`prevCalendar`) and calling `setState` directly in the render phase. This skips the extra paint cycle and eliminates the cascading render issue.
+
+## 2026-04-04 - [Nested Array Searches Inside Component Render Loop]
+**Learning:** Found a major performance bottleneck in `Attendance.tsx` where global simulated state (`daySimulations`) was mapped over and processed _inside_ the main data loop processing subjects. This caused `O(N * M)` operations, including an array `.find()` scan and expensive regex matching within every subject iteration.
+**Action:** To optimize nested array scans and Regex tests in loops, hoist them outside the `map()` operation. Precompute expensive values and index them using a `Map` structure for `O(1)` key lookups during the main array traversal.
+
+## 2026-04-05 - [O(N*M) Array Scanning in render loops]
+**Learning:** Found a performance bottleneck in `Attendance.tsx` where nested array methods (`.filter` combined with an inner `findIndex`) were repeatedly traversing arrays and allocating new memory on every re-render loop, causing unnecessary CPU load and potential render blocking.
+**Action:** Replaced the O(N*M) nested array iterations with a single-pass O(N) loop and pre-computed an O(1) `Record` map to do property lookups. Always pre-compute known reference maps (like months or days) and perform single-pass iterations instead of chaining multiple array functions.
