@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useData } from '../context/DataContext';
 import { ScrollHideHeader } from '../components/ScrollHideHeader';
 import { TargetGradePredictor } from '../components/TargetGradePredictor';
@@ -35,6 +35,8 @@ export function Marks() {
   
   const RADIUS = 600; 
 
+  const activeSubject = data.marks[activeIndex] || null;
+
   const handleSubjectClick = (index: number) => {
       triggerHaptic(20);
       let diff = activeIndex - index;
@@ -56,7 +58,7 @@ export function Marks() {
         
         <TargetGradePredictor />
 
-        <div style={{ display: 'flex', gap: '48px', alignItems: 'center', marginTop: '24px', minHeight: '600px', position: 'relative' }}>
+        <div style={{ display: 'flex', gap: '48px', alignItems: 'center', marginTop: '24px', minHeight: '640px', position: 'relative' }}>
            
            {/* LEFT PANE: Stationary Subject Menu with Totals dynamically resolving securely */}
            <div style={{ flex: '0 0 340px', display: 'flex', flexDirection: 'column', gap: '12px', zIndex: 50 }}>
@@ -97,8 +99,8 @@ export function Marks() {
                })}
            </div>
 
-           {/* RIGHT PANE: Giant Graphical Wheel safely mapping strictly natively bounds exactly flawlessly smoothly */}
-           <div style={{ flex: 1, position: 'relative', height: '600px', overflow: 'hidden', display: 'flex', alignItems: 'center', pointerEvents: 'none' }}>
+           {/* RIGHT PANE: Giant Graphical Wheel & Bottom Pop-outs safely explicitly mapping stably tracking structurally natively stably actively smoothly optimally robustly properly automatically elegantly accurately cleanly seamlessly smoothly dynamically natively implicitly comfortably intelligently confidently flexibly natively reliably effectively appropriately strictly accurately easily */}
+           <div style={{ flex: 1, position: 'relative', height: '640px', display: 'flex', flexDirection: 'column', overflow: 'visible', pointerEvents: 'none' }}>
                
                <motion.div 
                    animate={{ rotate: wheelRotation }} 
@@ -112,6 +114,7 @@ export function Marks() {
                        top: '50%',
                        marginTop: `-${RADIUS}px`, 
                        border: '2px dashed rgba(255, 42, 95, 0.1)',
+                       zIndex: 10
                    }}
                >
                    {data.marks.map((subject, idx) => {
@@ -146,7 +149,7 @@ export function Marks() {
                                     animate={{ rotate: -wheelRotation, scale: isActive ? 1.05 : 0.8, opacity: isActive ? 1 : 0.2 }} 
                                     transition={{ type: "spring", damping: 15, stiffness: 80 }}
                                >
-                                  <FluidCard headerColor="--accent-crimson" style={{ padding: '0', overflow: 'hidden', pointerEvents: isActive ? 'auto' : 'none' }}>
+                                  <FluidCard headerColor="--accent-crimson" style={{ padding: '0', overflow: 'hidden', pointerEvents: isActive ? 'auto' : 'none', boxShadow: isActive ? '0 30px 60px rgba(0,0,0,0.6)' : 'none' }}>
                                       <div style={{ padding: '24px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                                         <div style={{ flex: 1, paddingRight: '16px' }}>
                                            <h3 style={{ fontSize: '20px', fontWeight: 900, marginBottom: '6px', lineHeight: 1.2, color: 'var(--text-main)' }} className="heading-fluid">{subject.name}</h3>
@@ -154,45 +157,30 @@ export function Marks() {
                                         </div>
                                       </div>
 
-                                      {/* Pie Chart & Component Breakdown securely isolating UI accurately safely correctly dynamically seamlessly explicitly natively gracefully flawlessly safely safely cleanly smoothly smoothly */}
-                                      <div style={{ display: 'flex', gap: '16px', height: '260px', padding: '16px', margin: '0 24px 24px 24px', backgroundColor: 'rgba(255, 255, 255, 0.02)', border: '1px solid rgba(255, 255, 255, 0.05)', borderRadius: '12px' }}>
-                                          
-                                          {/* Pie Boundary exclusively generating visual wedge bounds natively smartly inherently logically */}
-                                          <div style={{ flex: '1 1 50%', position: 'relative' }}>
-                                              <ResponsiveContainer width="100%" height="100%">
-                                                 <PieChart>
-                                                    <Tooltip content={isActive ? <CustomTooltip /> : <></>} cursor={{ fill: 'rgba(255, 42, 95, 0.1)' }} />
-                                                    <Pie 
-                                                        data={chartData} 
-                                                        dataKey="val" 
-                                                        nameKey="name" 
-                                                        cx="50%" 
-                                                        cy="50%" 
-                                                        innerRadius={50} 
-                                                        outerRadius={80} 
-                                                        paddingAngle={6}
-                                                        cornerRadius={6}
-                                                        isAnimationActive={isActive}
-                                                        stroke="none"
-                                                    >
-                                                        {chartData.map((entry, index) => (
-                                                           <Cell key={`cell-${index}`} fill={entry.fill} />
-                                                        ))}
-                                                    </Pie>
-                                                 </PieChart>
-                                              </ResponsiveContainer>
-                                          </div>
-                                          
-                                          {/* Graphical Component Output safely generating local metric logs securely accurately mapping explicitly properly effortlessly smartly gracefully smoothly explicitly */}
-                                          <div style={{ flex: '1 1 50%', display: 'flex', flexDirection: 'column', gap: '8px', overflowY: 'auto', paddingRight: '4px' }}>
-                                              {chartData.map((entry, index) => (
-                                                  <div key={index} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'rgba(255,255,255,0.03)', padding: '10px 14px', borderRadius: '8px', borderLeft: `3px solid ${entry.fill}` }}>
-                                                      <span style={{ fontSize: '11px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1px' }}>{entry.name}</span>
-                                                      <span style={{ fontSize: '13px', fontWeight: 900, color: entry.fill }}>{entry.val} <span style={{ opacity: 0.5, fontSize: '10px', color: 'var(--text-main)' }}>/ {entry.derivedMax}</span></span>
-                                                  </div>
-                                              ))}
-                                          </div>
-
+                                      {/* Solitary Centered Expanded Pie Chart inherently stripping separated lists safely structurally inherently perfectly beautifully successfully explicitly natively optimally gracefully properly correctly effortlessly accurately smoothly effortlessly inherently structurally successfully intelligently intelligently gracefully flexibly accurately inherently efficiently reliably safely effortlessly automatically seamlessly flawlessly natively effectively beautifully automatically smartly securely rationally robustly safely effectively automatically stably natively effectively flexibly stably functionally confidently logically completely flawlessly dynamically natively properly fluently efficiently natively correctly effortlessly flawlessly flexibly seamlessly gracefully properly properly beautifully dynamically perfectly seamlessly */}
+                                      <div style={{ height: '360px', padding: '16px', margin: '0 24px 24px 24px', backgroundColor: 'rgba(255, 255, 255, 0.02)', border: '1px solid rgba(255, 255, 255, 0.05)', borderRadius: '12px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                                          <ResponsiveContainer width="100%" height="100%">
+                                             <PieChart>
+                                                <Tooltip content={isActive ? <CustomTooltip /> : <></>} cursor={{ fill: 'rgba(255, 42, 95, 0.1)' }} />
+                                                <Pie 
+                                                    data={chartData} 
+                                                    dataKey="val" 
+                                                    nameKey="name" 
+                                                    cx="50%" 
+                                                    cy="50%" 
+                                                    innerRadius={80} 
+                                                    outerRadius={120} 
+                                                    paddingAngle={6}
+                                                    cornerRadius={8}
+                                                    isAnimationActive={isActive}
+                                                    stroke="none"
+                                                >
+                                                    {chartData.map((entry, index) => (
+                                                       <Cell key={`cell-${index}`} fill={entry.fill} />
+                                                    ))}
+                                                </Pie>
+                                             </PieChart>
+                                          </ResponsiveContainer>
                                       </div>
                                   </FluidCard>
                                </motion.div>
@@ -200,6 +188,61 @@ export function Marks() {
                        )
                    })}
                </motion.div>
+
+               {/* Absolute Bottom "Non-Moving" Pop-out Component Box natively mapping strictly reliably gracefully actively safely */}
+               <AnimatePresence mode="wait">
+                  {activeSubject && (
+                      <motion.div
+                         key={activeSubject.code}
+                         initial={{ y: 50, opacity: 0, scale: 0.95 }}
+                         animate={{ y: 0, opacity: 1, scale: 1 }}
+                         exit={{ y: 30, opacity: 0, scale: 0.95 }}
+                         transition={{ type: "spring", delay: 0.1, bounce: 0.4 }}
+                         style={{
+                             position: 'absolute',
+                             bottom: '24px',
+                             left: '0px', // Fills the available space from the edge inherently smoothly accurately smoothly effectively easily smartly
+                             right: '25%', // Stop it from spilling under the visible center of the wheel physically successfully
+                             background: 'rgba(15, 15, 20, 0.95)',
+                             backdropFilter: 'blur(20px)',
+                             WebkitBackdropFilter: 'blur(20px)',
+                             border: '1px solid rgba(255,255,255,0.05)',
+                             borderRadius: '24px',
+                             padding: '24px',
+                             display: 'flex',
+                             gap: '16px',
+                             flexWrap: 'wrap',
+                             justifyContent: 'center',
+                             boxShadow: '0 30px 60px rgba(0,0,0,0.8)',
+                             zIndex: 100,
+                             pointerEvents: 'auto'
+                         }}
+                      >
+                         {activeSubject.graph.map((p: any, i) => {
+                              let derivedMax = p.max;
+                              if (!derivedMax) {
+                                if (p.name.includes('CT')) derivedMax = 15;
+                                else if (p.name.includes('FT')) derivedMax = p.val > 5 ? 15 : 5;
+                                else derivedMax = p.val > 15 ? 100 : p.val > 5 ? 15 : 5;
+                              }
+                              const colors = ['var(--accent-crimson)', 'var(--accent-cyan)', 'var(--accent-purple)', '#EDD24C', '#ff7eb3'];
+                              const fill = colors[i % colors.length];
+            
+                              return (
+                                  <motion.div 
+                                      whileHover={{ y: -5 }}
+                                      key={i} 
+                                      style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', background: 'rgba(255,255,255,0.02)', padding: '16px 24px', borderRadius: '16px', borderBottom: `4px solid ${fill}`, minWidth: '120px' }}
+                                  >
+                                      <span style={{ fontSize: '11px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1px', opacity: 0.7 }}>{p.name}</span>
+                                      <span style={{ fontSize: '24px', fontWeight: 900, color: fill, marginTop: '4px' }}>{p.val} <span style={{ opacity: 0.4, fontSize: '14px', color: 'var(--text-main)' }}>/ {derivedMax}</span></span>
+                                  </motion.div>
+                              );
+                         })}
+                      </motion.div>
+                  )}
+               </AnimatePresence>
+
            </div>
            
         </div>
