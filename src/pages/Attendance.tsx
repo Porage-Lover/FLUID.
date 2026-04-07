@@ -1,8 +1,8 @@
-import { useMemo, useState } from 'react';
-import { motion } from 'framer-motion';
+import { useMemo, useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { FluidCard } from '../components/FluidCard';
 import { useData } from '../context/DataContext';
-import { AlertCircle, Plus, Calendar as CalendarIcon, RotateCcw } from 'lucide-react';
+import { AlertCircle, Plus, RotateCcw, X, Target, PlusCircle, MinusCircle } from 'lucide-react';
 import { ScrollHideHeader } from '../components/ScrollHideHeader';
 import { triggerHaptic } from '../utils/haptics';
 
@@ -12,20 +12,26 @@ export function Attendance() {
   // 1. STATE MANAGEMENT
   const [daySimulations, setDaySimulations] = useState<Record<string, 'attend' | 'bunk'>>({});
   const [subjectSimulations, setSubjectSimulations] = useState<Record<string, { attend: number, bunk: number }>>({});
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  // Lock body scroll when modal opens
+  useEffect(() => {
+    if (isModalOpen) {
+       document.body.style.overflow = 'hidden';
+    } else {
+       document.body.style.overflow = 'unset';
+    }
+  }, [isModalOpen]);
 
   // 2. PARSE UPCOMING CALENDAR DAYS
   const futureWorkingDays = useMemo(() => {
-    // ⚡ Bolt Optimization:
-    // Replaced O(N*M) validMonths.findIndex scanning and multiple array allocations
-    // with a single-pass O(N) loop and O(1) Record lookup for month resolution.
-    // Impact: ~30% faster execution time for calendar filtering, reducing render blocking.
+    // ⚡ Bolt Optimization: Single-pass O(N) loop and O(1) Record lookup for month resolution.
     const MONTH_MAP: Record<string, number> = {
       Jan: 0, Feb: 1, Mar: 2, Apr: 3, May: 4, Jun: 5,
       Jul: 6, Aug: 7, Sep: 8, Oct: 9, Nov: 10, Dec: 11
     };
 
     const now = new Date();
-    // Neutralize time to midnight for secure comparison preventing skipping events today
     now.setHours(0,0,0,0);
     const nowTime = now.getTime();
 
@@ -50,10 +56,7 @@ export function Attendance() {
 
   // 3. CORE PREDICTOR CALCULATION MATRIX
   const processedAttendance = useMemo(() => {
-    // ⚡ Bolt Optimization:
-    // Precompute global day simulation adjustments per subject outside the O(N) course map loop.
-    // Replaces O(N * M) nested loops and expensive repeated Regex tests/Array.find() with O(N + M) processing.
-    // Impact: Prevents UI thrashing during complex component renders by using a pre-populated Map lookup.
+    // ⚡ Bolt Optimization: Precompute global day simulation adjustments per subject outside the O(N) course map loop.
     const globalAdjustments = new Map<string, { attend: number, bunk: number }>();
 
     Object.entries(daySimulations).forEach(([dateKey, action]) => {
@@ -181,45 +184,45 @@ export function Attendance() {
         )}
       </ScrollHideHeader>
 
-      <motion.div variants={containerVariants} initial="hidden" animate="show" style={{ display: 'flex', flexDirection: 'column', gap: '40px' }}>
+      <motion.div variants={containerVariants} initial="hidden" animate="show" style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
         
-        {/* --- GLOBAL CALENDAR PREDICTOR --- */}
+        {/* --- SLEEK PREDICTOR TOGGLE (Replaces clutter mapping) --- */}
         {futureWorkingDays.length > 0 && (
-           <motion.div variants={itemVariants} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                 <CalendarIcon size={24} color="var(--text-main)" />
-                 <h2 style={{ fontSize: '16px', margin: 0, textTransform: 'uppercase', letterSpacing: '2px', color: 'var(--text-main)' }}>Global Sandbox Tracker</h2>
+           <motion.button 
+              variants={itemVariants} 
+              onClick={() => { triggerHaptic(20); setIsModalOpen(true); }}
+              style={{
+                 width: '100%',
+                 padding: '24px',
+                 background: 'rgba(29, 199, 209, 0.05)',
+                 border: '1px solid rgba(29, 199, 209, 0.2)',
+                 borderRadius: '24px',
+                 cursor: 'pointer',
+                 display: 'flex',
+                 alignItems: 'center',
+                 justifyContent: 'space-between',
+                 color: 'var(--accent-cyan)'
+              }}
+           >
+              <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                 <div style={{ background: 'var(--accent-cyan)', borderRadius: '50%', padding: '12px', color: 'var(--bg-color)' }}>
+                    <Target size={24} />
+                 </div>
+                 <div style={{ textAlign: 'left' }}>
+                    <h3 style={{ margin: '0 0 4px 0', fontSize: '18px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1px' }}>Global Timeline Predictor</h3>
+                    <p style={{ margin: 0, fontSize: '12px', fontWeight: 600, opacity: 0.8 }}>Predict absolute timetable ripples across upcoming days.</p>
+                 </div>
               </div>
-              <p style={{ fontSize: '13px', color: 'var(--text-muted)', margin: 0, fontWeight: 600 }}>Simulate a specific day to automatically calculate timetable attendance cascades across all subjects.</p>
-              
-              <div style={{ display: 'flex', overflowX: 'auto', gap: '16px', paddingBottom: '16px', scrollbarWidth: 'none', WebkitOverflowScrolling: 'touch' }}>
-                 {futureWorkingDays.slice(0, 15).map(day => {
-                    const dateKey = day.date + day.month;
-                    const status = daySimulations[dateKey];
-                    // Conditional dynamic theme borders mapping inherently securely
-                    const borderDef = status === 'attend' ? '1px solid var(--accent-cyan)' : status === 'bunk' ? '1px solid var(--accent-crimson)' : '1px solid rgba(255,255,255,0.1)';
-                    const bgDef = status === 'attend' ? 'rgba(29, 199, 209, 0.1)' : status === 'bunk' ? 'rgba(255, 42, 95, 0.1)' : 'var(--card-bg)';
-                    
-                    return (
-                       <FluidCard key={dateKey} innerStyle={{ padding: '16px', display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: '130px' }} style={{ background: bgDef, border: borderDef, borderRadius: '16px', flexShrink: 0, transition: 'all 0.3s ease' }}>
-                           <span style={{ fontSize: '12px', opacity: 0.7, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '1px' }}>{day.day}</span>
-                           <span className="heading-fluid" style={{ fontSize: '32px', margin: '4px 0', color: 'var(--text-main)' }}>{day.date}</span>
-                           <span style={{ fontSize: '10px', color: 'var(--accent-purple)', fontWeight: 800, margin: '6px 0 16px 0', textAlign: 'center' }}>{day.title}</span>
-                           
-                           <div style={{ display: 'flex', width: '100%', gap: '8px' }}>
-                              <button onClick={() => handleGlobalSim(dateKey, 'attend')} style={{ flex: 1, padding: '8px 0', border: 'none', borderRadius: '8px', cursor: 'pointer', background: status === 'attend' ? 'var(--accent-cyan)' : 'rgba(255,255,255,0.05)', color: status === 'attend' ? 'var(--bg-color)' : 'var(--text-main)', fontSize: '10px', fontWeight: 800 }}>+ ATD</button>
-                              <button onClick={() => handleGlobalSim(dateKey, 'bunk')} style={{ flex: 1, padding: '8px 0', border: 'none', borderRadius: '8px', cursor: 'pointer', background: status === 'bunk' ? 'var(--accent-crimson)' : 'rgba(255,255,255,0.05)', color: status === 'bunk' ? 'var(--bg-color)' : 'var(--text-main)', fontSize: '10px', fontWeight: 800 }}>- BNK</button>
-                           </div>
-                       </FluidCard>
-                    )
-                 })}
-              </div>
-           </motion.div>
+              <Plus size={24} opacity={0.5} />
+           </motion.button>
         )}
 
         {/* --- SUBJECT CARDS --- */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
           {processedAttendance.map((course, idx) => {
+            const locSim = subjectSimulations[course.code];
+            const hasLocalEdits = locSim && (locSim.attend > 0 || locSim.bunk > 0);
+
             return (
               <motion.div key={idx} variants={itemVariants} layout>
                 <FluidCard 
@@ -241,17 +244,29 @@ export function Attendance() {
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '16px' }}>
                      <div style={{ display: 'flex', flexDirection: 'column' }}>
                        <span style={{ fontSize: '11px', letterSpacing: '2px', opacity: 0.7, fontWeight: 800, textTransform: 'uppercase' }}>Classes</span>
-                       <span style={{ fontSize: '32px', fontWeight: 800 }}>{course.simPresent} <span style={{ opacity: 0.5, fontSize: '20px' }}>/ {course.simTotal}</span></span>
+                       <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                          <span style={{ fontSize: '32px', fontWeight: 800 }}>{course.simPresent} <span style={{ opacity: 0.5, fontSize: '20px' }}>/ {course.simTotal}</span></span>
+                       </div>
                        {course.isSimulated && <span style={{ fontSize: '10px', color: 'var(--text-muted)', marginTop: '4px' }}>Base: {course.present}/{course.total}</span>}
                      </div>
+                     
                      <div style={{ textAlign: 'right' }}>
                        <span style={{ fontSize: '11px', letterSpacing: '2px', fontWeight: 800, textTransform: 'uppercase', color: course.simSafe ? 'var(--accent-cyan)' : 'var(--accent-crimson)' }}>{course.simSafe ? 'Secure' : 'Alert'}</span>
-                       <div style={{ fontSize: '36px', fontWeight: 800, color: course.simSafe ? 'var(--accent-cyan)' : 'var(--accent-crimson)', letterSpacing: '-1px', textShadow: `0 0 15px ${course.simSafe ? 'rgba(29,199,209,0.4)' : 'rgba(255,42,95,0.4)'}` }}>{course.percentage.toFixed(1)}%</div>
+                       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '12px' }}>
+                          
+                          {/* MINIMALIST SUBJECT SANDBOX TOGGLES */}
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                             <button onClick={() => handleLocalSim(course.code, 'attend')} style={{ padding: '0', background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--accent-cyan)', opacity: 0.8, display: 'flex' }}><PlusCircle size={20} strokeWidth={2.5} /></button>
+                             <button onClick={() => handleLocalSim(course.code, 'bunk')} style={{ padding: '0', background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--accent-crimson)', opacity: 0.8, display: 'flex' }}><MinusCircle size={20} strokeWidth={2.5} /></button>
+                          </div>
+                          
+                          <div style={{ fontSize: '36px', fontWeight: 800, color: course.simSafe ? 'var(--accent-cyan)' : 'var(--accent-crimson)', letterSpacing: '-1px', textShadow: `0 0 15px ${course.simSafe ? 'rgba(29,199,209,0.4)' : 'rgba(255,42,95,0.4)'}` }}>{course.percentage.toFixed(1)}%</div>
+                       </div>
                        {course.isSimulated && <span style={{ fontSize: '10px', color: 'var(--text-muted)', marginTop: '4px', display: 'block' }}>Base: {course.realPercentage.toFixed(1)}%</span>}
                      </div>
                   </div>
 
-                  {/* Progress Bar Container Cyberspace */}
+                  {/* Progress Bar Container */}
                   <div style={{ height: '8px', backgroundColor: 'rgba(255,255,255,0.05)', position: 'relative', overflow: 'hidden', marginBottom: '24px', borderRadius: '4px' }}>
                     {/* Background Base Trace Line highlighting real percentage passively mapped beneath simulation layer purely indicating boundaries securely */}
                     {course.isSimulated && (
@@ -276,15 +291,16 @@ export function Attendance() {
                     <div style={{ position: 'absolute', top: 0, left: '75%', height: '100%', width: '2px', backgroundColor: 'rgba(255,255,255,0.8)', zIndex: 5, boxShadow: '0 0 5px #fff' }} />
                   </div>
 
-                  {/* Sandbox Per-Subject Arrays */}
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '16px' }}>
-                     <button onClick={() => handleLocalSim(course.code, 'attend')} style={{ padding: '12px', background: 'rgba(29, 199, 209, 0.05)', color: 'var(--accent-cyan)', border: '1px solid rgba(29, 199, 209, 0.2)', borderRadius: '8px', cursor: 'pointer', fontWeight: 800, fontSize: '11px', textTransform: 'uppercase', letterSpacing: '1px', display: 'flex', justifyContent: 'center', gap: '8px' }}>
-                        + Add Attend
-                     </button>
-                     <button onClick={() => handleLocalSim(course.code, 'bunk')} style={{ padding: '12px', background: 'rgba(255, 42, 95, 0.05)', color: 'var(--accent-crimson)', border: '1px solid rgba(255, 42, 95, 0.2)', borderRadius: '8px', cursor: 'pointer', fontWeight: 800, fontSize: '11px', textTransform: 'uppercase', letterSpacing: '1px', display: 'flex', justifyContent: 'center', gap: '8px' }}>
-                        + Add Bunk
-                     </button>
-                  </div>
+                  {/* Simulated Indicator Explicit Breakdown (only shows if local overrides triggered removing horizontal clutter) */}
+                  {hasLocalEdits && (
+                     <div style={{ padding: '8px 12px', background: 'rgba(237, 210, 76, 0.05)', border: '1px solid rgba(237, 210, 76, 0.2)', borderRadius: '8px', marginBottom: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '11px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1px', color: '#EDD24C' }}>
+                        <span>Local Edits</span>
+                        <div style={{ display: 'flex', gap: '12px' }}>
+                           <span>+ {locSim?.attend || 0} Atd</span>
+                           <span>+ {locSim?.bunk || 0} Bnk</span>
+                        </div>
+                     </div>
+                  )}
 
                   {/* Algorithmic Margin Analysis Output computing SIMULATED matrixes exclusively bridging projections dynamically */}
                   <div style={{ padding: '16px', backgroundColor: 'rgba(255,255,255,0.03)', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.05)', display: 'flex', alignItems: 'center', gap: '16px' }}>
@@ -318,6 +334,79 @@ export function Attendance() {
         </div>
 
       </motion.div>
+
+      {/* --- EXCLUSIVE HOLOGRAPHIC PREDICTOR MODAL --- */}
+      <AnimatePresence>
+        {isModalOpen && (
+           <motion.div 
+             initial={{ opacity: 0, y: 100 }} 
+             animate={{ opacity: 1, y: 0 }} 
+             exit={{ opacity: 0, y: 200 }}
+             transition={{ type: "spring", damping: 25, stiffness: 200 }}
+             style={{
+                position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh',
+                background: 'rgba(5, 5, 8, 0.9)', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)',
+                zIndex: 9999, display: 'flex', flexDirection: 'column', paddingTop: 'env(safe-area-inset-top)'
+             }}
+           >
+              {/* Modal Header */}
+              <div style={{ padding: '24px 32px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
+                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                    <Target size={28} color="var(--accent-cyan)" />
+                    <div>
+                       <h2 style={{ fontSize: '24px', margin: 0, color: 'var(--text-main)', letterSpacing: '1px' }} className="heading-fluid">Predictor</h2>
+                       <span style={{ fontSize: '11px', color: 'var(--accent-purple)', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '2px' }}>Timeline Simulator</span>
+                    </div>
+                 </div>
+                 <button onClick={() => { triggerHaptic(30); setIsModalOpen(false); }} style={{ padding: '12px', background: 'rgba(255,255,255,0.05)', borderRadius: '50%', border: 'none', cursor: 'pointer', color: 'var(--text-main)', display: 'flex' }}>
+                    <X size={24} />
+                 </button>
+              </div>
+
+              {/* Modal Body / Calendar Scroller */}
+              <div style={{ flex: 1, overflowY: 'auto', padding: '32px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                 {Object.keys(daySimulations).length > 0 && (
+                    <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'rgba(255, 42, 95, 0.1)', border: '1px solid rgba(255, 42, 95, 0.3)', padding: '16px', borderRadius: '16px', marginBottom: '16px' }}>
+                       <span style={{ fontSize: '12px', fontWeight: 800, textTransform: 'uppercase', color: 'var(--accent-crimson)', letterSpacing: '1px' }}>{Object.keys(daySimulations).length} Days Tracking</span>
+                       <button onClick={() => { triggerHaptic(40); setDaySimulations({}); }} style={{ background: 'transparent', border: 'none', color: 'var(--accent-crimson)', fontWeight: 800, fontSize: '12px', display: 'flex', alignItems: 'center', gap: '4px', cursor: 'pointer' }}><RotateCcw size={14}/> Reset Timeline</button>
+                    </motion.div>
+                 )}
+
+                 {futureWorkingDays.map((day, idx) => {
+                    const dateKey = day.date + day.month;
+                    const status = daySimulations[dateKey];
+                    const borderDef = status === 'attend' ? '1px solid var(--accent-cyan)' : status === 'bunk' ? '1px solid var(--accent-crimson)' : '1px solid rgba(255,255,255,0.1)';
+                    const bgDef = status === 'attend' ? 'rgba(29, 199, 209, 0.1)' : status === 'bunk' ? 'rgba(255, 42, 95, 0.1)' : 'rgba(255,255,255,0.02)';
+
+                    return (
+                       <motion.div 
+                          key={dateKey}
+                          initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: idx * 0.05 }}
+                          style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px 24px', background: bgDef, border: borderDef, borderRadius: '16px' }}
+                       >
+                          <div style={{ display: 'flex', flexDirection: 'column' }}>
+                             <span style={{ fontSize: '12px', fontWeight: 800, opacity: 0.6, letterSpacing: '1px', textTransform: 'uppercase' }}>{day.day}, {day.month}</span>
+                             <span style={{ fontSize: '24px', fontWeight: 800, color: 'var(--text-main)' }}>{day.date}</span>
+                             <span style={{ fontSize: '11px', color: 'var(--accent-purple)', fontWeight: 800, marginTop: '4px' }}>{day.title}</span>
+                          </div>
+
+                          <div style={{ display: 'flex', gap: '8px' }}>
+                              <button onClick={() => handleGlobalSim(dateKey, 'attend')} style={{ width: '48px', height: '48px', borderRadius: '50%', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', background: status === 'attend' ? 'var(--accent-cyan)' : 'rgba(255,255,255,0.05)', color: status === 'attend' ? 'var(--bg-color)' : 'var(--text-main)', transition: 'all 0.2s' }}>
+                                 <Plus size={24} />
+                              </button>
+                              <button onClick={() => handleGlobalSim(dateKey, 'bunk')} style={{ width: '48px', height: '48px', borderRadius: '50%', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', background: status === 'bunk' ? 'var(--accent-crimson)' : 'rgba(255,255,255,0.05)', color: status === 'bunk' ? 'var(--bg-color)' : 'var(--text-main)', transition: 'all 0.2s' }}>
+                                 <X size={24} />
+                              </button>
+                          </div>
+                       </motion.div>
+                    )
+                 })}
+                 <div style={{ height: '40px' }} /> {/* Bottom Margin Spacer */}
+              </div>
+           </motion.div>
+        )}
+      </AnimatePresence>
+
     </div>
   );
 }
