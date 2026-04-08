@@ -140,7 +140,7 @@ async function fetchAcademicsData(client: any): Promise<{ attendance: any[], mar
       if (!codeText || codeText.toLowerCase().includes("course code") || codeText.toLowerCase().includes("subject code")) return;
 
       // Clean up course code for hashing references
-      const courseCodeClean = codeText.toUpperCase().replace(/[\n\r\*]/g, '').trim();
+      const courseCodeClean = codeText.toUpperCase().replace(/[\n\r*]/g, '').trim();
 
       // HEURISTIC A: ATTENDANCE BLOCK (Strict Numeric Verification on Ends)
       // Check column counts. unio accounts sometimes embed 8, 9, or 10 columns
