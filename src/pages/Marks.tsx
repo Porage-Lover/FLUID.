@@ -56,7 +56,7 @@ export function Marks() {
       <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
         
         {/* Metric Menu Bar isolated at top securely above any graph z-index flawlessly natively stably actively automatically effortlessly optimally securely safely */}
-        <div style={{ zIndex: 100, position: 'relative' }}>
+        <div>
             <TargetGradePredictor />
         </div>
 
