@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { useData } from '../context/DataContext';
 import { ScrollHideHeader } from '../components/ScrollHideHeader';
 import { TargetGradePredictor } from '../components/TargetGradePredictor';
@@ -67,7 +66,7 @@ export function Marks2() {
 
         {/* Stacked Ring Grid intelligently cleanly inherently perfectly accurately neatly natively seamlessly effortlessly effectively efficiently effectively seamlessly neatly intelligently neatly nicely accurately effectively smartly explicitly smoothly seamlessly fluently instinctively implicitly effortlessly dynamically compactly gracefully smoothly properly perfectly intelligently precisely confidently dynamically successfully */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-            {data.marks.map((subject, idx) => {
+            {data.marks.map((subject) => {
                const chartData = getRingData(subject.graph);
                const dummyRemoved = chartData.filter(c => c.name !== 'dummy').reverse();
                
@@ -135,7 +134,7 @@ export function Marks2() {
                                   startAngle={90} endAngle={-270}
                                >
                                   <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(255,255,255,0.02)' }} />
-                                  <RadialBar minAngle={15} background={{ fill: 'rgba(255,255,255,0.05)' }} cornerRadius={10} dataKey="percentage" />
+                                  <RadialBar background={{ fill: 'rgba(255,255,255,0.05)' }} cornerRadius={10} dataKey="percentage" />
                                </RadialBarChart>
                            </ResponsiveContainer>
                        </div>
