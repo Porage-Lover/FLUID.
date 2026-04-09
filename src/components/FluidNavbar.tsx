@@ -59,7 +59,8 @@ export function FluidNavbar() {
     { name: 'HOME', path: '/dashboard' },
     { name: 'TIMETABLE', path: '/timetable' },
     { name: 'ATTENDANCE', path: '/attendance' },
-    { name: 'METRICS', path: '/marks' },
+    { name: 'METRICS (1)', path: '/marks1' },
+    { name: 'METRICS (2)', path: '/marks2' },
     { name: 'AGENDA', path: '/calendar' },
   ];
 
