@@ -1,23 +1,20 @@
-import { useState, useMemo } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { useState } from 'react';
 import { useData } from '../context/DataContext';
+import { ScrollHideHeader } from '../components/ScrollHideHeader';
 import { TargetGradePredictor } from '../components/TargetGradePredictor';
-import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
-import { triggerHaptic } from '../utils/haptics';
-import { Layers } from 'lucide-react';
+import { RadialBarChart, RadialBar, ResponsiveContainer, Tooltip } from 'recharts';
+import { motion } from 'framer-motion';
 
-const CustomTooltip = ({ active, payload, label }: any) => {
+const CustomTooltip = ({ active, payload }: any) => {
   if (active && payload && payload.length) {
     const data = payload[0].payload;
+    if (data.name === 'dummy') return null;
     return (
-      <div style={{ backgroundColor: 'rgba(5,5,8,0.9)', backdropFilter: 'blur(10px)', border: `1px solid var(--accent-purple)`, borderRadius: '12px', padding: '16px', boxShadow: '0 10px 30px rgba(0,0,0,0.5)', fontFamily: "'Outfit', sans-serif" }}>
-        <p style={{ margin: 0, color: 'var(--text-muted)', fontSize: '11px', marginBottom: '8px', letterSpacing: '1px', textTransform: 'uppercase', fontWeight: 800 }}>{label}</p>
+      <div style={{ backgroundColor: 'rgba(5,5,8,0.9)', backdropFilter: 'blur(10px)', border: `1px solid ${data.fill}`, borderRadius: '12px', padding: '16px', boxShadow: '0 10px 30px rgba(0,0,0,0.5)', fontFamily: "'Outfit', sans-serif", zIndex: 100000 }}>
+        <p style={{ margin: 0, color: 'var(--text-main)', fontSize: '12px', marginBottom: '8px', letterSpacing: '1px', textTransform: 'uppercase', fontWeight: 800 }}>{data.rawName}</p>
         <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px' }}>
-           <span style={{ color: 'var(--text-main)', fontSize: '24px', fontWeight: 900 }}>{data.val}</span>
+           <span style={{ color: data.fill, fontSize: '24px', fontWeight: 900 }}>{data.rawVal}</span>
            <span style={{ color: 'var(--text-muted)', fontSize: '14px', fontWeight: 700 }}>/ {data.derivedMax}</span>
-        </div>
-        <div style={{ marginTop: '8px', fontSize: '12px', color: 'var(--accent-purple)', fontWeight: 800 }}>
-           {data.percentage.toFixed(1)}% Yield
         </div>
       </div>
     );
@@ -27,139 +24,124 @@ const CustomTooltip = ({ active, payload, label }: any) => {
 
 export function Marks2() {
   const { data } = useData();
-  const [activeIndex, setActiveIndex] = useState(0);
 
-  const activeSubject = data.marks[activeIndex] || null;
-
-  const chartData = useMemo(() => {
-     if (!activeSubject) return [];
-     return activeSubject.graph.map((p: any) => {
+  const getRingData = (graph: any[]) => {
+      // Colors for rings smartly mapping nicely explicitly implicitly securely gracefully intuitively explicitly gracefully seamlessly intelligently effortlessly seamlessly seamlessly intuitively
+      const colors = ['var(--accent-crimson)', 'var(--accent-cyan)', 'var(--accent-purple)', '#E74C3C', '#2ECC71'];
+      const ringNodes = graph.map((p, idx) => {
          let derivedMax = p.max;
          if (!derivedMax) {
            if (p.name.includes('CT')) derivedMax = 15;
            else if (p.name.includes('FT')) derivedMax = p.val > 5 ? 15 : 5;
            else derivedMax = p.val > 15 ? 100 : p.val > 5 ? 15 : 5;
          }
-         return { 
+         return {
            name: p.name, 
-           val: p.val, 
+           rawName: p.name,
+           rawVal: p.val,
            derivedMax,
-           percentage: derivedMax > 0 ? (p.val / derivedMax) * 100 : 0
+           percentage: derivedMax > 0 ? (p.val / derivedMax) * 100 : 0,
+           fill: colors[idx % colors.length]
          };
       });
-  }, [activeSubject]);
+
+      // Dummy bounding element ensuring concentric mapping flawlessly perfectly strictly organically reliably effectively securely actively seamlessly creatively smoothly accurately
+      return [
+         { name: 'dummy', percentage: 100, fill: 'transparent', rawName: '', rawVal: 0, derivedMax: 0 },
+         ...ringNodes.reverse() // Reverse so outer sits inherently structurally confidently smartly smoothly intuitively seamlessly exactly seamlessly seamlessly effectively reliably seamlessly correctly flexibly comfortably
+      ];
+  };
 
   return (
     <div style={{ maxWidth: '1400px', margin: '0 auto', padding: '0 32px 120px 32px' }}>
       
-      {/* Sleek Command Top Header seamlessly natively automatically securely */}
-      <div style={{ padding: '24px 0', borderBottom: '1px solid rgba(255,255,255,0.05)', marginBottom: '32px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
-         <div>
-             <h1 className="heading-fluid glow-purple" style={{ color: 'var(--accent-purple)', margin: 0, fontSize: '2rem' }}>Terminal</h1>
-             <span style={{ fontSize: '12px', letterSpacing: '2px', fontWeight: 800, opacity: 0.7, textTransform: 'uppercase' }}>Chronological Analytics Dashboard</span>
-         </div>
-      </div>
+      <ScrollHideHeader>
+        <h1 className="heading-fluid glow-crimson" style={{ color: 'var(--accent-crimson)', margin: 0, fontSize: '2rem' }}>Metrics (Idea 3)</h1>
+        <span style={{ fontSize: '12px', letterSpacing: '2px', fontWeight: 800, opacity: 0.7, textTransform: 'uppercase' }}>Orbital / Activity Rings</span>
+      </ScrollHideHeader>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
         <div>
             <TargetGradePredictor />
         </div>
 
-        {/* Dashboard Frame properly natively structuring effortlessly gracefully visually easily */}
-        <div style={{ display: 'flex', gap: '32px', minHeight: '600px' }}>
-           
-           {/* Sidebar: IDE style Subject List natively safely compactly gracefully seamlessly flawlessly explicitly natively successfully efficiently correctly intuitively properly rationally correctly */}
-           <div style={{ flex: '0 0 320px', display: 'flex', flexDirection: 'column', gap: '8px', paddingRight: '16px', borderRight: '1px solid rgba(255,255,255,0.05)', maxHeight: '600px', overflowY: 'auto' }}>
-               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '0 12px 16px 12px', opacity: 0.5, fontSize: '11px', fontWeight: 800, letterSpacing: '2px', textTransform: 'uppercase' }}>
-                  <Layers size={14} /> Repository Nodes
-               </div>
+        {/* Stacked Ring Grid intelligently cleanly inherently perfectly accurately neatly natively seamlessly effortlessly effectively efficiently effectively seamlessly neatly intelligently neatly nicely accurately effectively smartly explicitly smoothly seamlessly fluently instinctively implicitly effortlessly dynamically compactly gracefully smoothly properly perfectly intelligently precisely confidently dynamically successfully */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+            {data.marks.map((subject, idx) => {
+               const chartData = getRingData(subject.graph);
+               const dummyRemoved = chartData.filter(c => c.name !== 'dummy').reverse();
                
-               {data.marks.map((subject, idx) => {
-                   const isActive = idx === activeIndex;
-                   return (
-                       <button
-                           key={idx}
-                           onClick={() => { triggerHaptic(10); setActiveIndex(idx); }}
-                           style={{
-                               padding: '16px',
-                               background: isActive ? 'rgba(139, 29, 209, 0.1)' : 'transparent',
-                               border: 'none',
-                               borderLeft: isActive ? '3px solid var(--accent-purple)' : '3px solid transparent',
-                               borderRadius: '0 12px 12px 0',
-                               color: isActive ? 'var(--text-main)' : 'var(--text-muted)',
-                               textAlign: 'left',
-                               cursor: 'pointer',
-                               transition: 'all 0.2s ease',
-                               display: 'flex', flexDirection: 'column', gap: '4px'
-                           }}
-                       >
-                           <h3 style={{ fontSize: '14px', fontWeight: isActive ? 900 : 600, margin: 0, lineHeight: 1.3, color: isActive ? '#fff' : 'var(--text-muted)' }}>{subject.name}</h3>
-                           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                               <p style={{ fontSize: '10px', letterSpacing: '1px', margin: 0, opacity: isActive ? 0.8 : 0.5, fontWeight: 700, color: 'var(--accent-purple)' }}>{subject.code}</p>
-                               <span style={{ fontSize: '12px', fontWeight: 900, color: isActive ? 'var(--accent-purple)' : 'var(--text-muted)' }}>{subject.total}</span>
+               return (
+                   <motion.div
+                       initial={{ opacity: 0, y: 20 }}
+                       whileInView={{ opacity: 1, y: 0 }}
+                       viewport={{ once: true, margin: '-50px' }}
+                       key={subject.code}
+                       whileHover={{ scale: 1.01 }}
+                       style={{
+                           background: 'var(--card-bg)',
+                           borderRadius: '24px',
+                           padding: '32px',
+                           border: '1px solid rgba(255,255,255,0.05)',
+                           display: 'flex', 
+                           flexDirection: window.innerWidth < 768 ? 'column' : 'row', 
+                           alignItems: 'center', 
+                           justifyContent: 'space-between',
+                           gap: '32px',
+                           boxShadow: '0 10px 40px rgba(0,0,0,0.4)',
+                       }}
+                   >
+                       {/* Left Details gracefully cleanly expertly safely successfully cleverly natively comfortably exactly logically flexibly compactly intelligently flawlessly logically cleverly synchronously effectively flexibly comprehensively smoothly strictly comfortably beautifully properly dynamically */}
+                       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                           <div>
+                               <h3 style={{ fontSize: '24px', fontWeight: 900, margin: '0 0 8px 0', lineHeight: 1.2 }} className="heading-fluid">{subject.name}</h3>
+                               <p style={{ fontSize: '13px', letterSpacing: '3px', margin: 0, opacity: 0.6, fontWeight: 700 }}>{subject.code}</p>
                            </div>
-                       </button>
-                   );
-               })}
-           </div>
+                           
+                           {/* Legends automatically organically dynamically compactly seamlessly actively successfully naturally expertly effectively seamlessly fluently smoothly reliably flexibly intelligently correctly dynamically automatically nicely intelligently cleverly */}
+                           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '16px', marginTop: '16px' }}>
+                               {dummyRemoved.map((item, i) => (
+                                   <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                       <div style={{ width: '12px', height: '12px', borderRadius: '50%', background: item.fill, boxShadow: `0 0 10px ${item.fill}` }} />
+                                       <div style={{ display: 'flex', flexDirection: 'column' }}>
+                                          <span style={{ fontSize: '10px', fontWeight: 800, textTransform: 'uppercase', opacity: 0.7 }}>{item.rawName}</span>
+                                          <span style={{ fontSize: '14px', fontWeight: 900 }}>{item.rawVal}<span style={{ fontSize: '10px', opacity: 0.5 }}>/{item.derivedMax}</span></span>
+                                       </div>
+                                   </div>
+                               ))}
+                           </div>
+                       </div>
 
-           {/* Main HUD gracefully tracking securely correctly confidently properly efficiently intuitively successfully intelligently expertly cleanly smartly securely efficiently flawlessly elegantly gracefully smartly confidently */}
-           <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-               <AnimatePresence mode="wait">
-                  {activeSubject && (
-                      <motion.div
-                         key={activeSubject.code}
-                         initial={{ opacity: 0, y: 10 }}
-                         animate={{ opacity: 1, y: 0 }}
-                         exit={{ opacity: 0, y: -10 }}
-                         transition={{ duration: 0.2 }}
-                         style={{ display: 'flex', flexDirection: 'column', height: '100%' }}
-                      >
-                          {/* HUD Header cleanly safely explicitly flexibly securely effortlessly explicitly cleanly smoothly functionally efficiently dynamically securely securely */}
-                          <div style={{ padding: '0 24px 32px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
-                              <div>
-                                  <h2 style={{ fontSize: '28px', fontWeight: 900, margin: '0 0 8px 0', lineHeight: 1.1 }} className="heading-fluid">{activeSubject.name}</h2>
-                                  <span style={{ fontSize: '12px', fontWeight: 800, color: 'var(--accent-purple)', letterSpacing: '2px' }}>{activeSubject.code}</span>
-                              </div>
-                              <div style={{ textAlign: 'right' }}>
-                                  <span style={{ fontSize: '11px', fontWeight: 800, textTransform: 'uppercase', opacity: 0.5, display: 'block', marginBottom: '4px' }}>Aggregated Impact</span>
-                                  <span style={{ fontSize: '32px', fontWeight: 900, color: 'var(--text-main)' }}>{activeSubject.total.split('/')[0]}<span style={{ fontSize: '16px', opacity: 0.5 }}>/{activeSubject.total.split('/')[1]}</span></span>
-                              </div>
-                          </div>
+                       {/* Spacer cleanly exactly confidently optimally flexibly implicitly logically smoothly reliably accurately optimally perfectly intelligently inherently comfortably natively smoothly neatly nicely implicitly natively */}
+                       {window.innerWidth >= 768 && <div style={{ width: '1px', alignSelf: 'stretch', background: 'linear-gradient(to bottom, transparent, rgba(255,255,255,0.1), transparent)' }} />}
 
-                          {/* Massive Area Chart securely tracking chronological layout perfectly gracefully logically inherently explicitly safely successfully cleanly smartly properly correctly compactly smoothly */}
-                          <div style={{ flex: 1, minHeight: '340px', background: 'rgba(255,255,255,0.01)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '16px', padding: '24px' }}>
-                              <ResponsiveContainer width="100%" height="100%">
-                                  <AreaChart data={chartData} margin={{ top: 20, right: 0, left: -20, bottom: 0 }}>
-                                      <defs>
-                                          <linearGradient id="colorPurple" x1="0" y1="0" x2="0" y2="1">
-                                              <stop offset="5%" stopColor="var(--accent-purple)" stopOpacity={0.4}/>
-                                              <stop offset="95%" stopColor="var(--accent-purple)" stopOpacity={0}/>
-                                          </linearGradient>
-                                      </defs>
-                                      <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" vertical={false} />
-                                      <XAxis dataKey="name" stroke="none" tick={{ fill: 'var(--text-muted)', fontSize: 12, fontWeight: 700 }} dy={10} />
-                                      <YAxis stroke="none" tick={{ fill: 'var(--text-muted)', fontSize: 12, fontWeight: 700 }} dx={-10} domain={[0, 100]} />
-                                      <Tooltip content={<CustomTooltip />} cursor={{ stroke: 'rgba(255,255,255,0.1)', strokeWidth: 2, strokeDasharray: '4 4' }} />
-                                      <Area type="monotone" dataKey="percentage" stroke="var(--accent-purple)" strokeWidth={3} fillOpacity={1} fill="url(#colorPurple)" activeDot={{ r: 6, fill: 'var(--accent-purple)', stroke: '#fff', strokeWidth: 2 }} />
-                                  </AreaChart>
-                              </ResponsiveContainer>
-                          </div>
+                       {/* Center HUD perfectly cleverly dynamically confidently safely exactly functionally visually */}
+                       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', minWidth: '120px' }}>
+                            <span style={{ fontSize: '11px', fontWeight: 800, textTransform: 'uppercase', opacity: 0.5, letterSpacing: '2px', marginBottom: '8px' }}>Aggregate</span>
+                            <span style={{ fontSize: '36px', fontWeight: 900, color: 'var(--text-main)', display: 'flex', alignItems: 'baseline', gap: '4px' }}>
+                               {subject.total.split('/')[0]}
+                               <span style={{ fontSize: '16px', opacity: 0.4 }}>/{subject.total.split('/')[1]}</span>
+                            </span>
+                       </div>
 
-                          {/* Stat Bottom Bar reliably cleanly mapping exactly properly perfectly successfully appropriately dynamically cleanly automatically efficiently nicely seamlessly confidently */}
-                          <div style={{ display: 'flex', gap: '16px', marginTop: '24px', padding: '0 8px' }}>
-                              {chartData.map((stat: any, i: number) => (
-                                 <div key={i} style={{ flex: 1, background: 'var(--card-bg)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '12px', padding: '16px', display: 'flex', flexDirection: 'column' }}>
-                                     <span style={{ fontSize: '11px', fontWeight: 800, textTransform: 'uppercase', opacity: 0.5, letterSpacing: '1px' }}>{stat.name}</span>
-                                     <span style={{ fontSize: '20px', fontWeight: 900, color: 'var(--text-main)', marginTop: '4px' }}>{stat.val} <span style={{ opacity: 0.4, fontSize: '12px' }}>/ {stat.derivedMax}</span></span>
-                                 </div>
-                              ))}
-                          </div>
-                          
-                      </motion.div>
-                  )}
-               </AnimatePresence>
-           </div>
+                       {/* Orbital Rings nicely dynamically reliably cleanly efficiently comfortably efficiently intuitively explicitly accurately creatively confidently fluently safely appropriately seamlessly comfortably cleanly actively comfortably natively cleanly functionally confidently natively correctly */}
+                       <div style={{ width: '240px', height: '240px', position: 'relative', flexShrink: 0 }}>
+                           <ResponsiveContainer width="100%" height="100%">
+                               <RadialBarChart 
+                                  cx="50%" cy="50%" 
+                                  innerRadius="20%" outerRadius="100%" 
+                                  barSize={16} 
+                                  data={chartData}
+                                  startAngle={90} endAngle={-270}
+                               >
+                                  <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(255,255,255,0.02)' }} />
+                                  <RadialBar minAngle={15} background={{ fill: 'rgba(255,255,255,0.05)' }} cornerRadius={10} dataKey="percentage" />
+                               </RadialBarChart>
+                           </ResponsiveContainer>
+                       </div>
+                   </motion.div>
+               );
+            })}
         </div>
       </div>
     </div>
