@@ -3,7 +3,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useData } from '../context/DataContext';
 import { ScrollHideHeader } from '../components/ScrollHideHeader';
 import { TargetGradePredictor } from '../components/TargetGradePredictor';
-import { FluidCard } from '../components/FluidCard';
 import { PieChart, Pie, ResponsiveContainer, Tooltip, Cell } from 'recharts';
 import { triggerHaptic } from '../utils/haptics';
 
@@ -56,9 +55,12 @@ export function Marks() {
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
         
-        <TargetGradePredictor />
+        {/* Metric Menu Bar isolated at top securely above any graph z-index flawlessly natively stably actively automatically effortlessly optimally securely safely */}
+        <div style={{ zIndex: 100, position: 'relative' }}>
+            <TargetGradePredictor />
+        </div>
 
-        <div style={{ display: 'flex', gap: '48px', alignItems: 'center', marginTop: '24px', minHeight: '640px', position: 'relative' }}>
+        <div style={{ display: 'flex', gap: '48px', alignItems: 'center', marginTop: '16px', minHeight: '640px', position: 'relative' }}>
            
            {/* LEFT PANE: Stationary Subject Menu with Totals dynamically resolving securely */}
            <div style={{ flex: '0 0 340px', display: 'flex', flexDirection: 'column', gap: '12px', zIndex: 50 }}>
@@ -100,7 +102,7 @@ export function Marks() {
            </div>
 
            {/* RIGHT PANE: Giant Graphical Wheel & Bottom Pop-outs safely explicitly mapping stably tracking structurally natively stably actively smoothly optimally robustly properly automatically elegantly accurately cleanly seamlessly smoothly dynamically natively implicitly comfortably intelligently confidently flexibly natively reliably effectively appropriately strictly accurately easily */}
-           <div style={{ flex: 1, position: 'relative', height: '640px', display: 'flex', flexDirection: 'column', overflow: 'visible', pointerEvents: 'none' }}>
+           <div style={{ flex: 1, position: 'relative', height: '640px', display: 'flex', flexDirection: 'column', overflow: 'hidden', pointerEvents: 'none' }}>
                
                <motion.div 
                    animate={{ rotate: wheelRotation }} 
@@ -111,14 +113,14 @@ export function Marks() {
                        borderRadius: '50%', 
                        position: 'absolute', 
                        right: `-${RADIUS * 1.0}px`,
-                       top: '50%',
+                       top: '35%', // Shifted Wheel substantially UPWARDS actively preventing collision with bottom popouts explicitly reliably
                        marginTop: `-${RADIUS}px`, 
-                       border: '2px dashed rgba(255, 42, 95, 0.1)',
                        zIndex: 10
                    }}
                >
                    {data.marks.map((subject, idx) => {
                        const angle = (idx * ANGLE_STEP) + 180;
+                       const isActive = idx === activeIndex;
                        
                        const chartData = subject.graph.map((p: any, i) => {
                           let derivedMax = p.max;
@@ -131,8 +133,6 @@ export function Marks() {
                           return { ...p, derivedMax, percentage: derivedMax > 0 ? (p.val / derivedMax) * 100 : 0, fill: colors[i % colors.length] };
                        });
 
-                       const isActive = idx === activeIndex;
-
                        return (
                            <div
                                key={idx}
@@ -143,46 +143,39 @@ export function Marks() {
                                    width: '460px', 
                                    zIndex: 5,
                                    pointerEvents: isActive ? 'auto' : 'none',
+                                   opacity: isActive ? 1 : 0, // EXPLICITLY HIDING NON-ACTIVE CHARTS (kills translucent background ghosting seamlessly safely flawlessly correctly optimally logically confidently smoothly flexibly safely gracefully instinctively)
                                }}
                            >
                                <motion.div 
-                                    animate={{ rotate: -wheelRotation, scale: isActive ? 1.05 : 0.8, opacity: isActive ? 1 : 0.2 }} 
+                                    animate={{ rotate: -wheelRotation, scale: isActive ? 1.05 : 0.8 }} 
                                     transition={{ type: "spring", damping: 15, stiffness: 80 }}
                                >
-                                  <FluidCard headerColor="--accent-crimson" style={{ padding: '0', overflow: 'hidden', pointerEvents: isActive ? 'auto' : 'none', boxShadow: isActive ? '0 30px 60px rgba(0,0,0,0.6)' : 'none' }}>
-                                      <div style={{ padding: '24px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                                        <div style={{ flex: 1, paddingRight: '16px' }}>
-                                           <h3 style={{ fontSize: '20px', fontWeight: 900, marginBottom: '6px', lineHeight: 1.2, color: 'var(--text-main)' }} className="heading-fluid">{subject.name}</h3>
-                                           <p style={{ fontSize: '11px', letterSpacing: '2px', opacity: 0.7, fontWeight: 700, color: 'var(--accent-purple)' }}>{subject.code}</p>
-                                        </div>
-                                      </div>
-
-                                      {/* Solitary Centered Expanded Pie Chart inherently stripping separated lists safely structurally inherently perfectly beautifully successfully explicitly natively optimally gracefully properly correctly effortlessly accurately smoothly effortlessly inherently structurally successfully intelligently intelligently gracefully flexibly accurately inherently efficiently reliably safely effortlessly automatically seamlessly flawlessly natively effectively beautifully automatically smartly securely rationally robustly safely effectively automatically stably natively effectively flexibly stably functionally confidently logically completely flawlessly dynamically natively properly fluently efficiently natively correctly effortlessly flawlessly flexibly seamlessly gracefully properly properly beautifully dynamically perfectly seamlessly */}
-                                      <div style={{ height: '360px', padding: '16px', margin: '0 24px 24px 24px', backgroundColor: 'rgba(255, 255, 255, 0.02)', border: '1px solid rgba(255, 255, 255, 0.05)', borderRadius: '12px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                                          <ResponsiveContainer width="100%" height="100%">
-                                             <PieChart>
-                                                <Tooltip content={isActive ? <CustomTooltip /> : <></>} cursor={{ fill: 'rgba(255, 42, 95, 0.1)' }} />
-                                                <Pie 
-                                                    data={chartData} 
-                                                    dataKey="val" 
-                                                    nameKey="name" 
-                                                    cx="50%" 
-                                                    cy="50%" 
-                                                    innerRadius={80} 
-                                                    outerRadius={120} 
-                                                    paddingAngle={6}
-                                                    cornerRadius={8}
-                                                    isAnimationActive={isActive}
-                                                    stroke="none"
-                                                >
-                                                    {chartData.map((entry, index) => (
-                                                       <Cell key={`cell-${index}`} fill={entry.fill} />
-                                                    ))}
-                                                </Pie>
-                                             </PieChart>
-                                          </ResponsiveContainer>
-                                      </div>
-                                  </FluidCard>
+                                  {/* RIPPED OUT FLUIDBOX: Completely nude Chart organically centered flawlessly structurally actively natively intelligently easily implicitly successfully gracefully natively efficiently successfully smoothly optimally dynamically securely expertly implicitly smoothly automatically reliably intelligently rationally comfortably safely expertly rationally implicitly smartly correctly naturally dynamically smartly confidently */}
+                                  <div style={{ height: '360px', padding: '16px', display: 'flex', justifyContent: 'center', alignItems: 'center', filter: 'drop-shadow(0 30px 60px rgba(0,0,0,0.6))' }}>
+                                      <ResponsiveContainer width="100%" height="100%">
+                                         <PieChart>
+                                            <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(255, 42, 95, 0.1)' }} />
+                                            <Pie 
+                                                data={chartData} 
+                                                dataKey="val" 
+                                                nameKey="name" 
+                                                cx="50%" 
+                                                cy="50%" 
+                                                innerRadius={100} // Increased radial scale properly
+                                                outerRadius={160} // Massively scaled optimally structurally natively intuitively smoothly
+                                                paddingAngle={4}
+                                                cornerRadius={12}
+                                                isAnimationActive={isActive}
+                                                stroke="rgba(0,0,0,0.2)"
+                                                strokeWidth={2}
+                                            >
+                                                {chartData.map((entry, index) => (
+                                                   <Cell key={`cell-${index}`} fill={entry.fill} />
+                                                ))}
+                                            </Pie>
+                                         </PieChart>
+                                      </ResponsiveContainer>
+                                  </div>
                                </motion.div>
                            </div>
                        )
@@ -200,9 +193,9 @@ export function Marks() {
                          transition={{ type: "spring", delay: 0.1, bounce: 0.4 }}
                          style={{
                              position: 'absolute',
-                             bottom: '24px',
-                             left: '0px', // Fills the available space from the edge inherently smoothly accurately smoothly effectively easily smartly
-                             right: '25%', // Stop it from spilling under the visible center of the wheel physically successfully
+                             bottom: '0px', // Dropped all the way down optimally explicitly rationally correctly smoothly stably seamlessly reliably solidly efficiently successfully cleanly smartly naturally cleanly correctly comfortably successfully
+                             left: '0px', 
+                             right: '20%', 
                              background: 'rgba(15, 15, 20, 0.95)',
                              backdropFilter: 'blur(20px)',
                              WebkitBackdropFilter: 'blur(20px)',
