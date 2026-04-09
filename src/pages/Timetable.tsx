@@ -41,11 +41,21 @@ export function Timetable() {
   }
 
   const attendanceMap = useMemo(() => {
-    const map = new Map<string, any[]>();
+    // ⚡ Bolt Optimization:
+    // Instead of grouping attendance records into arrays which require an O(M) `.find()` scan
+    // inside the inner timetable processing loop, we pre-index the records directly by their category
+    // into an O(1) Record lookup map during the initial O(N) traversal.
+    // Impact: Completely eliminates nested array searches, making the timetable processing loop O(N) overall.
+    const map = new Map<string, { theory?: any, practical?: any, default: any }>();
     data.attendance.forEach(record => {
-      const list = map.get(record.code) || [];
-      list.push(record);
-      map.set(record.code, list);
+      let catObj = map.get(record.code);
+      if (!catObj) {
+         catObj = { default: record };
+         map.set(record.code, catObj);
+      }
+      const cat = record.category?.toLowerCase();
+      if (cat === 'theory') catObj.theory = record;
+      else if (cat === 'practical') catObj.practical = record;
     });
     return map;
   }, [data.attendance]);
@@ -71,8 +81,8 @@ export function Timetable() {
           let exactRoom = cls.room || 'TBD';
           let isPractical = cls.type === 'Practical' || cls.name?.toLowerCase().includes('practical');
 
-          const attendanceRecords = attendanceMap.get(cls.code) || [];
-          const attendanceRecord = attendanceRecords.find((a: any) => a.category?.toLowerCase() === (isPractical ? 'practical' : 'theory')) || attendanceRecords[0];
+          const catObj = attendanceMap.get(cls.code);
+          const attendanceRecord = catObj ? (isPractical ? (catObj.practical || catObj.default) : (catObj.theory || catObj.default)) : undefined;
 
           if (attendanceRecord) {
              // ⚡ Bolt Optimization:
