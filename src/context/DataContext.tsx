@@ -4,7 +4,7 @@ import { THEMES } from '../utils/themes';
 
 export type AppData = {
   user: { name: string; overallAttendance: number; overallMarks: string; };
-  attendance: Array<{ name: string; code: string; present: number; absent: number; total: number; percentage: number; }>;
+  attendance: Array<{ name: string; code: string; present: number; absent: number; total: number; percentage: number; category?: string; }>;
   timetable: { [key: string]: Array<{ time: string; subject: string; code: string; room: string; }> | 'holiday'; };
   marks: Array<{ name: string; code: string; total: string; graph: Array<{ name: string; val: number }>; }>;
   calendar: Array<{ day: string; date: string; title: string; tag: string; type: 'working' | 'regular' | 'holiday' | 'exam'; month: string; }>;
