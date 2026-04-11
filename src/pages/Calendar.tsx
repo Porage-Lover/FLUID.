@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { FluidCard } from '../components/FluidCard';
 import { useData } from '../context/DataContext';
@@ -9,7 +10,7 @@ export function Calendar() {
   const { data } = useData();
   const containerVariants = {
     hidden: { opacity: 0 },
-    show: { opacity: 1 }
+    show: { opacity: 1, transition: { delay: 0.1, duration: 0.4 } }
   };
   const itemVariants = {
     hidden: { opacity: 0 },
@@ -20,39 +21,44 @@ export function Calendar() {
   const searchMonth = `${today.toLocaleString('en-US', { month: 'short' })} '${today.getFullYear().toString().slice(-2)}`;
   const searchDate = today.getDate().toString();
 
+  // Phase 1: Instantly jump to the origin (5 items before today) right after mount, 
+  // overriding any global scroll resets, while the container is still hidden (opacity 0).
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      const todayIdx = data.calendar.findIndex(
+        (c: any) => c.month === searchMonth && c.date === searchDate
+      );
+      const originIdx = Math.max(0, todayIdx - 5);
+      const originId = `cal-event-${originIdx}`;
+      const originEl = document.getElementById(originId);
+
+      if (originEl) {
+        (window as any).isProgrammaticScroll = true;
+        const originPos = originEl.getBoundingClientRect().top + window.scrollY - 120;
+        window.scrollTo({ top: originPos, behavior: 'instant' as ScrollBehavior });
+      }
+    }, 50);
+
+    return () => clearTimeout(timer);
+  }, [data.calendar, searchMonth, searchDate]);
+
+  // Phase 2: Smooth scroll to today, triggered when the fade-in animation completes or via button.
   const scrollToToday = () => {
     const el = document.getElementById('today-event');
     if (!el) return;
 
-    // Find the origin element (5 entries before today)
-    const todayIdx = data.calendar.findIndex(
-      (c: any) => c.month === searchMonth && c.date === searchDate
-    );
-    const originIdx = Math.max(0, todayIdx - 5);
-    const originId = `cal-event-${originIdx}`;
-    const originEl = document.getElementById(originId);
-
     (window as any).isProgrammaticScroll = true;
 
-    // Phase 1: Instantly jump to the origin (5 items before today)
-    if (originEl) {
-      const originPos = originEl.getBoundingClientRect().top + window.scrollY - 120;
-      window.scrollTo({ top: originPos, behavior: 'instant' as ScrollBehavior });
-    }
+    const headerOffset = 200; // Extra padding so today sits comfortably below the fold
+    const elementPosition = el.getBoundingClientRect().top;
+    const offsetPosition = elementPosition + window.scrollY - headerOffset;
 
-    // Phase 2: After a short pause, smoothly scroll to just above today
-    setTimeout(() => {
-      const headerOffset = 200; // Extra padding so today sits comfortably below the fold
-      const elementPosition = el.getBoundingClientRect().top;
-      const offsetPosition = elementPosition + window.scrollY - headerOffset;
-
-      window.scrollTo({
-           top: offsetPosition,
-           behavior: "smooth"
-      });
-      
-      setTimeout(() => { (window as any).isProgrammaticScroll = false; }, 1200);
-    }, 400);
+    window.scrollTo({
+         top: offsetPosition,
+         behavior: "smooth"
+    });
+    
+    setTimeout(() => { (window as any).isProgrammaticScroll = false; }, 1200);
   };
 
   return (
