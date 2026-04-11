@@ -268,7 +268,7 @@ export function Attendance() {
                     <CalendarIcon size={24} />
                  </div>
                  <div style={{ textAlign: 'left' }}>
-                    <h3 style={{ margin: '0 0 4px 0', fontSize: 'var(--text-lg)', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1px' }}>Global Timeline Simulator</h3>
+                    <h3 style={{ margin: '0 0 4px 0', fontSize: 'var(--text-lg)', fontWeight: 800, letterSpacing: '1px', fontFamily: 'var(--font-main)' }}>Global Timeline Simulator</h3>
                     <p style={{ margin: 0, fontSize: 'var(--text-xs)', fontWeight: 600, opacity: 0.6 }}>Predict absolute timetable ripples via interactive calendar grids natively.</p>
                  </div>
               </div>

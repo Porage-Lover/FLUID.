@@ -117,8 +117,8 @@ export function Dashboard() {
          </FluidCard>
 
          {/* 3. MARKS AGGREGATE WIDGET (2x2 Square) */}
-         <FluidCard className="col-span-2 row-span-1" headerColor="--accent-crimson" onClick={() => navigate('/marks')} innerStyle={{ padding: '24px', height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-            <div style={{ fontSize: 'var(--text-xs)', fontWeight: 800, color: 'var(--accent-crimson)', letterSpacing: '1px', textTransform: 'uppercase' }}>Aggregate</div>
+         <FluidCard className="col-span-2 row-span-1" headerColor="--accent-crimson" onClick={() => navigate('/marks')} innerStyle={{ padding: '24px', height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end' }}>
+            <div style={{ position: 'absolute', top: '24px', left: '24px', fontSize: 'var(--text-xs)', fontWeight: 800, color: 'var(--accent-crimson)', letterSpacing: '1px' }}>Aggregate</div>
             <div style={{ display: 'flex', flexDirection: 'column' }}>
                <span style={{ fontSize: 'var(--text-4xl)', fontWeight: 300, color: 'var(--text-main)', letterSpacing: '-2px', lineHeight: 1 }}>{marksEarned}</span>
                <span style={{ fontSize: 'var(--text-sm)', fontWeight: 800, color: 'var(--text-muted)' }}>/ {marksTotal}</span>
