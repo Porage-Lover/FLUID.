@@ -27,24 +27,14 @@ export function FluidCard({ children, style, headerColor = '#d62828', actionIcon
       }}
       {...props}
     >
-      {/* Sleek Colored Gradient Overlay */}
+      {/* Sleek Colored Gradient Overlay - Apple Soft Blend */}
       <div style={{
           position: 'absolute',
           top: 0, left: 0, right: 0, bottom: 0,
-          background: `linear-gradient(135deg, ${bg} 0%, transparent 60%)`,
-          opacity: 0.15,
+          background: `radial-gradient(ellipse at top left, ${bg} 0%, transparent 70%)`,
+          opacity: 0.1,
           zIndex: 0,
           pointerEvents: 'none'
-      }} />
-
-      {/* Glowing Top Lip Overlay */}
-      <div style={{
-          position: 'absolute',
-          top: 0, left: 0, right: 0,
-          height: '4px',
-          backgroundColor: bg,
-          zIndex: 1,
-          boxShadow: `0 0 15px ${bg}`
       }} />
 
       {actionIcon && (

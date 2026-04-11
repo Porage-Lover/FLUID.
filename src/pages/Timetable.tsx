@@ -125,37 +125,59 @@ export function Timetable() {
         <h1 className="heading-fluid glow-cyan" style={{ color: 'var(--accent-cyan)', margin: 0, fontSize: '2rem' }}>Timetable</h1>
       </ScrollHideHeader>
 
-      <FluidCard headerColor="--text-color" style={{ padding: '24px', marginBottom: '32px', minHeight: 'auto' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
-          {tabs.map(day => (
-            <motion.button
-              key={day}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => setSelectedDay(day)}
-              className="fluid-card"
-              style={{
-                flex: day === 'holiday' ? '1 1 100%' : '1 1 15%',
-                padding: day === 'holiday' ? '12px' : '0',
-                aspectRatio: day === 'holiday' ? 'auto' : '1',
-                borderRadius: '12px',
-                border: selectedDay === day ? '1px solid var(--accent-cyan)' : '1px solid rgba(255,255,255,0.05)',
-                backgroundColor: selectedDay === day ? 'rgba(29, 199, 209, 0.15)' : 'var(--card-bg)',
-                color: selectedDay === day ? 'var(--accent-cyan)' : 'var(--text-main)',
-                fontSize: day === 'holiday' ? '14px' : '18px',
-                fontWeight: 800,
-                cursor: 'pointer',
-                transition: 'all 0.1s',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                textTransform: 'uppercase',
-                boxShadow: selectedDay === day ? '0 0 20px rgba(29, 199, 209, 0.3)' : 'none'
-              }}
-            >
-              {day === 'holiday' ? '🎉 Holiday' : day}
-            </motion.button>
-          ))}
-        </div>
-      </FluidCard>
+      {/* iOS Segmented Control */}
+      <div style={{
+         position: 'relative',
+         background: 'rgba(255, 255, 255, 0.03)',
+         border: '1px solid rgba(255, 255, 255, 0.05)',
+         padding: '6px',
+         borderRadius: '32px',
+         display: 'flex',
+         marginBottom: '32px',
+         overflow: 'hidden'
+      }}>
+         {tabs.map(day => {
+            const isSelected = selectedDay === day;
+            return (
+              <motion.button
+                key={day}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => setSelectedDay(day)}
+                style={{
+                  flex: day === 'holiday' ? '1 1 100%' : 1,
+                  position: 'relative',
+                  zIndex: 2,
+                  background: 'transparent',
+                  border: 'none',
+                  padding: day === 'holiday' ? '14px' : '14px 0',
+                  color: isSelected ? '#000' : 'var(--text-main)',
+                  fontSize: day === 'holiday' ? '14px' : '16px',
+                  fontWeight: 900,
+                  cursor: 'pointer',
+                  textTransform: 'uppercase',
+                  transition: 'color 0.2s ease',
+                  outline: 'none'
+                }}
+              >
+                {isSelected && (
+                   <motion.div
+                      layoutId="active-pill"
+                      style={{
+                         position: 'absolute',
+                         top: 0, left: 0, right: 0, bottom: 0,
+                         background: 'var(--accent-cyan)',
+                         borderRadius: '26px',
+                         zIndex: -1,
+                         boxShadow: '0 0 15px rgba(29, 199, 209, 0.4)'
+                      }}
+                      transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                   />
+                )}
+                {day === 'holiday' ? '🎉 Holiday' : `D${day}`}
+              </motion.button>
+            )
+         })}
+      </div>
 
       <AnimatePresence mode="wait">
         <motion.div

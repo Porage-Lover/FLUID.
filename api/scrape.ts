@@ -358,13 +358,9 @@ function generateLocalTimetable(attendanceData: any[], isBatchTwo: boolean) {
     const slotMap = new Map<string, any>();
     attendanceData.forEach(subj => {
       if (subj.slot) {
-        if (subj.slot.includes('-')) {
-          subj.slot.split('-').forEach((s: string) => {
-            if (!slotMap.has(s)) slotMap.set(s, subj);
-          });
-        } else {
-          if (!slotMap.has(subj.slot)) slotMap.set(subj.slot, subj);
-        }
+        subj.slot.split(/[-\/,\s]+/).forEach((s: string) => {
+          if (s && !slotMap.has(s)) slotMap.set(s, subj);
+        });
       }
     });
 
