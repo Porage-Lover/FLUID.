@@ -86,7 +86,7 @@ export function Login() {
           <FluidLogo />
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', marginTop: '16px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', fontFamily: getThemeDef(theme).fontFamily || "'Montserrat', sans-serif" }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', fontFamily: getThemeDef(theme).fontFamily || "'Outfit', sans-serif" }}>
              <span style={{ color: 'var(--accent-crimson)', fontWeight: 900, fontSize: '26px', letterSpacing: '-1px' }}>REVANCED</span>
              <span style={{ color: 'var(--text-main)', fontWeight: 900, fontSize: '26px', letterSpacing: '-1px' }}>ACADEMIA</span>
           </div>

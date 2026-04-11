@@ -66,7 +66,7 @@ export function Dashboard() {
          <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
             <div>
               <h1 className="heading-fluid" style={{ fontSize: '2rem', margin: 0, color: 'var(--text-main)', letterSpacing: '-2px' }}>Welcome, {data.user.name}</h1>
-              <span style={{ fontSize: '13px', fontWeight: 600, color: 'var(--text-muted)' }}>At-a-glance</span>
+              <span style={{ fontSize: '13px', fontWeight: 600, color: 'var(--text-muted)' }}>At a Glance</span>
             </div>
          </div>
          <motion.button 

@@ -7,7 +7,7 @@ export function FluidLogo({ width = "100%", height = "100%" }: { width?: string,
   const { theme } = useData();
 
   const themeDef = getThemeDef(theme);
-  const logoFont = themeDef.fontFamily || "'Montserrat', sans-serif";
+  const logoFont = themeDef.fontFamily || "'Outfit', sans-serif";
   const logoSize = "130";
   const logoY = "110";
   
