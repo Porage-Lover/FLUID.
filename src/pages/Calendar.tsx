@@ -1,4 +1,3 @@
-import { useState, useLayoutEffect } from 'react';
 import { motion } from 'framer-motion';
 import { FluidCard } from '../components/FluidCard';
 import { useData } from '../context/DataContext';
@@ -8,8 +7,6 @@ import { ScrollHideHeader } from '../components/ScrollHideHeader';
 
 export function Calendar() {
   const { data } = useData();
-  const [isReady, setIsReady] = useState(false);
-
   const containerVariants = {
     hidden: { opacity: 0 },
     show: { opacity: 1 }
@@ -23,104 +20,67 @@ export function Calendar() {
   const searchMonth = `${today.toLocaleString('en-US', { month: 'short' })} '${today.getFullYear().toString().slice(-2)}`;
   const searchDate = today.getDate().toString();
 
-  const todayIdx = data.calendar ? data.calendar.findIndex(
-    (c: any) => c.month === searchMonth && c.date === searchDate
-  ) : -1;
-  const originIdx = Math.max(0, todayIdx - 5);
-
-  useLayoutEffect(() => {
-    // Hide navbar during the scroll entrance
-    const nav = document.querySelector('.nav-container') as HTMLElement;
-    if (nav) {
-      nav.style.transition = 'none';
-      nav.style.opacity = '0';
-      nav.style.pointerEvents = 'none';
-    }
-
-    if (todayIdx < 0) {
-      // No today found — just reveal immediately
-      if (nav) { nav.style.transition = 'opacity 0.5s ease'; nav.style.opacity = '1'; nav.style.pointerEvents = ''; }
-      setIsReady(true);
-      return;
-    }
-
-    requestAnimationFrame(() => {
-      const originEl = document.getElementById(`cal-event-${originIdx}`);
-      if (originEl) {
-        const originPos = originEl.getBoundingClientRect().top + window.scrollY - 120;
-        window.scrollTo({ top: originPos, behavior: 'instant' as ScrollBehavior });
-      }
-
-      setTimeout(() => {
-        const el = document.getElementById('today-event');
-        if (!el) return;
-        (window as any).isProgrammaticScroll = true;
-        const elementPosition = el.getBoundingClientRect().top;
-        const offsetPosition = elementPosition + window.scrollY - 200;
-        window.scrollTo({ top: offsetPosition, behavior: 'smooth' });
-
-        // After scroll finishes, reveal navbar + header
-        setTimeout(() => {
-          (window as any).isProgrammaticScroll = false;
-          if (nav) {
-            nav.style.transition = 'opacity 0.5s ease';
-            nav.style.opacity = '1';
-            nav.style.pointerEvents = '';
-          }
-          setIsReady(true);
-        }, 1200);
-      }, 500);
-    });
-
-    return () => {
-      // Cleanup: ensure navbar is visible if user navigates away mid-animation
-      if (nav) { nav.style.opacity = '1'; nav.style.pointerEvents = ''; nav.style.transition = ''; }
-    };
-  }, [todayIdx, originIdx]);
-
   const scrollToToday = () => {
     const el = document.getElementById('today-event');
     if (!el) return;
+
+    // Find the origin element (5 entries before today)
+    const todayIdx = data.calendar.findIndex(
+      (c: any) => c.month === searchMonth && c.date === searchDate
+    );
+    const originIdx = Math.max(0, todayIdx - 5);
+    const originId = `cal-event-${originIdx}`;
+    const originEl = document.getElementById(originId);
+
     (window as any).isProgrammaticScroll = true;
-    const headerOffset = 200;
-    const elementPosition = el.getBoundingClientRect().top;
-    const offsetPosition = elementPosition + window.scrollY - headerOffset;
-    window.scrollTo({ top: offsetPosition, behavior: 'smooth' });
-    setTimeout(() => { (window as any).isProgrammaticScroll = false; }, 1200);
+
+    // Phase 1: Instantly jump to the origin (5 items before today)
+    if (originEl) {
+      const originPos = originEl.getBoundingClientRect().top + window.scrollY - 120;
+      window.scrollTo({ top: originPos, behavior: 'instant' as ScrollBehavior });
+    }
+
+    // Phase 2: After a short pause, smoothly scroll to just above today
+    setTimeout(() => {
+      const headerOffset = 200; // Extra padding so today sits comfortably below the fold
+      const elementPosition = el.getBoundingClientRect().top;
+      const offsetPosition = elementPosition + window.scrollY - headerOffset;
+
+      window.scrollTo({
+           top: offsetPosition,
+           behavior: "smooth"
+      });
+      
+      setTimeout(() => { (window as any).isProgrammaticScroll = false; }, 1200);
+    }, 400);
   };
 
   return (
     <div style={{ maxWidth: '800px', margin: '0 auto', padding: '0 32px 200px 32px' }}>
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: isReady ? 1 : 0 }}
-        transition={{ duration: 0.5 }}
-      >
-        <ScrollHideHeader style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-             <CalendarIcon size={40} color="var(--accent-crimson)" strokeWidth={2.5} />
-             <h1 className="heading-fluid glow-crimson" style={{ color: 'var(--accent-crimson)', margin: 0, fontSize: '2rem' }}>Agenda</h1>
-          </div>
-          <button 
-             onClick={() => { triggerHaptic(50); scrollToToday(); }}
-             className="fluid-card" 
-             style={{ 
-                padding: '8px 20px', 
-                background: 'rgba(255, 42, 95, 0.1)', 
-                color: 'var(--accent-crimson)',
-                fontWeight: 800, 
-                fontSize: '13px', 
-                letterSpacing: '2px',
-                cursor: 'pointer',
-                border: '1px solid rgba(255, 42, 95, 0.3)',
-                textTransform: 'uppercase'
-             }}>
-             Sync Today
-          </button>
-        </ScrollHideHeader>
-      </motion.div>
+      <ScrollHideHeader style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+           <CalendarIcon size={40} color="var(--accent-crimson)" strokeWidth={2.5} />
+           <h1 className="heading-fluid glow-crimson" style={{ color: 'var(--accent-crimson)', margin: 0, fontSize: '2rem' }}>Agenda</h1>
+        </div>
+        <button 
+           onClick={() => { triggerHaptic(50); scrollToToday(); }}
+           className="fluid-card" 
+           style={{ 
+              padding: '8px 20px', 
+              background: 'rgba(255, 42, 95, 0.1)', 
+              color: 'var(--accent-crimson)',
+              fontWeight: 800, 
+              fontSize: '13px', 
+              letterSpacing: '2px',
+              cursor: 'pointer',
+              border: '1px solid rgba(255, 42, 95, 0.3)',
+              textTransform: 'uppercase'
+           }}>
+           Sync Today
+        </button>
+      </ScrollHideHeader>
 
-      <motion.div variants={containerVariants} initial="hidden" animate="show" style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+      <motion.div variants={containerVariants} initial="hidden" animate="show" onAnimationComplete={scrollToToday} style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
         {data.calendar && data.calendar.length > 0 ? data.calendar.map((item, idx) => {
             const isHoliday = item.type === 'holiday';
             const isToday = item.month === searchMonth && item.date === searchDate;
