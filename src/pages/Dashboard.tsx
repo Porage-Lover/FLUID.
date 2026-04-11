@@ -127,7 +127,7 @@ export function Dashboard() {
 
          {/* 4. AGENDA / CALENDAR WIDGET (4x2 / 4xAuto List) */}
          <FluidCard className="col-span-4" headerColor="--text-main" onClick={() => navigate('/calendar')} innerStyle={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
-            <div style={{ fontSize: 'var(--text-xs)', fontWeight: 800, color: 'var(--text-muted)', letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '8px' }}>Upcoming Agenda</div>
+            <div style={{ fontSize: 'var(--text-xs)', fontWeight: 800, color: 'var(--text-muted)', letterSpacing: '1px', marginBottom: '8px' }}>Upcoming Agenda</div>
             {upcomingAgenda.length > 0 ? upcomingAgenda.map((c: any, i: number) => (
                <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '16px', padding: '12px', background: 'rgba(255,255,255,0.03)', borderRadius: '16px' }}>
                   <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', width: '48px', height: '48px', background: c.type === 'holiday' ? 'rgba(255,42,95,0.1)' : 'rgba(255,255,255,0.05)', borderRadius: '12px' }}>
