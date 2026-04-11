@@ -102,7 +102,7 @@ export function Dashboard() {
 
          {/* 2. ATTENDANCE ORBIT WIDGET (2x2 Square) */}
          <FluidCard className="col-span-2 row-span-1" headerColor="--accent-cyan" onClick={() => navigate('/attendance')} innerStyle={{ padding: 0, height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-            <div style={{ position: 'absolute', top: '24px', left: '24px', fontSize: 'var(--text-xs)', fontWeight: 800, color: 'var(--accent-cyan)', letterSpacing: '1px', textTransform: 'uppercase' }}>Pulse</div>
+            <div style={{ position: 'absolute', top: '24px', left: '24px', fontSize: 'var(--text-xs)', fontWeight: 800, color: 'var(--accent-cyan)', letterSpacing: '1px' }}>Pulse</div>
             <div style={{ width: '100px', height: '100px', position: 'relative', marginTop: '16px' }}>
                <ResponsiveContainer width="100%" height="100%">
                   <RadialBarChart cx="50%" cy="50%" innerRadius="75%" outerRadius="100%" barSize={8} data={[{ name: 'A', value: data.user.overallAttendance, fill: 'var(--accent-cyan)' }]}>
