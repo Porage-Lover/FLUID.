@@ -59,8 +59,7 @@ export function FluidNavbar() {
     { name: 'HOME', path: '/dashboard' },
     { name: 'TIMETABLE', path: '/timetable' },
     { name: 'ATTENDANCE', path: '/attendance' },
-    { name: 'METRICS (1)', path: '/marks1' },
-    { name: 'METRICS (2)', path: '/marks2' },
+    { name: 'METRICS', path: '/marks' },
     { name: 'AGENDA', path: '/calendar' },
   ];
 
@@ -86,7 +85,7 @@ export function FluidNavbar() {
          <FluidLogo width="160px" height="48px" />
       </div>
 
-      {/* Navigation Links & Theme Toggle */}
+      {/* Navigation Links */}
       <div className="nav-links-row">
         {links.map((link) => (
           <NavLink
@@ -98,7 +97,7 @@ export function FluidNavbar() {
             style={({ isActive }) => ({
               textDecoration: 'none',
               fontWeight: 800,
-              fontFamily: activeThemeDef.fontFamily || "'Montserrat', sans-serif",
+              fontFamily: activeThemeDef.fontFamily || "'Outfit', sans-serif",
               letterSpacing: '2px',
               color: isActive ? 'var(--accent-crimson)' : 'var(--text-main)',
               transition: 'all 0.3s ease',
@@ -115,8 +114,10 @@ export function FluidNavbar() {
             )}
           </NavLink>
         ))}
+      </div>
 
-        <div ref={themeRef} style={{ position: 'relative' }}>
+      {/* Theme Toggle - Independent from scroll container */}
+      <div ref={themeRef} style={{ position: 'relative', flexShrink: 0 }}>
           <button
             onClick={() => { setIsThemeOpen(!isThemeOpen); triggerHaptic(10); }}
             aria-label="Theme switcher"
@@ -180,7 +181,7 @@ export function FluidNavbar() {
                     textAlign: 'left',
                     fontSize: '13px',
                     fontWeight: 700,
-                    fontFamily: t.fontFamily || "'Montserrat', sans-serif",
+                    fontFamily: t.fontFamily || "'Outfit', sans-serif",
                     letterSpacing: '1px',
                     transition: 'all 0.2s ease'
                   }}
@@ -199,7 +200,6 @@ export function FluidNavbar() {
             </motion.div>
           )}
         </div>
-      </div>
     </motion.nav>
   );
 }

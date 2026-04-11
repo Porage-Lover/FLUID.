@@ -10,8 +10,6 @@ const Dashboard = React.lazy(() => import('./pages/Dashboard').then(m => ({ defa
 const Attendance = React.lazy(() => import('./pages/Attendance').then(m => ({ default: m.Attendance })));
 const Timetable = React.lazy(() => import('./pages/Timetable').then(m => ({ default: m.Timetable })));
 const Marks = React.lazy(() => import('./pages/Marks').then(m => ({ default: m.Marks })));
-const Marks1 = React.lazy(() => import('./pages/Marks1').then(m => ({ default: m.Marks1 })));
-const Marks2 = React.lazy(() => import('./pages/Marks2').then(m => ({ default: m.Marks2 })));
 const Calendar = React.lazy(() => import('./pages/Calendar').then(m => ({ default: m.Calendar })));
 const Login = React.lazy(() => import('./pages/Login').then(m => ({ default: m.Login })));
 
@@ -65,8 +63,6 @@ function App() {
               <Route path="/attendance" element={<Attendance />} />
               <Route path="/timetable" element={<Timetable />} />
               <Route path="/marks" element={<Marks />} />
-              <Route path="/marks1" element={<Marks1 />} />
-              <Route path="/marks2" element={<Marks2 />} />
               <Route path="/calendar" element={<Calendar />} />
               <Route path="/" element={<Navigate to="/dashboard" replace />} />
             </Route>

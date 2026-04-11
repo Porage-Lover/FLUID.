@@ -21,21 +21,38 @@ export function Calendar() {
   const searchDate = today.getDate().toString();
 
   const scrollToToday = () => {
-    // ⚡ Bolt Optimization: Using explicit mathematical scroll calculations natively mapped to DOM bounds guaranteeing perfect layout transition without structural stuttering. 
     const el = document.getElementById('today-event');
-    if (el) {
-       (window as any).isProgrammaticScroll = true;
-       const headerOffset = 120; 
-       const elementPosition = el.getBoundingClientRect().top;
-       const offsetPosition = elementPosition + window.scrollY - headerOffset;
+    if (!el) return;
 
-       window.scrollTo({
-            top: offsetPosition,
-            behavior: "smooth"
-       });
-       
-       setTimeout(() => { (window as any).isProgrammaticScroll = false; }, 1000);
+    // Find the origin element (5 entries before today)
+    const todayIdx = data.calendar.findIndex(
+      (c: any) => c.month === searchMonth && c.date === searchDate
+    );
+    const originIdx = Math.max(0, todayIdx - 5);
+    const originId = `cal-event-${originIdx}`;
+    const originEl = document.getElementById(originId);
+
+    (window as any).isProgrammaticScroll = true;
+
+    // Phase 1: Instantly jump to the origin (5 items before today)
+    if (originEl) {
+      const originPos = originEl.getBoundingClientRect().top + window.scrollY - 120;
+      window.scrollTo({ top: originPos, behavior: 'instant' as ScrollBehavior });
     }
+
+    // Phase 2: After a short pause, smoothly scroll to just above today
+    setTimeout(() => {
+      const headerOffset = 200; // Extra padding so today sits comfortably below the fold
+      const elementPosition = el.getBoundingClientRect().top;
+      const offsetPosition = elementPosition + window.scrollY - headerOffset;
+
+      window.scrollTo({
+           top: offsetPosition,
+           behavior: "smooth"
+      });
+      
+      setTimeout(() => { (window as any).isProgrammaticScroll = false; }, 1200);
+    }, 400);
   };
 
   return (
@@ -69,7 +86,7 @@ export function Calendar() {
             const isToday = item.month === searchMonth && item.date === searchDate;
             
             return (
-               <motion.div key={idx} id={isToday ? "today-event" : undefined} variants={itemVariants} layout style={{ display: 'flex', alignItems: 'center' }}>
+               <motion.div key={idx} id={isToday ? "today-event" : `cal-event-${idx}`} variants={itemVariants} layout style={{ display: 'flex', alignItems: 'center' }}>
                  {/* Left Date Block */}
                  <div style={{ 
                     width: '90px',

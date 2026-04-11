@@ -133,9 +133,14 @@ export function Timetable() {
          padding: '6px',
          borderRadius: '32px',
          display: 'flex',
+         gap: '4px',
          marginBottom: '32px',
-         overflow: 'hidden'
+         overflowX: 'auto',
+         WebkitOverflowScrolling: 'touch',
+         scrollbarWidth: 'none',
+         msOverflowStyle: 'none',
       }}>
+         <style>{`.seg-ctrl::-webkit-scrollbar { display: none; }`}</style>
          {tabs.map(day => {
             const isSelected = selectedDay === day;
             return (
@@ -144,19 +149,20 @@ export function Timetable() {
                 whileTap={{ scale: 0.95 }}
                 onClick={() => setSelectedDay(day)}
                 style={{
-                  flex: day === 'holiday' ? '1 1 100%' : 1,
+                  minWidth: day === 'holiday' ? '120px' : '52px',
+                  flex: '0 0 auto',
                   position: 'relative',
                   zIndex: 2,
                   background: 'transparent',
                   border: 'none',
-                  padding: day === 'holiday' ? '14px' : '14px 0',
+                  padding: '12px 16px',
                   color: isSelected ? '#000' : 'var(--text-main)',
-                  fontSize: day === 'holiday' ? '14px' : '16px',
-                  fontWeight: 900,
+                  fontSize: '14px',
+                  fontWeight: 800,
                   cursor: 'pointer',
-                  textTransform: 'uppercase',
                   transition: 'color 0.2s ease',
-                  outline: 'none'
+                  outline: 'none',
+                  whiteSpace: 'nowrap',
                 }}
               >
                 {isSelected && (
@@ -173,7 +179,7 @@ export function Timetable() {
                       transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
                    />
                 )}
-                {day === 'holiday' ? '🎉 Holiday' : `D${day}`}
+                {day === 'holiday' ? '🎉 Holiday' : `Day ${day}`}
               </motion.button>
             )
          })}
