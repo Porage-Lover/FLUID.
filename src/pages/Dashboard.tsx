@@ -85,7 +85,7 @@ export function Dashboard() {
          <FluidCard className="col-span-4 row-span-1" headerColor="--accent-cyan" onClick={() => navigate('/timetable')} innerStyle={{ padding: '24px', display: 'flex', flexDirection: 'column' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
                <Sparkles size={16} color="var(--accent-cyan)" />
-               <span style={{ fontSize: 'var(--text-xs)', fontWeight: 800, color: 'var(--accent-cyan)', textTransform: 'uppercase', letterSpacing: '1px' }}>Up Next</span>
+               <span style={{ fontSize: 'var(--text-xs)', fontWeight: 800, color: 'var(--accent-cyan)', letterSpacing: '1px' }}>Up Next</span>
             </div>
             {upNextClass ? (
                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginTop: 'auto' }}>
