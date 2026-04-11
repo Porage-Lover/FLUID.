@@ -97,7 +97,7 @@ export function FluidNavbar() {
             style={({ isActive }) => ({
               textDecoration: 'none',
               fontWeight: 800,
-              fontFamily: activeThemeDef.fontFamily || "'Outfit', sans-serif",
+              fontFamily: activeThemeDef.fontFamily || "var(--font-main)",
               letterSpacing: '2px',
               color: isActive ? 'var(--accent-crimson)' : 'var(--text-main)',
               transition: 'all 0.3s ease',
@@ -107,9 +107,9 @@ export function FluidNavbar() {
           >
             {({ isActive }) => (
               <>
-                <span style={{ fontSize: '10px', color: isActive ? 'var(--accent-crimson)' : 'transparent', marginRight: '6px' }}>−</span>
+                <span style={{ fontSize: 'var(--text-xs)', color: isActive ? 'var(--accent-crimson)' : 'transparent', marginRight: '6px' }}>−</span>
                 {link.name}
-                <span style={{ fontSize: '10px', color: isActive ? 'var(--accent-crimson)' : 'transparent', marginLeft: '6px' }}>−</span>
+                <span style={{ fontSize: 'var(--text-xs)', color: isActive ? 'var(--accent-crimson)' : 'transparent', marginLeft: '6px' }}>−</span>
               </>
             )}
           </NavLink>
@@ -179,9 +179,9 @@ export function FluidNavbar() {
                     color: theme === t.id ? 'var(--bg-color)' : 'var(--text-main)',
                     cursor: 'pointer',
                     textAlign: 'left',
-                    fontSize: '13px',
+                    fontSize: 'var(--text-sm)',
                     fontWeight: 700,
-                    fontFamily: t.fontFamily || "'Outfit', sans-serif",
+                    fontFamily: t.fontFamily || "var(--font-main)",
                     letterSpacing: '1px',
                     transition: 'all 0.2s ease'
                   }}

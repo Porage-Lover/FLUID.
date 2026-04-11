@@ -10,11 +10,11 @@ const CustomTooltip = ({ active, payload }: any) => {
     const data = payload[0].payload;
     if (data.name === 'dummy') return null;
     return (
-      <div style={{ backgroundColor: 'rgba(5,5,8,0.9)', backdropFilter: 'blur(10px)', border: `1px solid ${data.fill}`, borderRadius: '20px', padding: '16px', boxShadow: '0 10px 30px rgba(0,0,0,0.5)', fontFamily: "'Outfit', sans-serif", zIndex: 100000 }}>
-        <p style={{ margin: 0, color: 'var(--text-main)', fontSize: '12px', marginBottom: '8px', letterSpacing: '1px', textTransform: 'uppercase', fontWeight: 800 }}>{data.rawName}</p>
+      <div style={{ backgroundColor: 'rgba(5,5,8,0.9)', backdropFilter: 'blur(10px)', border: `1px solid ${data.fill}`, borderRadius: '20px', padding: '16px', boxShadow: '0 10px 30px rgba(0,0,0,0.5)', fontFamily: "var(--font-main)", zIndex: 100000 }}>
+        <p style={{ margin: 0, color: 'var(--text-main)', fontSize: 'var(--text-xs)', marginBottom: '8px', letterSpacing: '1px', textTransform: 'uppercase', fontWeight: 800 }}>{data.rawName}</p>
         <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px' }}>
-           <span style={{ color: data.fill, fontSize: '24px', fontWeight: 900 }}>{data.rawVal}</span>
-           <span style={{ color: 'var(--text-muted)', fontSize: '14px', fontWeight: 700 }}>/ {data.derivedMax}</span>
+           <span style={{ color: data.fill, fontSize: 'var(--text-2xl)', fontWeight: 900 }}>{data.rawVal}</span>
+           <span style={{ color: 'var(--text-muted)', fontSize: 'var(--text-sm)', fontWeight: 700 }}>/ {data.derivedMax}</span>
         </div>
       </div>
     );
@@ -56,7 +56,7 @@ export function Marks() {
     <div style={{ maxWidth: '900px', margin: '0 auto', padding: '0 24px 120px 24px' }}>
       
       <ScrollHideHeader>
-        <h1 className="heading-fluid glow-crimson" style={{ color: 'var(--accent-crimson)', margin: 0, fontSize: '2rem' }}>Metrics</h1>
+        <h1 className="heading-fluid glow-crimson" style={{ color: 'var(--accent-crimson)', margin: 0, fontSize: 'var(--text-4xl)' }}>Metrics</h1>
       </ScrollHideHeader>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
@@ -99,7 +99,7 @@ export function Marks() {
                            <div style={{ flex: '1 1 200px', display: 'flex', flexDirection: 'column', gap: '20px', minWidth: '180px' }}>
                                <div>
                                    <h3 style={{ fontSize: 'clamp(18px, 3vw, 28px)', fontWeight: 800, margin: '0 0 6px 0', lineHeight: 1.1, letterSpacing: '-0.5px' }} className="heading-fluid">{subject.name}</h3>
-                                   <p style={{ fontSize: '12px', letterSpacing: '3px', margin: 0, opacity: 0.4, fontWeight: 600 }}>{subject.code}</p>
+                                   <p style={{ fontSize: 'var(--text-xs)', letterSpacing: '3px', margin: 0, opacity: 0.4, fontWeight: 600 }}>{subject.code}</p>
                                </div>
                                
                                {/* Pill Legends */}
@@ -107,8 +107,8 @@ export function Marks() {
                                    {dummyRemoved.map((item, i) => (
                                        <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '8px 12px', background: 'rgba(255,255,255,0.03)', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.04)' }}>
                                            <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: item.fill, boxShadow: `0 0 10px ${item.fill}` }} />
-                                           <span style={{ fontSize: '11px', fontWeight: 700, color: 'var(--text-muted)' }}>{item.rawName}</span>
-                                           <span style={{ fontSize: '13px', fontWeight: 800 }}>{item.rawVal}<span style={{ fontSize: '10px', opacity: 0.3 }}>/{item.derivedMax}</span></span>
+                                           <span style={{ fontSize: 'var(--text-xs)', fontWeight: 700, color: 'var(--text-muted)' }}>{item.rawName}</span>
+                                           <span style={{ fontSize: 'var(--text-sm)', fontWeight: 800 }}>{item.rawVal}<span style={{ fontSize: 'var(--text-xs)', opacity: 0.3 }}>/{item.derivedMax}</span></span>
                                        </div>
                                    ))}
                                </div>
@@ -116,7 +116,7 @@ export function Marks() {
 
                            {/* Center: Aggregate */}
                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', flexShrink: 0 }}>
-                                <span style={{ fontSize: '10px', fontWeight: 800, textTransform: 'uppercase', opacity: 0.4, letterSpacing: '3px', marginBottom: '4px' }}>Total</span>
+                                <span style={{ fontSize: 'var(--text-xs)', fontWeight: 800, textTransform: 'uppercase', opacity: 0.4, letterSpacing: '3px', marginBottom: '4px' }}>Total</span>
                                 <span style={{ fontSize: 'clamp(28px, 5vw, 48px)', fontWeight: 300, color: 'var(--text-main)', display: 'flex', alignItems: 'baseline', gap: '4px', letterSpacing: '-2px' }}>
                                    {subject.total.split('/')[0]}
                                    <span style={{ fontSize: 'clamp(12px, 2vw, 18px)', opacity: 0.3, fontWeight: 400, letterSpacing: '0' }}>/{subject.total.split('/')[1]}</span>

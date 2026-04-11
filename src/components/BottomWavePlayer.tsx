@@ -44,16 +44,16 @@ export function BottomWavePlayer() {
              <motion.button whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }} style={{ background: 'transparent', border: 'none', color: 'var(--text-main)', cursor: 'pointer' }}><FastForward size={20} fill="currentColor" /></motion.button>
           </div>
           <div style={{ display: 'flex', flexDirection: 'column' }}>
-            <span style={{ fontSize: '14px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1px' }}>System Active [FLUID ENGINE]</span>
-            <span style={{ fontSize: '11px', fontWeight: 500, color: 'var(--accent-crimson)', letterSpacing: '2px' }}>LIVE SESSION PORTAL</span>
+            <span style={{ fontSize: 'var(--text-sm)', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1px' }}>System Active [FLUID ENGINE]</span>
+            <span style={{ fontSize: 'var(--text-xs)', fontWeight: 500, color: 'var(--accent-crimson)', letterSpacing: '2px' }}>LIVE SESSION PORTAL</span>
           </div>
         </div>
 
         {/* Global Class Scrubber */}
         <div style={{ flex: 1, margin: '0 64px', display: 'flex', alignItems: 'center', gap: '16px' }}>
-             <span style={{ fontSize: '12px', opacity: 0.7, fontFamily: 'monospace' }}>00:00</span>
+             <span style={{ fontSize: 'var(--text-xs)', opacity: 0.7, fontFamily: 'monospace' }}>00:00</span>
              <input type="range" defaultValue={100} style={{ flex: 1 }} />
-             <span style={{ fontSize: '12px', opacity: 0.7, fontFamily: 'monospace' }}>12:00</span>
+             <span style={{ fontSize: 'var(--text-xs)', opacity: 0.7, fontFamily: 'monospace' }}>12:00</span>
         </div>
 
         {/* Right Menu Hooks */}

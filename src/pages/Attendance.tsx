@@ -227,14 +227,14 @@ export function Attendance() {
   return (
     <div style={{ maxWidth: '800px', margin: '0 auto', padding: '0 32px 200px 32px' }}>
       <ScrollHideHeader style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <h1 className="heading-fluid glow-cyan" style={{ color: 'var(--accent-cyan)', margin: 0, fontSize: '2rem' }}>Attendance</h1>
+        <h1 className="heading-fluid glow-cyan" style={{ color: 'var(--accent-cyan)', margin: 0, fontSize: 'var(--text-4xl)' }}>Attendance</h1>
         {(Object.keys(daySimulations).length > 0 || Object.keys(subjectSimulations).length > 0) && (
            <motion.button 
              initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }}
              onClick={clearGlobalSimulations}
              style={{ 
                 padding: '8px 16px', background: 'rgba(255, 42, 95, 0.1)', color: 'var(--accent-crimson)', 
-                border: '1px solid rgba(255, 42, 95, 0.3)', borderRadius: '12px', fontSize: '12px', 
+                border: '1px solid rgba(255, 42, 95, 0.3)', borderRadius: '12px', fontSize: 'var(--text-xs)', 
                 fontWeight: 800, textTransform: 'uppercase', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' 
              }}>
              <RotateCcw size={14} /> Reset 
@@ -268,8 +268,8 @@ export function Attendance() {
                     <CalendarIcon size={24} />
                  </div>
                  <div style={{ textAlign: 'left' }}>
-                    <h3 style={{ margin: '0 0 4px 0', fontSize: '18px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1px' }}>Global Timeline Simulator</h3>
-                    <p style={{ margin: 0, fontSize: '12px', fontWeight: 600, opacity: 0.6 }}>Predict absolute timetable ripples via interactive calendar grids natively.</p>
+                    <h3 style={{ margin: '0 0 4px 0', fontSize: 'var(--text-lg)', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1px' }}>Global Timeline Simulator</h3>
+                    <p style={{ margin: 0, fontSize: 'var(--text-xs)', fontWeight: 600, opacity: 0.6 }}>Predict absolute timetable ripples via interactive calendar grids natively.</p>
                  </div>
               </div>
               <Plus size={24} opacity={0.5} />
@@ -292,25 +292,25 @@ export function Attendance() {
                   {/* Header Content */}
                   <div style={{ marginBottom: '24px', paddingRight: '48px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                        <div>
-                         <h3 style={{ fontSize: '20px', fontWeight: 800, marginBottom: '4px', lineHeight: 1.2, color: 'var(--text-main)' }}>{course.name}</h3>
-                         <p style={{ fontSize: '13px', letterSpacing: '2px', fontWeight: 600, color: 'var(--accent-purple)', opacity: 0.9 }}>{course.code}</p>
+                         <h3 style={{ fontSize: 'var(--text-xl)', fontWeight: 800, marginBottom: '4px', lineHeight: 1.2, color: 'var(--text-main)' }}>{course.name}</h3>
+                         <p style={{ fontSize: 'var(--text-sm)', letterSpacing: '2px', fontWeight: 600, color: 'var(--accent-purple)', opacity: 0.9 }}>{course.code}</p>
                        </div>
                        {course.isSimulated && (
-                          <span style={{ fontSize: '10px', padding: '4px 10px', borderRadius: '12px', background: 'rgba(237, 210, 76, 0.1)', color: '#EDD24C', border: '1px solid rgba(237, 210, 76, 0.3)', fontWeight: 800, letterSpacing: '1px' }}>SIMULATED</span>
+                          <span style={{ fontSize: 'var(--text-xs)', padding: '4px 10px', borderRadius: '12px', background: 'rgba(237, 210, 76, 0.1)', color: '#EDD24C', border: '1px solid rgba(237, 210, 76, 0.3)', fontWeight: 800, letterSpacing: '1px' }}>SIMULATED</span>
                        )}
                   </div>
 
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '16px' }}>
                      <div style={{ display: 'flex', flexDirection: 'column' }}>
-                       <span style={{ fontSize: '11px', letterSpacing: '2px', opacity: 0.7, fontWeight: 800, textTransform: 'uppercase' }}>Classes</span>
+                       <span style={{ fontSize: 'var(--text-xs)', letterSpacing: '2px', opacity: 0.7, fontWeight: 800, textTransform: 'uppercase' }}>Classes</span>
                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                          <span style={{ fontSize: '32px', fontWeight: 800 }}>{course.simPresent} <span style={{ opacity: 0.5, fontSize: '20px' }}>/ {course.simTotal}</span></span>
+                          <span style={{ fontSize: 'var(--text-3xl)', fontWeight: 800 }}>{course.simPresent} <span style={{ opacity: 0.5, fontSize: 'var(--text-xl)' }}>/ {course.simTotal}</span></span>
                        </div>
-                       {course.isSimulated && <span style={{ fontSize: '10px', color: 'var(--text-muted)', marginTop: '4px' }}>Base: {course.present}/{course.total}</span>}
+                       {course.isSimulated && <span style={{ fontSize: 'var(--text-xs)', color: 'var(--text-muted)', marginTop: '4px' }}>Base: {course.present}/{course.total}</span>}
                      </div>
                      
                      <div style={{ textAlign: 'right' }}>
-                       <span style={{ fontSize: '11px', letterSpacing: '2px', fontWeight: 800, textTransform: 'uppercase', color: course.simSafe ? 'var(--accent-cyan)' : 'var(--accent-crimson)' }}>{course.simSafe ? 'Secure' : 'Alert'}</span>
+                       <span style={{ fontSize: 'var(--text-xs)', letterSpacing: '2px', fontWeight: 800, textTransform: 'uppercase', color: course.simSafe ? 'var(--accent-cyan)' : 'var(--accent-crimson)' }}>{course.simSafe ? 'Secure' : 'Alert'}</span>
                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '12px' }}>
                           
                           {/* MINIMALIST SUBJECT SANDBOX TOGGLES */}
@@ -319,9 +319,9 @@ export function Attendance() {
                              <button onClick={() => handleLocalSim(course.code, 'bunk')} style={{ padding: '0', background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--accent-crimson)', opacity: 0.8, display: 'flex' }} title="+ Bunk"><MinusCircle size={20} strokeWidth={2.5} /></button>
                           </div>
                           
-                          <div style={{ fontSize: '36px', fontWeight: 800, color: course.simSafe ? 'var(--accent-cyan)' : 'var(--accent-crimson)', letterSpacing: '-1px', textShadow: `0 0 15px ${course.simSafe ? 'rgba(29,199,209,0.4)' : 'rgba(255,42,95,0.4)'}` }}>{course.percentage.toFixed(1)}%</div>
+                          <div style={{ fontSize: 'var(--text-4xl)', fontWeight: 800, color: course.simSafe ? 'var(--accent-cyan)' : 'var(--accent-crimson)', letterSpacing: '-1px', textShadow: `0 0 15px ${course.simSafe ? 'rgba(29,199,209,0.4)' : 'rgba(255,42,95,0.4)'}` }}>{course.percentage.toFixed(1)}%</div>
                        </div>
-                       {course.isSimulated && <span style={{ fontSize: '10px', color: 'var(--text-muted)', marginTop: '4px', display: 'block' }}>Base: {course.realPercentage.toFixed(1)}%</span>}
+                       {course.isSimulated && <span style={{ fontSize: 'var(--text-xs)', color: 'var(--text-muted)', marginTop: '4px', display: 'block' }}>Base: {course.realPercentage.toFixed(1)}%</span>}
                      </div>
                   </div>
 
@@ -350,7 +350,7 @@ export function Attendance() {
 
                   {/* Simulated Indicator Explicit Breakdown */}
                   {hasLocalEdits && (
-                     <div style={{ padding: '8px 12px', background: 'rgba(237, 210, 76, 0.05)', border: '1px solid rgba(237, 210, 76, 0.2)', borderRadius: '8px', marginBottom: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '11px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1px', color: '#EDD24C' }}>
+                     <div style={{ padding: '8px 12px', background: 'rgba(237, 210, 76, 0.05)', border: '1px solid rgba(237, 210, 76, 0.2)', borderRadius: '8px', marginBottom: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: 'var(--text-xs)', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1px', color: '#EDD24C' }}>
                         <span>Local Sandbox</span>
                         <div style={{ display: 'flex', gap: '12px' }}>
                            <span style={{ color: 'var(--accent-cyan)' }}>+ {locSim?.attend || 0} Atd</span>
@@ -364,21 +364,21 @@ export function Attendance() {
                      {course.simSafe ? (
                        <>
                           <div style={{ width: '48px', height: '48px', borderRadius: '50%', backgroundColor: 'rgba(29, 199, 209, 0.15)', border: '1px solid var(--accent-cyan)', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 0 15px rgba(29, 199, 209, 0.3)' }}>
-                            <span style={{ color: 'var(--accent-cyan)', fontWeight: 800, fontSize: '20px' }}>{course.marginBunkable}</span>
+                            <span style={{ color: 'var(--accent-cyan)', fontWeight: 800, fontSize: 'var(--text-xl)' }}>{course.marginBunkable}</span>
                           </div>
                           <div style={{ display: 'flex', flexDirection: 'column' }}>
-                            <span style={{ fontSize: '15px', fontWeight: 800, letterSpacing: '1px' }}>Classes Safe to Bunk</span>
-                            <span style={{ fontSize: '12px', opacity: 0.6, fontWeight: 500 }}>{course.isSimulated ? 'Projected safe threshold limit' : 'Algorithms predict safe threshold limit'}</span>
+                            <span style={{ fontSize: 'var(--text-sm)', fontWeight: 800, letterSpacing: '1px' }}>Classes Safe to Bunk</span>
+                            <span style={{ fontSize: 'var(--text-xs)', opacity: 0.6, fontWeight: 500 }}>{course.isSimulated ? 'Projected safe threshold limit' : 'Algorithms predict safe threshold limit'}</span>
                           </div>
                        </>
                      ) : (
                        <>
                           <div style={{ width: '48px', height: '48px', borderRadius: '50%', backgroundColor: 'rgba(255, 42, 95, 0.15)', border: '1px solid var(--accent-crimson)', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 0 15px rgba(255, 42, 95, 0.3)' }}>
-                            <span style={{ color: 'var(--accent-crimson)', fontWeight: 800, fontSize: '20px' }}>{course.marginNeeded}</span>
+                            <span style={{ color: 'var(--accent-crimson)', fontWeight: 800, fontSize: 'var(--text-xl)' }}>{course.marginNeeded}</span>
                           </div>
                           <div style={{ display: 'flex', flexDirection: 'column' }}>
-                            <span style={{ fontSize: '15px', fontWeight: 800, letterSpacing: '1px' }}>Classes Needed</span>
-                            <span style={{ fontSize: '12px', opacity: 0.6, fontWeight: 500 }}>{course.isSimulated ? 'Consecutive attendance projected to recover' : 'Consecutive attendance mandatory'}</span>
+                            <span style={{ fontSize: 'var(--text-sm)', fontWeight: 800, letterSpacing: '1px' }}>Classes Needed</span>
+                            <span style={{ fontSize: 'var(--text-xs)', opacity: 0.6, fontWeight: 500 }}>{course.isSimulated ? 'Consecutive attendance projected to recover' : 'Consecutive attendance mandatory'}</span>
                           </div>
                        </>
                      )}
@@ -418,8 +418,8 @@ export function Attendance() {
                  {/* Modal Header & Navigation */}
                  <div style={{ padding: '24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
                     <div style={{ display: 'flex', flexDirection: 'column' }}>
-                       <span style={{ fontSize: '24px', fontWeight: 900, color: 'var(--text-main)' }} className="heading-fluid">{currentMStr} {calYear}</span>
-                       <span style={{ fontSize: '11px', color: 'var(--accent-purple)', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '2px', opacity: 0.8 }}>Predictor Array</span>
+                       <span style={{ fontSize: 'var(--text-2xl)', fontWeight: 900, color: 'var(--text-main)' }} className="heading-fluid">{currentMStr} {calYear}</span>
+                       <span style={{ fontSize: 'var(--text-xs)', color: 'var(--accent-purple)', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '2px', opacity: 0.8 }}>Predictor Array</span>
                     </div>
                     <div style={{ display: 'flex', gap: '8px' }}>
                        <button onClick={handlePrevMonth} style={{ background: 'rgba(255,255,255,0.05)', border: 'none', borderRadius: '50%', width: '40px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: 'var(--text-main)' }}>
@@ -436,7 +436,7 @@ export function Attendance() {
                     {/* Weekday Headers */}
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '8px', marginBottom: '16px' }}>
                        {WEEK_DAYS.map((wd, i) => (
-                          <div key={i} style={{ textAlign: 'center', fontSize: '11px', fontWeight: 800, color: 'var(--text-muted)', textTransform: 'uppercase' }}>{wd}</div>
+                          <div key={i} style={{ textAlign: 'center', fontSize: 'var(--text-xs)', fontWeight: 800, color: 'var(--text-muted)', textTransform: 'uppercase' }}>{wd}</div>
                        ))}
                     </div>
 
@@ -473,11 +473,11 @@ export function Attendance() {
                                 }}
                              >
                                 {/* The physical day number inherently bypassing block heights cleanly */}
-                                <span style={{ fontSize: '14px', fontWeight: 800, color: dayTextColor }}>{dayNum}</span>
+                                <span style={{ fontSize: 'var(--text-sm)', fontWeight: 800, color: dayTextColor }}>{dayNum}</span>
                                 
                                 {/* Micro-indicator marking simulation triggers gracefully natively */}
-                                {simState === 'attend' && <span style={{ fontSize: '10px', color: 'var(--accent-cyan)', fontWeight: 800, marginTop: '2px' }}><Check size={12} strokeWidth={4}/></span>}
-                                {simState === 'bunk' && <span style={{ fontSize: '10px', color: 'var(--accent-crimson)', fontWeight: 800, marginTop: '2px' }}><X size={12} strokeWidth={4}/></span>}
+                                {simState === 'attend' && <span style={{ fontSize: 'var(--text-xs)', color: 'var(--accent-cyan)', fontWeight: 800, marginTop: '2px' }}><Check size={12} strokeWidth={4}/></span>}
+                                {simState === 'bunk' && <span style={{ fontSize: 'var(--text-xs)', color: 'var(--accent-crimson)', fontWeight: 800, marginTop: '2px' }}><X size={12} strokeWidth={4}/></span>}
                                 {(!simState && isWorkingDay) && <span style={{ width: '4px', height: '4px', borderRadius: '50%', background: 'var(--accent-purple)', marginTop: '6px', opacity: 0.5 }} />}
                              </motion.button>
                           );
@@ -485,7 +485,7 @@ export function Attendance() {
                     </div>
 
                     {/* Explanatory Legend natively nested removing UX confusion bounds dynamically */}
-                    <div style={{ marginTop: '24px', display: 'flex', justifyContent: 'center', gap: '16px', fontSize: '11px', fontWeight: 800, opacity: 0.7 }}>
+                    <div style={{ marginTop: '24px', display: 'flex', justifyContent: 'center', gap: '16px', fontSize: 'var(--text-xs)', fontWeight: 800, opacity: 0.7 }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                            <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: 'var(--accent-cyan)' }} /> Attend
                         </div>
