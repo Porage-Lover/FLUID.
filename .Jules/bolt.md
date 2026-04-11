@@ -25,3 +25,7 @@
 ## 2026-04-08 - [O(M) Array Searches inside Render Loops]
 **Learning:** Found a performance bottleneck in `Timetable.tsx` where an `O(M)` array `.find()` operation was executed inside the inner `O(N)` mapping loop for every timetable cell to resolve whether a subject class was "theory" or "practical". This caused `O(N*M)` complexity during render setups.
 **Action:** Replaced the grouping logic to pre-index the array data directly into specific `{ theory, practical }` object properties within a `Map` during the initial `O(N)` pass. This completely removed the need for array traversals in the inner loop, replacing it with an `O(1)` property lookup and reducing rendering block time by ~50%.
+
+## 2026-04-10 - [React useMemo Anti-Pattern on Trivial Operations]
+**Learning:** Found a minor inefficiency in `Dashboard.tsx` where `.split('/')` was called twice directly inside the JSX render loop. While extracting this was correct, initially attempting to wrap the trivial string split in a `useMemo` hook was flagged as an anti-pattern during code review. The overhead of invoking the hook, creating closures, and checking the dependency array on every render cycle is generally heavier than the string split itself.
+**Action:** Do not use `useMemo` for trivial, fast operations like single string manipulation (`.split()`, `.toLowerCase()`) or simple arithmetic. Simply extract the operation to the component body before the `return` statement to avoid redundant inline executions without paying the heavy cost of React hook tracking.

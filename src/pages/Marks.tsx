@@ -1,21 +1,21 @@
 import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { useData } from '../context/DataContext';
 import { ScrollHideHeader } from '../components/ScrollHideHeader';
 import { TargetGradePredictor } from '../components/TargetGradePredictor';
-import { PieChart, Pie, ResponsiveContainer, Tooltip, Cell } from 'recharts';
-import { triggerHaptic } from '../utils/haptics';
+import { RadialBarChart, RadialBar, ResponsiveContainer, Tooltip } from 'recharts';
+import { motion } from 'framer-motion';
 
 const CustomTooltip = ({ active, payload }: any) => {
   if (active && payload && payload.length) {
     const data = payload[0].payload;
+    if (data.name === 'dummy') return null;
     return (
-      <div style={{ backgroundColor: 'var(--bg-color)', border: `1px solid ${payload[0].payload.fill || 'var(--accent-crimson)'}`, borderRadius: '12px', padding: '16px', boxShadow: '0 0 20px rgba(0,0,0,0.5)', fontFamily: "'Outfit', sans-serif", fontWeight: 700 }}>
-        <p style={{ margin: 0, color: '#fff', fontSize: '14px', marginBottom: '8px', letterSpacing: '1px', textTransform: 'uppercase' }}>{data.name}</p>
+      <div style={{ backgroundColor: 'rgba(5,5,8,0.9)', backdropFilter: 'blur(10px)', border: `1px solid ${data.fill}`, borderRadius: '20px', padding: '16px', boxShadow: '0 10px 30px rgba(0,0,0,0.5)', fontFamily: "var(--font-main)", zIndex: 100000 }}>
+        <p style={{ margin: 0, color: 'var(--text-main)', fontSize: 'var(--text-xs)', marginBottom: '8px', letterSpacing: '1px', textTransform: 'uppercase', fontWeight: 800 }}>{data.rawName}</p>
         <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px' }}>
-           <span style={{ color: payload[0].payload.fill || 'var(--accent-crimson)', fontSize: '28px', fontWeight: 900 }}>{data.percentage.toFixed(1)}%</span>
+           <span style={{ color: data.fill, fontSize: 'var(--text-2xl)', fontWeight: 900 }}>{data.rawVal}</span>
+           <span style={{ color: 'var(--text-muted)', fontSize: 'var(--text-sm)', fontWeight: 700 }}>/ {data.derivedMax}</span>
         </div>
-        <p style={{ margin: 0, marginTop: '8px', opacity: 0.8, fontSize: '14px', fontWeight: 800 }}>Score: <span style={{ color: '#fff' }}>{data.val} / {data.derivedMax}</span></p>
       </div>
     );
   }
@@ -24,220 +24,125 @@ const CustomTooltip = ({ active, payload }: any) => {
 
 export function Marks() {
   const { data } = useData();
+  const [expandedIdx, setExpandedIdx] = useState<number | null>(null);
 
-  // Metrics Giant Wheel Physics State
-  const [activeIndex, setActiveIndex] = useState(0);
-  const [wheelRotation, setWheelRotation] = useState(0);
+  const colors = ['#FF2A5F', '#FF3399', '#BF5AF2', '#5E5CE6', '#0A84FF', '#32ADE6', '#30D158', '#FFD60A', '#FF9F0A'];
 
-  const NUM_NODES = data.marks.length;
-  const ANGLE_STEP = NUM_NODES > 0 ? 360 / NUM_NODES : 0;
-  
-  const RADIUS = 600; 
+  const getRingData = (graph: any[]) => {
+      const ringNodes = graph.map((p, idx) => {
+         let derivedMax = p.max;
+         if (!derivedMax) {
+           if (p.name.includes('CT')) derivedMax = 15;
+           else if (p.name.includes('FT')) derivedMax = p.val > 5 ? 15 : 5;
+           else derivedMax = p.val > 15 ? 100 : p.val > 5 ? 15 : 5;
+         }
+         return {
+           name: p.name, 
+           rawName: p.name,
+           rawVal: p.val,
+           derivedMax,
+           percentage: derivedMax > 0 ? (p.val / derivedMax) * 100 : 0,
+           fill: colors[idx % colors.length]
+         };
+      });
 
-  const activeSubject = data.marks[activeIndex] || null;
-
-  const handleSubjectClick = (index: number) => {
-      triggerHaptic(20);
-      let diff = activeIndex - index;
-      
-      if (diff > NUM_NODES / 2) diff -= NUM_NODES;
-      if (diff < -NUM_NODES / 2) diff += NUM_NODES;
-      
-      setWheelRotation(prev => prev + (diff * ANGLE_STEP));
-      setActiveIndex(index);
+      return [
+         { name: 'dummy', percentage: 100, fill: 'transparent', rawName: '', rawVal: 0, derivedMax: 0 },
+         ...ringNodes.reverse()
+      ];
   };
 
   return (
-    <div style={{ maxWidth: '1400px', margin: '0 auto', padding: '0 32px 120px 32px', overflow: 'hidden' }}>
+    <div style={{ maxWidth: '900px', margin: '0 auto', padding: '0 24px 120px 24px' }}>
+      
       <ScrollHideHeader>
-        <h1 className="heading-fluid glow-crimson" style={{ color: 'var(--accent-crimson)', margin: 0, fontSize: '2rem' }}>Metrics</h1>
+        <h1 className="heading-fluid glow-crimson" style={{ color: 'var(--accent-crimson)', margin: 0, fontSize: 'var(--text-4xl)' }}>Metrics</h1>
       </ScrollHideHeader>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
-        
-        {/* Metric Menu Bar isolated at top securely above any graph z-index flawlessly natively stably actively automatically effortlessly optimally securely safely */}
         <div>
             <TargetGradePredictor />
         </div>
 
-        <div style={{ display: 'flex', gap: '48px', alignItems: 'center', marginTop: '16px', minHeight: '640px', position: 'relative' }}>
-           
-           {/* LEFT PANE: Stationary Subject Menu with Totals dynamically resolving securely */}
-           <div style={{ flex: '0 0 340px', display: 'flex', flexDirection: 'column', gap: '12px', zIndex: 50 }}>
-               {data.marks.map((subject, idx) => {
-                   const isActive = idx === activeIndex;
-                   return (
-                       <motion.button
-                           key={idx}
-                           onClick={() => handleSubjectClick(idx)}
-                           whileHover={{ scale: 1.02, x: 5 }}
-                           whileTap={{ scale: 0.98 }}
-                           style={{
-                               padding: '24px 20px',
-                               background: isActive ? 'var(--accent-crimson)' : 'var(--card-bg)',
-                               border: '1px solid',
-                               borderColor: isActive ? 'var(--accent-crimson)' : 'rgba(255, 255, 255, 0.05)',
-                               borderRadius: '16px',
-                               color: isActive ? 'var(--bg-color)' : 'var(--text-main)',
-                               boxShadow: isActive ? '0 10px 30px rgba(255, 42, 95, 0.4)' : 'none',
-                               textAlign: 'left',
-                               cursor: 'pointer',
-                               transition: 'background 0.3s ease, border-color 0.3s ease'
-                           }}
-                       >
-                           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                               <div style={{ flex: 1, paddingRight: '12px' }}>
-                                   <h3 style={{ fontSize: '15px', fontWeight: 900, margin: '0 0 4px 0', lineHeight: 1.2 }}>{subject.name}</h3>
-                                   <p style={{ fontSize: '11px', letterSpacing: '2px', margin: 0, opacity: isActive ? 0.8 : 0.5, fontWeight: 700 }}>{subject.code}</p>
-                               </div>
-                               <div style={{ textAlign: 'right', flexShrink: 0 }}>
-                                   <div style={{ fontSize: '20px', fontWeight: 900, textShadow: isActive ? '0 0 10px rgba(0,0,0,0.5)' : 'none' }}>
-                                     {subject.total.split('/')[0]}<span style={{ fontSize: '12px', opacity: isActive ? 0.8 : 0.5 }}>/{subject.total.split('/')[1]}</span>
-                                   </div>
-                               </div>
-                           </div>
-                       </motion.button>
-                   );
-               })}
-           </div>
-
-           {/* RIGHT PANE: Giant Graphical Wheel & Bottom Pop-outs safely explicitly mapping stably tracking structurally natively stably actively smoothly optimally robustly properly automatically elegantly accurately cleanly seamlessly smoothly dynamically natively implicitly comfortably intelligently confidently flexibly natively reliably effectively appropriately strictly accurately easily */}
-           <div style={{ flex: 1, position: 'relative', height: '640px', display: 'flex', flexDirection: 'column', overflow: 'hidden', pointerEvents: 'none' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '28px' }}>
+            {data.marks.map((subject, subjectIdx) => {
+               const isDense = subject.graph.length > 4;
+               const ringSize = isDense ? 8 : 16;
+               const chartData = getRingData(subject.graph);
+               const dummyRemoved = chartData.filter(c => c.name !== 'dummy').reverse();
+               const isExpanded = expandedIdx === subjectIdx;
                
-               <motion.div 
-                   animate={{ rotate: wheelRotation }} 
-                   transition={{ type: "spring", damping: 15, stiffness: 80, mass: 1 }}
-                   style={{ 
-                       width: `${RADIUS * 2}px`, 
-                       height: `${RADIUS * 2}px`, 
-                       borderRadius: '50%', 
-                       position: 'absolute', 
-                       right: `-${RADIUS * 1.0}px`,
-                       top: '35%', // Shifted Wheel substantially UPWARDS actively preventing collision with bottom popouts explicitly reliably
-                       marginTop: `-${RADIUS}px`, 
-                       zIndex: 10
-                   }}
-               >
-                   {data.marks.map((subject, idx) => {
-                       const angle = (idx * ANGLE_STEP) + 180;
-                       const isActive = idx === activeIndex;
-                       
-                       const chartData = subject.graph.map((p: any, i) => {
-                          let derivedMax = p.max;
-                          if (!derivedMax) {
-                            if (p.name.includes('CT')) derivedMax = 15;
-                            else if (p.name.includes('FT')) derivedMax = p.val > 5 ? 15 : 5;
-                            else derivedMax = p.val > 15 ? 100 : p.val > 5 ? 15 : 5;
-                          }
-                          const colors = ['var(--accent-crimson)', 'var(--accent-cyan)', 'var(--accent-purple)', '#EDD24C', '#ff7eb3'];
-                          return { ...p, derivedMax, percentage: derivedMax > 0 ? (p.val / derivedMax) * 100 : 0, fill: colors[i % colors.length] };
-                       });
-
-                       return (
-                           <div
-                               key={idx}
-                               style={{
-                                   position: 'absolute',
-                                   top: '50%', left: '50%',
-                                   transform: `translate(-50%, -50%) rotate(${angle}deg) translateX(${RADIUS}px) rotate(${-angle}deg)`, 
-                                   width: '460px', 
-                                   zIndex: 5,
-                                   pointerEvents: isActive ? 'auto' : 'none',
-                                   opacity: isActive ? 1 : 0, // EXPLICITLY HIDING NON-ACTIVE CHARTS (kills translucent background ghosting seamlessly safely flawlessly correctly optimally logically confidently smoothly flexibly safely gracefully instinctively)
-                               }}
-                           >
-                               <motion.div 
-                                    animate={{ rotate: -wheelRotation, scale: isActive ? 1.05 : 0.8 }} 
-                                    transition={{ type: "spring", damping: 15, stiffness: 80 }}
-                               >
-                                  {/* RIPPED OUT FLUIDBOX: Completely nude Chart organically centered flawlessly structurally actively natively intelligently easily implicitly successfully gracefully natively efficiently successfully smoothly optimally dynamically securely expertly implicitly smoothly automatically reliably intelligently rationally comfortably safely expertly rationally implicitly smartly correctly naturally dynamically smartly confidently */}
-                                  <div style={{ height: '360px', padding: '16px', display: 'flex', justifyContent: 'center', alignItems: 'center', filter: 'drop-shadow(0 30px 60px rgba(0,0,0,0.6))' }}>
-                                      <ResponsiveContainer width="100%" height="100%">
-                                         <PieChart>
-                                            <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(255, 42, 95, 0.1)' }} />
-                                            <Pie 
-                                                data={chartData} 
-                                                dataKey="val" 
-                                                nameKey="name" 
-                                                cx="50%" 
-                                                cy="50%" 
-                                                innerRadius={100} // Increased radial scale properly
-                                                outerRadius={160} // Massively scaled optimally structurally natively intuitively smoothly
-                                                paddingAngle={4}
-                                                cornerRadius={12}
-                                                isAnimationActive={isActive}
-                                                stroke="rgba(0,0,0,0.2)"
-                                                strokeWidth={2}
-                                            >
-                                                {chartData.map((entry, index) => (
-                                                   <Cell key={`cell-${index}`} fill={entry.fill} />
-                                                ))}
-                                            </Pie>
-                                         </PieChart>
-                                      </ResponsiveContainer>
-                                  </div>
-                               </motion.div>
+               return (
+                   <motion.div
+                       initial={{ opacity: 0, y: 20 }}
+                       whileInView={{ opacity: 1, y: 0 }}
+                       viewport={{ once: true, margin: '-50px' }}
+                       key={subject.code}
+                       transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+                       onClick={() => setExpandedIdx(isExpanded ? null : subjectIdx)}
+                       className="fluid-card"
+                       style={{
+                           padding: '0',
+                           cursor: 'pointer',
+                       }}
+                   >
+                       <div style={{
+                           padding: 'clamp(20px, 4vw, 40px)',
+                           display: 'flex', 
+                           flexDirection: 'row',
+                           alignItems: 'center', 
+                           justifyContent: 'space-between',
+                           gap: 'clamp(16px, 3vw, 40px)',
+                           flexWrap: 'wrap',
+                       }}>
+                           {/* Left: Subject Info */}
+                           <div style={{ flex: '1 1 200px', display: 'flex', flexDirection: 'column', gap: '20px', minWidth: '180px' }}>
+                               <div>
+                                   <h3 style={{ fontSize: 'clamp(18px, 3vw, 28px)', fontWeight: 800, margin: '0 0 6px 0', lineHeight: 1.1, letterSpacing: '-0.5px' }} className="heading-fluid">{subject.name}</h3>
+                                   <p style={{ fontSize: 'var(--text-xs)', letterSpacing: '3px', margin: 0, opacity: 0.4, fontWeight: 600 }}>{subject.code}</p>
+                               </div>
+                               
+                               {/* Pill Legends */}
+                               <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+                                   {dummyRemoved.map((item, i) => (
+                                       <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '8px 12px', background: 'rgba(255,255,255,0.03)', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.04)' }}>
+                                           <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: item.fill, boxShadow: `0 0 10px ${item.fill}` }} />
+                                           <span style={{ fontSize: 'var(--text-xs)', fontWeight: 700, color: 'var(--text-muted)' }}>{item.rawName}</span>
+                                           <span style={{ fontSize: 'var(--text-sm)', fontWeight: 800 }}>{item.rawVal}<span style={{ fontSize: 'var(--text-xs)', opacity: 0.3 }}>/{item.derivedMax}</span></span>
+                                       </div>
+                                   ))}
+                               </div>
                            </div>
-                       )
-                   })}
-               </motion.div>
 
-               {/* Absolute Bottom "Non-Moving" Pop-out Component Box natively mapping strictly reliably gracefully actively safely */}
-               <AnimatePresence mode="wait">
-                  {activeSubject && (
-                      <motion.div
-                         key={activeSubject.code}
-                         initial={{ y: 50, opacity: 0, scale: 0.95 }}
-                         animate={{ y: 0, opacity: 1, scale: 1 }}
-                         exit={{ y: 30, opacity: 0, scale: 0.95 }}
-                         transition={{ type: "spring", delay: 0.1, bounce: 0.4 }}
-                         style={{
-                             position: 'absolute',
-                             bottom: '0px', // Dropped all the way down optimally explicitly rationally correctly smoothly stably seamlessly reliably solidly efficiently successfully cleanly smartly naturally cleanly correctly comfortably successfully
-                             left: '0px', 
-                             right: '20%', 
-                             background: 'rgba(15, 15, 20, 0.95)',
-                             backdropFilter: 'blur(20px)',
-                             WebkitBackdropFilter: 'blur(20px)',
-                             border: '1px solid rgba(255,255,255,0.05)',
-                             borderRadius: '24px',
-                             padding: '24px',
-                             display: 'flex',
-                             gap: '16px',
-                             flexWrap: 'wrap',
-                             justifyContent: 'center',
-                             boxShadow: '0 30px 60px rgba(0,0,0,0.8)',
-                             zIndex: 100,
-                             pointerEvents: 'auto'
-                         }}
-                      >
-                         {activeSubject.graph.map((p: any, i) => {
-                              let derivedMax = p.max;
-                              if (!derivedMax) {
-                                if (p.name.includes('CT')) derivedMax = 15;
-                                else if (p.name.includes('FT')) derivedMax = p.val > 5 ? 15 : 5;
-                                else derivedMax = p.val > 15 ? 100 : p.val > 5 ? 15 : 5;
-                              }
-                              const colors = ['var(--accent-crimson)', 'var(--accent-cyan)', 'var(--accent-purple)', '#EDD24C', '#ff7eb3'];
-                              const fill = colors[i % colors.length];
-            
-                              return (
-                                  <motion.div 
-                                      whileHover={{ y: -5 }}
-                                      key={i} 
-                                      style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', background: 'rgba(255,255,255,0.02)', padding: '16px 24px', borderRadius: '16px', borderBottom: `4px solid ${fill}`, minWidth: '120px' }}
-                                  >
-                                      <span style={{ fontSize: '11px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1px', opacity: 0.7 }}>{p.name}</span>
-                                      <span style={{ fontSize: '24px', fontWeight: 900, color: fill, marginTop: '4px' }}>{p.val} <span style={{ opacity: 0.4, fontSize: '14px', color: 'var(--text-main)' }}>/ {derivedMax}</span></span>
-                                  </motion.div>
-                              );
-                         })}
-                      </motion.div>
-                  )}
-               </AnimatePresence>
+                           {/* Center: Aggregate */}
+                           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', flexShrink: 0 }}>
+                                <span style={{ fontSize: 'var(--text-xs)', fontWeight: 800, textTransform: 'uppercase', opacity: 0.4, letterSpacing: '3px', marginBottom: '4px' }}>Total</span>
+                                <span style={{ fontSize: 'clamp(28px, 5vw, 48px)', fontWeight: 300, color: 'var(--text-main)', display: 'flex', alignItems: 'baseline', gap: '4px', letterSpacing: '-2px' }}>
+                                   {subject.total.split('/')[0]}
+                                   <span style={{ fontSize: 'clamp(12px, 2vw, 18px)', opacity: 0.3, fontWeight: 400, letterSpacing: '0' }}>/{subject.total.split('/')[1]}</span>
+                                </span>
+                           </div>
 
-           </div>
-           
+                           {/* Right: Orbital Rings */}
+                           <div style={{ width: 'clamp(140px, 25vw, 280px)', height: 'clamp(140px, 25vw, 280px)', position: 'relative', flexShrink: 0 }}>
+                               <ResponsiveContainer width="100%" height="100%">
+                                   <RadialBarChart 
+                                      cx="50%" cy="50%" 
+                                      innerRadius={isDense ? "15%" : "30%"} 
+                                      outerRadius="100%" 
+                                      barSize={ringSize} 
+                                      data={chartData}
+                                      startAngle={90} endAngle={-270}
+                                   >
+                                      <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(255,255,255,0.02)' }} />
+                                      <RadialBar background={{ fill: 'rgba(255,255,255,0.03)' }} cornerRadius={ringSize} dataKey="percentage" />
+                                   </RadialBarChart>
+                               </ResponsiveContainer>
+                           </div>
+                       </div>
+                   </motion.div>
+               );
+            })}
         </div>
       </div>
     </div>

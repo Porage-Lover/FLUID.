@@ -1,12 +1,12 @@
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800;900&family=Outfit:wght@300;400;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap');
 
 :root {
-  /* Fluid Architecture Primary Array */
-  --bg-color: #050508;
-  --card-bg: rgba(20, 20, 25, 0.4);
+  /* Fluid Architecture Primary Array (Jony Ive Overload) */
+  --bg-color: #000000;
+  --card-bg: rgba(20, 20, 25, 0.35);
   --text-main: #FFFFFF;
-  --text-muted: rgba(255, 255, 255, 0.6);
-  --glass-border: rgba(255, 255, 255, 0.05);
+  --text-muted: rgba(255, 255, 255, 0.5);
+  --glass-border: rgba(255, 255, 255, 0.08);
   
   --accent-crimson: #FF2A5F;
   --accent-cyan: #1DC7D1;
@@ -14,6 +14,17 @@
 
   --logo-primary: #FF2A5F;
   --logo-secondary: #d41b47;
+
+  /* Typography Scale */
+  --font-main: 'Outfit', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.25rem;
+  --text-2xl: 1.5rem;
+  --text-3xl: 1.875rem;
+  --text-4xl: 2.25rem;
 }
 
 [data-theme="light"] {
@@ -76,15 +87,15 @@ body {
 
 /* Fluid UI Typography */
 .heading-fluid {
-  font-family: 'Montserrat', sans-serif;
-  font-weight: 900;
-  text-transform: uppercase;
+  font-family: 'Outfit', sans-serif;
+  font-weight: 800;
+  text-transform: none;
   letter-spacing: -1px;
 }
 
 /* The FLUID Logo Styling */
 .logo-fluid {
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Outfit', sans-serif;
   font-weight: 900;
   font-size: 28px;
   letter-spacing: -2px;
@@ -101,22 +112,25 @@ body {
   color: #FF2A5F !important;
 }
 
-/* Glassmorphism Cards */
+/* Glassmorphism Cards - Apple Squircles */
 .fluid-card {
   background: var(--card-bg);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(40px);
+  -webkit-backdrop-filter: blur(40px);
   border: 1px solid var(--glass-border);
-  border-radius: 12px;
+  border-radius: 36px;
   overflow: hidden;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-  transition: box-shadow 0.3s ease, border-color 0.3s ease, transform 0.3s ease;
-  will-change: transform, backdrop-filter;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  transition: box-shadow 0.3s cubic-bezier(0.25, 1, 0.5, 1), transform 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+  will-change: transform, box-shadow, filter;
+}
+
+[data-theme="light"] .fluid-card {
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.6);
 }
 
 .fluid-card:hover {
-  border-color: rgba(255, 255, 255, 0.1);
-  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6), 0 0 20px rgba(255, 42, 95, 0.1);
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.2);
 }
 
 /* Neon Glow Utilities */
@@ -190,12 +204,19 @@ input[type=range]::-webkit-slider-runnable-track {
   100% { transform: translateX(-50%); }
 }
 
-/* Fluid UI Responsive Systems */
+/* Fluid UI Responsive Systems - macOS Masonry Grid */
 .dashboard-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(4, 1fr);
+  grid-auto-rows: 170px;
   gap: 24px;
 }
+
+.col-span-1 { grid-column: span 1; }
+.col-span-2 { grid-column: span 2; }
+.col-span-4 { grid-column: span 4; }
+.row-span-1 { grid-row: span 1; }
+.row-span-2 { grid-row: span 2; }
 
 .nav-container {
   padding: 16px 32px;
@@ -212,10 +233,23 @@ input[type=range]::-webkit-slider-runnable-track {
   white-space: nowrap;
 }
 
+@media (max-width: 900px) {
+  .dashboard-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .col-span-4 { grid-column: span 2; }
+}
+
 @media (max-width: 600px) {
   .dashboard-grid {
     grid-template-columns: 1fr;
+    grid-auto-rows: minMax(140px, auto);
+    gap: 16px;
   }
+  .col-span-2 { grid-column: span 1; }
+  .col-span-4 { grid-column: span 1; }
+  .row-span-2 { grid-row: span 1; }
+
   .nav-container {
     padding: 12px 16px !important;
   }
@@ -225,8 +259,8 @@ input[type=range]::-webkit-slider-runnable-track {
     padding-bottom: 2px;
     -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
-    mask-image: linear-gradient(to right, black 85%, transparent 100%);
-    -webkit-mask-image: linear-gradient(to right, black 85%, transparent 100%);
+    mask-image: none;
+    -webkit-mask-image: none;
   }
   .nav-links-row::-webkit-scrollbar {
     display: none;

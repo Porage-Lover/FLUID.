@@ -34,7 +34,7 @@ export function TargetGradePredictor() {
              <div style={{ width: '48px', height: '48px', borderRadius: '50%', backgroundColor: 'rgba(139, 29, 209, 0.15)', border: '1px solid var(--accent-purple)', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 0 15px rgba(139, 29, 209, 0.3)' }}>
                <Calculator size={24} color="var(--accent-purple)" strokeWidth={2.5} />
              </div>
-             <span style={{ fontSize: '18px', fontWeight: 800, color: 'var(--text-main)', letterSpacing: '1px' }}>Target Grade Predictor</span>
+             <span style={{ fontSize: 'var(--text-lg)', fontWeight: 800, color: 'var(--text-main)', letterSpacing: '1px' }}>Target Grade Predictor</span>
           </div>
           <motion.div animate={{ rotate: showPredictor ? 180 : 0 }} transition={{ type: 'spring', stiffness: 300, damping: 20 }}>
             <ChevronDown size={28} color="var(--text-main)" />
@@ -53,8 +53,8 @@ export function TargetGradePredictor() {
               <div style={{ padding: '24px', backgroundColor: 'rgba(255,255,255,0.02)', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
                 <div style={{ marginBottom: '32px' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '16px' }}>
-                    <span style={{ fontSize: '14px', letterSpacing: '2px', textTransform: 'uppercase', fontWeight: 800, opacity: 0.6 }}>Hypothetical Internal Tracker</span>
-                    <span style={{ fontSize: '32px', fontWeight: 900, color: 'var(--accent-purple)' }}>{globalInternal}</span>
+                    <span style={{ fontSize: 'var(--text-sm)', letterSpacing: '2px', textTransform: 'uppercase', fontWeight: 800, opacity: 0.6 }}>Hypothetical Internal Tracker</span>
+                    <span style={{ fontSize: 'var(--text-3xl)', fontWeight: 900, color: 'var(--accent-purple)' }}>{globalInternal}</span>
                   </div>
                   <input
                     type="range"
@@ -75,12 +75,12 @@ export function TargetGradePredictor() {
                     return (
                       <div key={t.grade} style={{ display: 'flex', flexDirection: 'column', gap: '8px', padding: '16px', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '8px', opacity: impossible ? 0.3 : 1 }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                          <span style={{ fontSize: '32px', fontWeight: 900, color: t.color, textShadow: `0 0 10px ${t.color}` }}>{t.grade}</span>
-                          <span style={{ fontSize: '20px', fontWeight: 800 }}>
+                          <span style={{ fontSize: 'var(--text-3xl)', fontWeight: 900, color: t.color, textShadow: `0 0 10px ${t.color}` }}>{t.grade}</span>
+                          <span style={{ fontSize: 'var(--text-xl)', fontWeight: 800 }}>
                             {secured ? <span style={{ color: 'var(--accent-cyan)' }}>Secured</span> : impossible ? <span style={{ color: 'var(--accent-crimson)' }}>N/A</span> : `${required}`}
                           </span>
                         </div>
-                        <span style={{ fontSize: '11px', letterSpacing: '1px', textTransform: 'uppercase', fontWeight: 700, opacity: 0.5 }}>{t.min} - {maxBound} Total</span>
+                        <span style={{ fontSize: 'var(--text-xs)', letterSpacing: '1px', textTransform: 'uppercase', fontWeight: 700, opacity: 0.5 }}>{t.min} - {maxBound} Total</span>
                       </div>
                     );
                   })}

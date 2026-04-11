@@ -86,9 +86,9 @@ export function Login() {
           <FluidLogo />
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', marginTop: '16px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', fontFamily: getThemeDef(theme).fontFamily || "'Montserrat', sans-serif" }}>
-             <span style={{ color: 'var(--accent-crimson)', fontWeight: 900, fontSize: '26px', letterSpacing: '-1px' }}>REVANCED</span>
-             <span style={{ color: 'var(--text-main)', fontWeight: 900, fontSize: '26px', letterSpacing: '-1px' }}>ACADEMIA</span>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', fontFamily: getThemeDef(theme).fontFamily || "var(--font-main)" }}>
+             <span style={{ color: 'var(--accent-crimson)', fontWeight: 900, fontSize: 'var(--text-2xl)', letterSpacing: '-1px' }}>REVANCED</span>
+             <span style={{ color: 'var(--text-main)', fontWeight: 900, fontSize: 'var(--text-2xl)', letterSpacing: '-1px' }}>ACADEMIA</span>
           </div>
         </div>
       </motion.div>
@@ -128,23 +128,23 @@ export function Login() {
             }}
           >
             <AlertCircle size={20} style={{ flexShrink: 0, marginTop: '2px' }} />
-            <span style={{ fontSize: '14px', wordBreak: 'break-word', whiteSpace: 'pre-wrap' }}>{err}</span>
+            <span style={{ fontSize: 'var(--text-sm)', wordBreak: 'break-word', whiteSpace: 'pre-wrap' }}>{err}</span>
           </motion.div>
         )}
 
         {isLoggedIn ? (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', alignItems: 'center', textAlign: 'center' }}>
              <div style={{ width: '80px', height: '80px', borderRadius: '50%', background: 'rgba(29, 199, 209, 0.1)', border: '2px solid var(--accent-cyan)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '8px', boxShadow: '0 10px 30px rgba(29, 199, 209, 0.2)' }}>
-                <span style={{ fontSize: '32px', fontWeight: 900, color: 'var(--accent-cyan)' }}>
+                <span style={{ fontSize: 'var(--text-3xl)', fontWeight: 900, color: 'var(--accent-cyan)' }}>
                   {data?.user?.name?.charAt(0) || '?'}
                 </span>
              </div>
              
              <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-               <h2 style={{ margin: 0, fontSize: '20px', fontWeight: 800, color: 'var(--text-main)', letterSpacing: '0px' }}>
+               <h2 style={{ margin: 0, fontSize: 'var(--text-xl)', fontWeight: 800, color: 'var(--text-main)', letterSpacing: '0px' }}>
                  Welcome back,
                </h2>
-               <h3 style={{ margin: 0, fontSize: '16px', fontWeight: 600, color: 'var(--accent-crimson)', letterSpacing: '1px' }}>
+               <h3 style={{ margin: 0, fontSize: 'var(--text-base)', fontWeight: 600, color: 'var(--accent-crimson)', letterSpacing: '1px' }}>
                  {data?.user?.name || sessionStorage.getItem('academia_id') || 'Student'}
                </h3>
              </div>
@@ -155,7 +155,7 @@ export function Login() {
                   whileTap={{ scale: 0.98 }}
                   onClick={() => { triggerHaptic(40); navigate('/dashboard'); }}
                   style={{
-                    width: '100%', padding: '20px', borderRadius: '30px', fontSize: '14px', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '2px', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '12px', background: 'var(--text-main)', color: 'var(--bg-color)', border: 'none', boxShadow: '0 10px 30px rgba(255, 255, 255, 0.2)', cursor: 'pointer'
+                    width: '100%', padding: '20px', borderRadius: '30px', fontSize: 'var(--text-sm)', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '2px', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '12px', background: 'var(--text-main)', color: 'var(--bg-color)', border: 'none', boxShadow: '0 10px 30px rgba(255, 255, 255, 0.2)', cursor: 'pointer'
                   }}
                >
                   CONTINUE TO DASHBOARD <ArrowRight size={18} />
@@ -164,7 +164,7 @@ export function Login() {
                <button 
                   onClick={() => { triggerHaptic(20); logout(); }}
                   style={{
-                    width: '100%', padding: '16px', fontSize: '13px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '2px', background: 'transparent', color: 'var(--text-muted)', border: 'none', cursor: 'pointer', transition: 'color 0.2s ease', marginTop: '8px'
+                    width: '100%', padding: '16px', fontSize: 'var(--text-sm)', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '2px', background: 'transparent', color: 'var(--text-muted)', border: 'none', cursor: 'pointer', transition: 'color 0.2s ease', marginTop: '8px'
                   }}
                   onMouseEnter={(e) => e.currentTarget.style.color = 'var(--accent-crimson)'}
                   onMouseLeave={(e) => e.currentTarget.style.color = 'var(--text-muted)'}
@@ -176,7 +176,7 @@ export function Login() {
         ) : (
           <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
             <div>
-              <label htmlFor="email" style={{ display: 'block', fontWeight: 800, marginBottom: '8px', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '2px', color: 'var(--text-muted)' }}>University ID</label>
+              <label htmlFor="email" style={{ display: 'block', fontWeight: 800, marginBottom: '8px', fontSize: 'var(--text-xs)', textTransform: 'uppercase', letterSpacing: '2px', color: 'var(--text-muted)' }}>University ID</label>
               <input
                 id="email"
                 type="email"
@@ -186,7 +186,7 @@ export function Login() {
                 style={{
                   width: '100%',
                   padding: '16px',
-                  fontSize: '15px',
+                  fontSize: 'var(--text-sm)',
                   backgroundColor: 'rgba(255,255,255,0.03)',
                   border: '1px solid rgba(255,255,255,0.1)',
                   color: 'var(--text-main)',
@@ -201,7 +201,7 @@ export function Login() {
             </div>
 
             <div>
-              <label htmlFor="password" style={{ display: 'block', fontWeight: 800, marginBottom: '8px', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '2px', color: 'var(--text-muted)' }}>Password</label>
+              <label htmlFor="password" style={{ display: 'block', fontWeight: 800, marginBottom: '8px', fontSize: 'var(--text-xs)', textTransform: 'uppercase', letterSpacing: '2px', color: 'var(--text-muted)' }}>Password</label>
               <div style={{ position: 'relative' }}>
                 <input
                   id="password"
@@ -213,7 +213,7 @@ export function Login() {
                     width: '100%',
                     padding: '16px',
                     paddingRight: '56px',
-                    fontSize: '15px',
+                    fontSize: 'var(--text-sm)',
                     backgroundColor: 'rgba(255,255,255,0.03)',
                     border: '1px solid rgba(255,255,255,0.1)',
                     color: 'var(--text-main)',
@@ -245,7 +245,7 @@ export function Login() {
                     width: '100%',
                     padding: '20px',
                     borderRadius: '30px',
-                    fontSize: '15px',
+                    fontSize: 'var(--text-sm)',
                     fontWeight: 900,
                     textTransform: 'uppercase',
                     letterSpacing: '2px',
