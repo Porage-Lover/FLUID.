@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useData } from '../context/DataContext';
 import { ScrollHideHeader } from '../components/ScrollHideHeader';
@@ -34,7 +34,29 @@ export function Marks() {
   
   const RADIUS = 600; 
 
-  const activeSubject = data.marks[activeIndex] || null;
+  // ⚡ Bolt Optimization:
+  // We useMemo to pre-process the chart array structure.
+  // Previously, every time `wheelRotation` updated (60fps during animation)
+  // the entire array tree triggered Regex strings `.includes()` and `.map()` calls inline.
+  // Pre-computing this prevents O(N*M) heavy allocations during UI ticks.
+  // Impact: Scrolling/Clicking the wheel is massively smoothed as chart nodes just pull stable maps.
+  const processedMarks = useMemo(() => {
+    return data.marks.map((subject) => {
+      const chartData = subject.graph.map((p: any, i) => {
+        let derivedMax = p.max;
+        if (!derivedMax) {
+          if (p.name.includes('CT')) derivedMax = 15;
+          else if (p.name.includes('FT')) derivedMax = p.val > 5 ? 15 : 5;
+          else derivedMax = p.val > 15 ? 100 : p.val > 5 ? 15 : 5;
+        }
+        const colors = ['var(--accent-crimson)', 'var(--accent-cyan)', 'var(--accent-purple)', '#EDD24C', '#ff7eb3'];
+        return { ...p, derivedMax, percentage: derivedMax > 0 ? (p.val / derivedMax) * 100 : 0, fill: colors[i % colors.length] };
+      });
+      return { ...subject, chartData };
+    });
+  }, [data.marks]);
+
+  const activeSubject = processedMarks[activeIndex] || null;
 
   const handleSubjectClick = (index: number) => {
       triggerHaptic(20);
@@ -64,7 +86,7 @@ export function Marks() {
            
            {/* LEFT PANE: Stationary Subject Menu with Totals dynamically resolving securely */}
            <div style={{ flex: '0 0 340px', display: 'flex', flexDirection: 'column', gap: '12px', zIndex: 50 }}>
-               {data.marks.map((subject, idx) => {
+               {processedMarks.map((subject: any, idx: number) => {
                    const isActive = idx === activeIndex;
                    return (
                        <motion.button
@@ -118,20 +140,10 @@ export function Marks() {
                        zIndex: 10
                    }}
                >
-                   {data.marks.map((subject, idx) => {
+                   {processedMarks.map((subject: any, idx: number) => {
                        const angle = (idx * ANGLE_STEP) + 180;
                        const isActive = idx === activeIndex;
-                       
-                       const chartData = subject.graph.map((p: any, i) => {
-                          let derivedMax = p.max;
-                          if (!derivedMax) {
-                            if (p.name.includes('CT')) derivedMax = 15;
-                            else if (p.name.includes('FT')) derivedMax = p.val > 5 ? 15 : 5;
-                            else derivedMax = p.val > 15 ? 100 : p.val > 5 ? 15 : 5;
-                          }
-                          const colors = ['var(--accent-crimson)', 'var(--accent-cyan)', 'var(--accent-purple)', '#EDD24C', '#ff7eb3'];
-                          return { ...p, derivedMax, percentage: derivedMax > 0 ? (p.val / derivedMax) * 100 : 0, fill: colors[i % colors.length] };
-                       });
+                       const chartData = subject.chartData;
 
                        return (
                            <div
@@ -169,7 +181,7 @@ export function Marks() {
                                                 stroke="rgba(0,0,0,0.2)"
                                                 strokeWidth={2}
                                             >
-                                                {chartData.map((entry, index) => (
+                                                {chartData.map((entry: any, index: number) => (
                                                    <Cell key={`cell-${index}`} fill={entry.fill} />
                                                 ))}
                                             </Pie>
@@ -211,24 +223,15 @@ export function Marks() {
                              pointerEvents: 'auto'
                          }}
                       >
-                         {activeSubject.graph.map((p: any, i) => {
-                              let derivedMax = p.max;
-                              if (!derivedMax) {
-                                if (p.name.includes('CT')) derivedMax = 15;
-                                else if (p.name.includes('FT')) derivedMax = p.val > 5 ? 15 : 5;
-                                else derivedMax = p.val > 15 ? 100 : p.val > 5 ? 15 : 5;
-                              }
-                              const colors = ['var(--accent-crimson)', 'var(--accent-cyan)', 'var(--accent-purple)', '#EDD24C', '#ff7eb3'];
-                              const fill = colors[i % colors.length];
-            
+                         {activeSubject.chartData.map((p: any, i: number) => {
                               return (
                                   <motion.div 
                                       whileHover={{ y: -5 }}
                                       key={i} 
-                                      style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', background: 'rgba(255,255,255,0.02)', padding: '16px 24px', borderRadius: '16px', borderBottom: `4px solid ${fill}`, minWidth: '120px' }}
+                                      style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', background: 'rgba(255,255,255,0.02)', padding: '16px 24px', borderRadius: '16px', borderBottom: `4px solid ${p.fill}`, minWidth: '120px' }}
                                   >
                                       <span style={{ fontSize: '11px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1px', opacity: 0.7 }}>{p.name}</span>
-                                      <span style={{ fontSize: '24px', fontWeight: 900, color: fill, marginTop: '4px' }}>{p.val} <span style={{ opacity: 0.4, fontSize: '14px', color: 'var(--text-main)' }}>/ {derivedMax}</span></span>
+                                      <span style={{ fontSize: '24px', fontWeight: 900, color: p.fill, marginTop: '4px' }}>{p.val} <span style={{ opacity: 0.4, fontSize: '14px', color: 'var(--text-main)' }}>/ {p.derivedMax}</span></span>
                                   </motion.div>
                               );
                          })}
