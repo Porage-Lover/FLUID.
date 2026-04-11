@@ -10,7 +10,7 @@ interface FluidCardProps extends HTMLMotionProps<"div"> {
   innerStyle?: CSSProperties;
 }
 
-export function FluidCard({ children, style, headerColor = '#d62828', actionIcon, onActionClick, innerStyle, onClick, ...props }: FluidCardProps) {
+export function FluidCard({ children, style, headerColor = '#d62828', actionIcon, onActionClick, innerStyle, onClick, className, ...props }: FluidCardProps) {
   const isCustomColor = headerColor.startsWith('#') || headerColor.startsWith('rgba');
   const bg = isCustomColor ? headerColor : `var(${headerColor})`;
 
@@ -19,7 +19,7 @@ export function FluidCard({ children, style, headerColor = '#d62828', actionIcon
       whileHover={onClick ? { scale: 1.02, y: -5 } : { scale: 1.0 }}
       whileTap={onClick ? { scale: 0.98 } : { scale: 1.0 }}
       onClick={onClick}
-      className={`fluid-card ${onClick ? 'cursor-pointer' : ''}`}
+      className={`fluid-card ${onClick ? 'cursor-pointer' : ''} ${className || ''}`}
       style={{
         position: 'relative',
         minHeight: '120px',
