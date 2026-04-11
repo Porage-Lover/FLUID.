@@ -10,6 +10,14 @@ export function Dashboard() {
   const navigate = useNavigate();
   const { data, logout } = useData();
 
+  // ⚡ Bolt Optimization:
+  // Extracting the overall marks string splitting to the component body.
+  // Previously, .split('/') was being called twice inline inside the render loop JSX.
+  // Using useMemo for this is an anti-pattern as the hook overhead is worse than the split.
+  // By splitting once during the render body, we prevent unnecessary duplicated string allocations.
+  // Expected impact: Minor reduction in CPU time and memory churn.
+  const [marksEarned, marksTotal] = (data.user.overallMarks || '0/0').split('/');
+
   return (
     <div style={{ maxWidth: '800px', margin: '0 auto', padding: '0 32px 200px 32px' }}>
       {/* Header */}
@@ -53,7 +61,7 @@ export function Dashboard() {
               </FluidCard>
               <FluidCard headerColor="--accent-crimson" actionIcon={<Play size={20} color="#fff" fill="#fff" />} onClick={() => { triggerHaptic(30); navigate('/marks'); }} onMouseEnter={() => triggerHaptic(10)} style={{ textAlign: 'center' }}>
                  <div style={{ fontSize: '48px', fontWeight: 800, marginBottom: '8px', color: 'var(--text-main)', letterSpacing: '-2px' }}>
-                   {data.user.overallMarks.split('/')[0]}<span style={{ fontSize: '24px', color: 'var(--text-muted)' }}>/{data.user.overallMarks.split('/')[1]}</span>
+                   {marksEarned}<span style={{ fontSize: '24px', color: 'var(--text-muted)' }}>/{marksTotal}</span>
                  </div>
                  <div style={{ fontSize: '13px', color: 'var(--accent-crimson)', fontWeight: 800, letterSpacing: '2px', textTransform: 'uppercase' }}>Total Marks</div>
               </FluidCard>
