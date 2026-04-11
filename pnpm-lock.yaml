@@ -12,11 +12,11 @@ importers:
         specifier: ^2.99.3
         version: 2.101.1
       axios:
-        specifier: ^1.13.6
-        version: 1.14.0
+        specifier: ^1.15.0
+        version: 1.15.0
       axios-cookiejar-support:
         specifier: ^6.0.5
-        version: 6.0.5(axios@1.14.0)(tough-cookie@6.0.1)(undici@7.24.7)
+        version: 6.0.5(axios@1.15.0)(tough-cookie@6.0.1)(undici@7.24.7)
       cheerio:
         specifier: ^1.2.0
         version: 1.2.0
@@ -61,8 +61,8 @@ importers:
         specifier: ^19.2.3
         version: 19.2.3(@types/react@19.2.14)
       '@vercel/node':
-        specifier: ^5.7.2
-        version: 5.7.2
+        specifier: ^5.7.4
+        version: 5.7.4
       '@vitejs/plugin-react':
         specifier: ^6.0.1
         version: 6.0.1(vite@8.0.3(@emnapi/core@1.9.2)(@emnapi/runtime@1.9.2)(@types/node@24.12.2)(esbuild@0.27.0)(tsx@4.21.0))
@@ -733,8 +733,8 @@ packages:
     resolution: {integrity: sha512-XJ9UD9+bbDo4a4epraTwG3TsNPeiB9aShrUneAVXy8q4LuwowN+qu89/6ByLMINqvIMeI9H9hOHQtg/ijrYXzQ==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
 
-  '@vercel/build-utils@13.14.0':
-    resolution: {integrity: sha512-mEYh+f+sNngEOJKLTTzoyPMse5A3bQNt0uIRq/jfl/h12ukWhrpHDmXdY6k6x3WsEXr7hrcN+2jT0VdvOBgACw==}
+  '@vercel/build-utils@13.14.2':
+    resolution: {integrity: sha512-L1wHzpSXVcaXji5+ylNV5yTpAKf/t6qEGNOdFrMSAqSWlcYtL9rrY1OFbqN+5gIAWXjdCqnkmBRVp1lk20uwdw==}
 
   '@vercel/error-utils@2.0.3':
     resolution: {integrity: sha512-CqC01WZxbLUxoiVdh9B/poPbNpY9U+tO1N9oWHwTl5YAZxcqXmmWJ8KNMFItJCUUWdY3J3xv8LvAuQv2KZ5YdQ==}
@@ -744,8 +744,8 @@ packages:
     engines: {node: '>=20'}
     hasBin: true
 
-  '@vercel/node@5.7.2':
-    resolution: {integrity: sha512-uX4l/f/0eu6ktDdUobHxUm3jkI85Ptbp08yMYFYJo9PAmsYJ5jJoU3eOS47XgkIXmQHGC+14UP1NN7Jh1bTkTA==}
+  '@vercel/node@5.7.4':
+    resolution: {integrity: sha512-pSU3hl7fSPPD/0W0RzwbogFTiTUT+LDIu0+qOdd/ZZAPQauefs09KQiRZGkt3oPmKnAWTvoQv/Ea4dWZcE9ijQ==}
 
   '@vercel/python-analysis@0.11.0':
     resolution: {integrity: sha512-gsoj+nscmNm0xDh+tRhECRhit2VlAVaD7jc9h93sN6rDEBDxPo7eLEgIJFzVDaAItxERZ9Od2IK/04fB9vFy+g==}
@@ -823,8 +823,8 @@ packages:
       axios: '>=0.20.0'
       tough-cookie: '>=4.0.0'
 
-  axios@1.14.0:
-    resolution: {integrity: sha512-3Y8yrqLSwjuzpXuZ0oIYZ/XGgLwUIBU3uLvbcpb0pidD9ctpShJd43KSlEEkVQg6DS0G9NKyzOvBfUtDKEyHvQ==}
+  axios@1.15.0:
+    resolution: {integrity: sha512-wWyJDlAatxk30ZJer+GeCWS209sA42X+N5jU2jy6oHTp7ufw8uzUTVFBX9+wTfAlhiJXGS0Bq7X6efruWjuK9Q==}
 
   balanced-match@1.0.2:
     resolution: {integrity: sha512-3oSeUO0TMV67hN1AmbXsK4yaqU7tjiHlbxRDZOpH0KW9+CeX4bRAaX0Anxt0tx2MrpRpWwQaPwIlISEJhYU5Pw==}
@@ -2646,7 +2646,7 @@ snapshots:
       '@typescript-eslint/types': 8.58.0
       eslint-visitor-keys: 5.0.1
 
-  '@vercel/build-utils@13.14.0':
+  '@vercel/build-utils@13.14.2':
     dependencies:
       '@vercel/python-analysis': 0.11.0
       cjs-module-lexer: 1.2.3
@@ -2673,13 +2673,13 @@ snapshots:
       - rollup
       - supports-color
 
-  '@vercel/node@5.7.2':
+  '@vercel/node@5.7.4':
     dependencies:
       '@edge-runtime/node-utils': 2.3.0
       '@edge-runtime/primitives': 4.1.0
       '@edge-runtime/vm': 3.2.0
       '@types/node': 20.11.0
-      '@vercel/build-utils': 13.14.0
+      '@vercel/build-utils': 13.14.2
       '@vercel/error-utils': 2.0.3
       '@vercel/nft': 1.5.0
       '@vercel/static-config': 3.2.0
@@ -2765,15 +2765,15 @@ snapshots:
 
   asynckit@0.4.0: {}
 
-  axios-cookiejar-support@6.0.5(axios@1.14.0)(tough-cookie@6.0.1)(undici@7.24.7):
+  axios-cookiejar-support@6.0.5(axios@1.15.0)(tough-cookie@6.0.1)(undici@7.24.7):
     dependencies:
-      axios: 1.14.0
+      axios: 1.15.0
       http-cookie-agent: 7.0.3(tough-cookie@6.0.1)(undici@7.24.7)
       tough-cookie: 6.0.1
     transitivePeerDependencies:
       - undici
 
-  axios@1.14.0:
+  axios@1.15.0:
     dependencies:
       follow-redirects: 1.15.11
       form-data: 4.0.5
