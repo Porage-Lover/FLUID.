@@ -8,15 +8,7 @@ import { ScrollHideHeader } from '../components/ScrollHideHeader';
 
 export function Calendar() {
   const { data } = useData();
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    show: { opacity: 1, transition: { delay: 0.1, duration: 0.4 } }
-  };
-  const itemVariants = {
-    hidden: { opacity: 0 },
-    show: { opacity: 1 }
-  };
-
+  
   const today = new Date();
   const searchMonth = `${today.toLocaleString('en-US', { month: 'short' })} '${today.getFullYear().toString().slice(-2)}`;
   const searchDate = today.getDate().toString();
@@ -86,13 +78,13 @@ export function Calendar() {
         </button>
       </ScrollHideHeader>
 
-      <motion.div variants={containerVariants} initial="hidden" animate="show" onAnimationComplete={scrollToToday} style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+      <motion.div initial={false} onAnimationComplete={scrollToToday} style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
         {data.calendar && data.calendar.length > 0 ? data.calendar.map((item, idx) => {
             const isHoliday = item.type === 'holiday';
             const isToday = item.month === searchMonth && item.date === searchDate;
             
             return (
-               <motion.div key={idx} id={isToday ? "today-event" : `cal-event-${idx}`} variants={itemVariants} layout style={{ display: 'flex', alignItems: 'center' }}>
+               <motion.div key={idx} id={isToday ? "today-event" : `cal-event-${idx}`} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: '-50px' }} transition={{ type: 'spring', stiffness: 300, damping: 30 }} layout style={{ display: 'flex', alignItems: 'center' }}>
                  {/* Left Date Block */}
                  <div style={{ 
                     width: '90px',

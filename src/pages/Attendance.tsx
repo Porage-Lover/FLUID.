@@ -149,15 +149,7 @@ export function Attendance() {
     });
   }, [data.attendance, data.timetable, calendarEventMap, daySimulations, subjectSimulations]);
 
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    show: { opacity: 1, transition: { staggerChildren: 0.1 } }
-  };
-  const itemVariants = {
-    hidden: { y: 20, opacity: 0 },
-    show: { y: 0, opacity: 1, transition: { type: "spring" as const, stiffness: 300, damping: 24 } }
-  };
-
+  
   const handleGlobalSimToggle = (dateKey: string) => {
      triggerHaptic(20);
      setDaySimulations(prev => {
@@ -242,12 +234,12 @@ export function Attendance() {
         )}
       </ScrollHideHeader>
 
-      <motion.div variants={containerVariants} initial="hidden" animate="show" style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
         
         {/* --- SLEEK PREDICTOR TOGGLE (Replaces clutter mapping) --- */}
         {futureWorkingDaysArray.length > 0 && (
            <motion.button 
-              variants={itemVariants} 
+              initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: '-50px' }} transition={{ type: 'spring', stiffness: 300, damping: 30 }} 
               onClick={() => { triggerHaptic(20); setIsModalOpen(true); }}
               style={{
                  width: '100%',
@@ -283,7 +275,7 @@ export function Attendance() {
             const hasLocalEdits = locSim && (locSim.attend > 0 || locSim.bunk > 0);
 
             return (
-              <motion.div key={idx} variants={itemVariants} layout>
+              <motion.div key={idx} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: '-50px' }} transition={{ type: 'spring', stiffness: 300, damping: 30 }} layout>
                 <FluidCard 
                    headerColor={course.headerColor}
                    actionIcon={course.simSafe ? <Plus size={24} color="#050508" /> : <AlertCircle size={24} color="#050508" />}
@@ -390,7 +382,7 @@ export function Attendance() {
           })}
         </div>
 
-      </motion.div>
+      </div>
 
       {/* --- EXCLUSIVE MACOS-STYLE GRID PREDICTOR MODAL --- */}
       <AnimatePresence>
