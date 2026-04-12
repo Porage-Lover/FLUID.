@@ -29,6 +29,14 @@ export function Calendar() {
         const originPos = originEl.getBoundingClientRect().top + window.scrollY - 120;
         window.scrollTo({ top: originPos, behavior: 'instant' as ScrollBehavior });
       }
+
+      // Phase 2 automatically triggered: 
+      // After locking in the 5-days-ago position, wait for the elements to mount/animate 
+      // then seamlessly glide down to Today exactly as before.
+      setTimeout(() => {
+        scrollToToday();
+      }, 400);
+
     }, 50);
 
     return () => clearTimeout(timer);
