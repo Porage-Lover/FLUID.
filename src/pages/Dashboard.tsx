@@ -79,13 +79,13 @@ export function Dashboard() {
          </motion.button>
       </ScrollHideHeader>
 
-      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ staggerChildren: 0.1 }} className="dashboard-grid">
+      <div className="dashboard-grid">
          
          {/* 1. UP NEXT WIDGET (4x2 Wide) */}
-         <FluidCard className="col-span-4 row-span-1" headerColor="--accent-cyan" onClick={() => navigate('/timetable')} innerStyle={{ padding: '24px', display: 'flex', flexDirection: 'column' }}>
+         <FluidCard initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ type: 'spring', stiffness: 300, damping: 30 }} className="col-span-4 row-span-1" headerColor="--accent-cyan" onClick={() => navigate('/timetable')} innerStyle={{ padding: '24px', display: 'flex', flexDirection: 'column' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
                <Sparkles size={16} color="var(--accent-cyan)" />
-               <span style={{ fontSize: 'var(--text-xs)', fontWeight: 800, color: 'var(--accent-cyan)', textTransform: 'uppercase', letterSpacing: '1px' }}>Up Next</span>
+               <span style={{ fontSize: 'var(--text-xs)', fontWeight: 800, color: 'var(--accent-cyan)', letterSpacing: '1px' }}>Up Next</span>
             </div>
             {upNextClass ? (
                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginTop: 'auto' }}>
@@ -101,8 +101,8 @@ export function Dashboard() {
          </FluidCard>
 
          {/* 2. ATTENDANCE ORBIT WIDGET (2x2 Square) */}
-         <FluidCard className="col-span-2 row-span-1" headerColor="--accent-cyan" onClick={() => navigate('/attendance')} innerStyle={{ padding: 0, height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-            <div style={{ position: 'absolute', top: '24px', left: '24px', fontSize: 'var(--text-xs)', fontWeight: 800, color: 'var(--accent-cyan)', letterSpacing: '1px', textTransform: 'uppercase' }}>Pulse</div>
+         <FluidCard initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ type: 'spring', stiffness: 300, damping: 30 }} className="col-span-2 row-span-1" headerColor="--accent-cyan" onClick={() => navigate('/attendance')} innerStyle={{ padding: 0, height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+            <div style={{ position: 'absolute', top: '24px', left: '24px', fontSize: 'var(--text-xs)', fontWeight: 800, color: 'var(--accent-cyan)', letterSpacing: '1px' }}>Pulse</div>
             <div style={{ width: '100px', height: '100px', position: 'relative', marginTop: '16px' }}>
                <ResponsiveContainer width="100%" height="100%">
                   <RadialBarChart cx="50%" cy="50%" innerRadius="75%" outerRadius="100%" barSize={8} data={[{ name: 'A', value: data.user.overallAttendance, fill: 'var(--accent-cyan)' }]}>
@@ -117,8 +117,8 @@ export function Dashboard() {
          </FluidCard>
 
          {/* 3. MARKS AGGREGATE WIDGET (2x2 Square) */}
-         <FluidCard className="col-span-2 row-span-1" headerColor="--accent-crimson" onClick={() => navigate('/marks')} innerStyle={{ padding: '24px', height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-            <div style={{ fontSize: 'var(--text-xs)', fontWeight: 800, color: 'var(--accent-crimson)', letterSpacing: '1px', textTransform: 'uppercase' }}>Aggregate</div>
+         <FluidCard initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ type: 'spring', stiffness: 300, damping: 30 }} className="col-span-2 row-span-1" headerColor="--accent-crimson" onClick={() => navigate('/marks')} innerStyle={{ padding: '24px', height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end' }}>
+            <div style={{ position: 'absolute', top: '24px', left: '24px', fontSize: 'var(--text-xs)', fontWeight: 800, color: 'var(--accent-crimson)', letterSpacing: '1px' }}>Aggregate</div>
             <div style={{ display: 'flex', flexDirection: 'column' }}>
                <span style={{ fontSize: 'var(--text-4xl)', fontWeight: 300, color: 'var(--text-main)', letterSpacing: '-2px', lineHeight: 1 }}>{marksEarned}</span>
                <span style={{ fontSize: 'var(--text-sm)', fontWeight: 800, color: 'var(--text-muted)' }}>/ {marksTotal}</span>
@@ -126,8 +126,8 @@ export function Dashboard() {
          </FluidCard>
 
          {/* 4. AGENDA / CALENDAR WIDGET (4x2 / 4xAuto List) */}
-         <FluidCard className="col-span-4" headerColor="--text-main" onClick={() => navigate('/calendar')} innerStyle={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
-            <div style={{ fontSize: 'var(--text-xs)', fontWeight: 800, color: 'var(--text-muted)', letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '8px' }}>Upcoming Agenda</div>
+         <FluidCard initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ type: 'spring', stiffness: 300, damping: 30 }} className="col-span-4" headerColor="--text-main" onClick={() => navigate('/calendar')} innerStyle={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            <div style={{ fontSize: 'var(--text-xs)', fontWeight: 800, color: 'var(--text-muted)', letterSpacing: '1px', marginBottom: '8px' }}>Upcoming Agenda</div>
             {upcomingAgenda.length > 0 ? upcomingAgenda.map((c: any, i: number) => (
                <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '16px', padding: '12px', background: 'rgba(255,255,255,0.03)', borderRadius: '16px' }}>
                   <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', width: '48px', height: '48px', background: c.type === 'holiday' ? 'rgba(255,42,95,0.1)' : 'rgba(255,255,255,0.05)', borderRadius: '12px' }}>
@@ -144,7 +144,7 @@ export function Dashboard() {
             )}
          </FluidCard>
 
-      </motion.div>
+      </div>
     </div>
   );
 }

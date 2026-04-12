@@ -149,15 +149,7 @@ export function Attendance() {
     });
   }, [data.attendance, data.timetable, calendarEventMap, daySimulations, subjectSimulations]);
 
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    show: { opacity: 1, transition: { staggerChildren: 0.1 } }
-  };
-  const itemVariants = {
-    hidden: { y: 20, opacity: 0 },
-    show: { y: 0, opacity: 1, transition: { type: "spring" as const, stiffness: 300, damping: 24 } }
-  };
-
+  
   const handleGlobalSimToggle = (dateKey: string) => {
      triggerHaptic(20);
      setDaySimulations(prev => {
@@ -242,12 +234,12 @@ export function Attendance() {
         )}
       </ScrollHideHeader>
 
-      <motion.div variants={containerVariants} initial="hidden" animate="show" style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
         
         {/* --- SLEEK PREDICTOR TOGGLE (Replaces clutter mapping) --- */}
         {futureWorkingDaysArray.length > 0 && (
            <motion.button 
-              variants={itemVariants} 
+              initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: '-50px' }} transition={{ type: 'spring', stiffness: 300, damping: 30 }} 
               onClick={() => { triggerHaptic(20); setIsModalOpen(true); }}
               style={{
                  width: '100%',
@@ -268,7 +260,7 @@ export function Attendance() {
                     <CalendarIcon size={24} />
                  </div>
                  <div style={{ textAlign: 'left' }}>
-                    <h3 style={{ margin: '0 0 4px 0', fontSize: 'var(--text-lg)', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1px' }}>Global Timeline Simulator</h3>
+                    <h3 style={{ margin: '0 0 4px 0', fontSize: 'var(--text-lg)', fontWeight: 800, letterSpacing: '1px', fontFamily: 'var(--font-main)' }}>Global Timeline Simulator</h3>
                     <p style={{ margin: 0, fontSize: 'var(--text-xs)', fontWeight: 600, opacity: 0.6 }}>Predict absolute timetable ripples via interactive calendar grids natively.</p>
                  </div>
               </div>
@@ -283,10 +275,10 @@ export function Attendance() {
             const hasLocalEdits = locSim && (locSim.attend > 0 || locSim.bunk > 0);
 
             return (
-              <motion.div key={idx} variants={itemVariants} layout>
-                <FluidCard 
-                   headerColor={course.headerColor}
-                   actionIcon={course.simSafe ? <Plus size={24} color="#050508" /> : <AlertCircle size={24} color="#050508" />}
+              <div key={idx}>
+                <FluidCard
+                   initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: '-50px' }} transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+                   headerColor={course.headerColor}                   actionIcon={course.simSafe ? <Plus size={24} color="#050508" /> : <AlertCircle size={24} color="#050508" />}
                    innerStyle={{ paddingTop: '24px' }}
                 >
                   {/* Header Content */}
@@ -385,12 +377,12 @@ export function Attendance() {
                   </div>
 
                 </FluidCard>
-              </motion.div>
+              </div>
             );
           })}
         </div>
 
-      </motion.div>
+      </div>
 
       {/* --- EXCLUSIVE MACOS-STYLE GRID PREDICTOR MODAL --- */}
       <AnimatePresence>

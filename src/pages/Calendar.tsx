@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { FluidCard } from '../components/FluidCard';
 import { useData } from '../context/DataContext';
@@ -7,52 +8,57 @@ import { ScrollHideHeader } from '../components/ScrollHideHeader';
 
 export function Calendar() {
   const { data } = useData();
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    show: { opacity: 1 }
-  };
-  const itemVariants = {
-    hidden: { opacity: 0 },
-    show: { opacity: 1 }
-  };
-
+  
   const today = new Date();
   const searchMonth = `${today.toLocaleString('en-US', { month: 'short' })} '${today.getFullYear().toString().slice(-2)}`;
   const searchDate = today.getDate().toString();
 
+  // Phase 1: Instantly jump to the origin (5 items before today) right after mount, 
+  // overriding any global scroll resets, while the container is still hidden (opacity 0).
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      const todayIdx = data.calendar.findIndex(
+        (c: any) => c.month === searchMonth && c.date === searchDate
+      );
+      const originIdx = Math.max(0, todayIdx - 5);
+      const originId = `cal-event-${originIdx}`;
+      const originEl = document.getElementById(originId);
+
+      if (originEl) {
+        (window as any).isProgrammaticScroll = true;
+        const originPos = originEl.getBoundingClientRect().top + window.scrollY - 120;
+        window.scrollTo({ top: originPos, behavior: 'instant' as ScrollBehavior });
+      }
+
+      // Phase 2 automatically triggered: 
+      // After locking in the 5-days-ago position, wait for the elements to mount/animate 
+      // then seamlessly glide down to Today exactly as before.
+      setTimeout(() => {
+        scrollToToday();
+      }, 400);
+
+    }, 50);
+
+    return () => clearTimeout(timer);
+  }, [data.calendar, searchMonth, searchDate]);
+
+  // Phase 2: Smooth scroll to today, triggered when the fade-in animation completes or via button.
   const scrollToToday = () => {
     const el = document.getElementById('today-event');
     if (!el) return;
 
-    // Find the origin element (5 entries before today)
-    const todayIdx = data.calendar.findIndex(
-      (c: any) => c.month === searchMonth && c.date === searchDate
-    );
-    const originIdx = Math.max(0, todayIdx - 5);
-    const originId = `cal-event-${originIdx}`;
-    const originEl = document.getElementById(originId);
-
     (window as any).isProgrammaticScroll = true;
 
-    // Phase 1: Instantly jump to the origin (5 items before today)
-    if (originEl) {
-      const originPos = originEl.getBoundingClientRect().top + window.scrollY - 120;
-      window.scrollTo({ top: originPos, behavior: 'instant' as ScrollBehavior });
-    }
+    const headerOffset = 200; // Extra padding so today sits comfortably below the fold
+    const elementPosition = el.getBoundingClientRect().top;
+    const offsetPosition = elementPosition + window.scrollY - headerOffset;
 
-    // Phase 2: After a short pause, smoothly scroll to just above today
-    setTimeout(() => {
-      const headerOffset = 200; // Extra padding so today sits comfortably below the fold
-      const elementPosition = el.getBoundingClientRect().top;
-      const offsetPosition = elementPosition + window.scrollY - headerOffset;
-
-      window.scrollTo({
-           top: offsetPosition,
-           behavior: "smooth"
-      });
-      
-      setTimeout(() => { (window as any).isProgrammaticScroll = false; }, 1200);
-    }, 400);
+    window.scrollTo({
+         top: offsetPosition,
+         behavior: "smooth"
+    });
+    
+    setTimeout(() => { (window as any).isProgrammaticScroll = false; }, 1200);
   };
 
   return (
@@ -80,15 +86,15 @@ export function Calendar() {
         </button>
       </ScrollHideHeader>
 
-      <motion.div variants={containerVariants} initial="hidden" animate="show" onAnimationComplete={scrollToToday} style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+      <motion.div initial={false} onAnimationComplete={scrollToToday} style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
         {data.calendar && data.calendar.length > 0 ? data.calendar.map((item, idx) => {
             const isHoliday = item.type === 'holiday';
             const isToday = item.month === searchMonth && item.date === searchDate;
             
             return (
-               <motion.div key={idx} id={isToday ? "today-event" : `cal-event-${idx}`} variants={itemVariants} layout style={{ display: 'flex', alignItems: 'center' }}>
+               <div key={idx} id={isToday ? "today-event" : `cal-event-${idx}`} style={{ display: 'flex', alignItems: 'center' }}>
                  {/* Left Date Block */}
-                 <div style={{ 
+                 <motion.div initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true, margin: '-50px' }} transition={{ type: 'spring', stiffness: 300, damping: 30 }} style={{ 
                     width: '90px',
                     display: 'flex',
                     flexDirection: 'column',
@@ -104,11 +110,11 @@ export function Calendar() {
                     <span style={{ fontSize: 'var(--text-sm)', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '2px', opacity: 0.7 }}>{item.month.split(' ')[0]}</span>
                     <span className="heading-fluid" style={{ fontSize: 'var(--text-4xl)', lineHeight: 1, margin: '8px 0', textShadow: isHoliday ? '0 0 20px rgba(255,42,95,0.4)' : 'none' }}>{item.date}</span>
                     <span style={{ fontSize: 'var(--text-xs)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '1px' }}>{item.day}</span>
-                 </div>
+                 </motion.div>
 
                  {/* Right Content Card */}
                  <div style={{ flex: 1 }}>
-                   <FluidCard style={{ padding: '24px' }} headerColor={isHoliday ? '--accent-crimson' : 'transparent'}>
+                   <FluidCard initial={{ opacity: 0, x: 20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true, margin: '-50px' }} transition={{ type: 'spring', stiffness: 300, damping: 30 }} style={{ padding: '24px' }} headerColor={isHoliday ? '--accent-crimson' : 'transparent'}>
                       <h3 style={{ fontSize: 'var(--text-xl)', fontWeight: 800, marginBottom: '16px', color: 'var(--text-main)', lineHeight: 1.2 }}>{item.title}</h3>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
@@ -120,7 +126,7 @@ export function Calendar() {
                       </div>
                    </FluidCard>
                  </div>
-               </motion.div>
+               </div>
             );
         }) : (
             <div style={{ textAlign: 'center', opacity: 0.5, marginTop: '40px', fontWeight: 800 }}>No Events Found in Planner Matrix</div>

@@ -42,8 +42,3 @@
 **Vulnerability:** Backend API `api/scrape.ts` returning sensitive student data (attendance, marks) lacked strict cache prevention headers, allowing browsers and intermediate Vercel edge proxies to potentially cache the cleartext JSON payload.
 **Learning:** Even when requests are over HTTPS and require authentication (or credentials in body), omitting cache headers on responses containing PII can lead to data leakage if devices are shared or edge proxies are misconfigured.
 **Prevention:** Always explicitly set `Cache-Control: no-store`, `Pragma: no-cache`, and `Surrogate-Control: no-store` headers on serverless endpoints returning sensitive user data.
-
-## 2026-04-11 - [Update axios to Fix SSRF and Metadata Exfiltration Vulnerabilities]
-**Vulnerability:** The project was using a vulnerable version of `axios` (<1.15.0) which had critical vulnerabilities related to a NO_PROXY Hostname Normalization Bypass leading to Server-Side Request Forgery (SSRF) and Unrestricted Cloud Metadata Exfiltration via Header Injection Chain.
-**Learning:** Using outdated dependencies with critical vulnerabilities leaves the application open to severe attacks, especially when making backend requests (e.g., in `api/scrape.ts`). SSRF can allow attackers to access internal services and exfiltrate cloud metadata.
-**Prevention:** Regularly audit and upgrade dependencies to patch known vulnerabilities. In this case, upgrading `axios` to `^1.15.0` mitigates the critical SSRF and Metadata Exfiltration issues.
