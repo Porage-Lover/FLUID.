@@ -49,15 +49,28 @@ export function Dashboard() {
   const upcomingAgenda = useMemo(() => {
       const nowTime = new Date();
       nowTime.setHours(0,0,0,0);
-      return (data.calendar || []).filter((c: any) => {
+      const nowMs = nowTime.getTime();
+
+      // ⚡ Bolt Optimization:
+      // Replaced chained `.filter().slice(0,4)` which needlessly iterated the entire
+      // academic calendar array. A simple `for...of` loop with a `break` stops execution
+      // immediately after finding 4 upcoming events, avoiding massive redundant date computations.
+      // Also hoisted `validMonths` object lookup to prevent recreating the array per iteration.
+      const validMonths: Record<string, number> = { Jan: 0, Feb: 1, Mar: 2, Apr: 3, May: 4, Jun: 5, Jul: 6, Aug: 7, Sep: 8, Oct: 9, Nov: 10, Dec: 11 };
+
+      const result = [];
+      for (const c of (data.calendar || [])) {
          const mStr = c.month.substring(0, 3);
          const yStr = c.month.split("'")[1];
-         const y = 2000 + (yStr ? parseInt(yStr) : 25);
-         const validMonths = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+         const y = 2000 + (yStr ? parseInt(yStr, 10) : 25);
          
-         const eventDate = new Date(y, validMonths.indexOf(mStr), parseInt(c.date));
-         return eventDate.getTime() >= nowTime.getTime();
-      }).slice(0, 4);
+         const eventDate = new Date(y, validMonths[mStr], parseInt(c.date, 10));
+         if (eventDate.getTime() >= nowMs) {
+            result.push(c);
+            if (result.length === 4) break;
+         }
+      }
+      return result;
   }, [data.calendar]);
 
   return (
