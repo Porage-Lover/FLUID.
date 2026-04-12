@@ -275,10 +275,10 @@ export function Attendance() {
             const hasLocalEdits = locSim && (locSim.attend > 0 || locSim.bunk > 0);
 
             return (
-              <motion.div key={idx} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: '-50px' }} transition={{ type: 'spring', stiffness: 300, damping: 30 }} layout>
-                <FluidCard 
-                   headerColor={course.headerColor}
-                   actionIcon={course.simSafe ? <Plus size={24} color="#050508" /> : <AlertCircle size={24} color="#050508" />}
+              <div key={idx}>
+                <FluidCard
+                   initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: '-50px' }} transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+                   headerColor={course.headerColor}                   actionIcon={course.simSafe ? <Plus size={24} color="#050508" /> : <AlertCircle size={24} color="#050508" />}
                    innerStyle={{ paddingTop: '24px' }}
                 >
                   {/* Header Content */}
@@ -377,7 +377,7 @@ export function Attendance() {
                   </div>
 
                 </FluidCard>
-              </motion.div>
+              </div>
             );
           })}
         </div>

@@ -84,9 +84,9 @@ export function Calendar() {
             const isToday = item.month === searchMonth && item.date === searchDate;
             
             return (
-               <motion.div key={idx} id={isToday ? "today-event" : `cal-event-${idx}`} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: '-50px' }} transition={{ type: 'spring', stiffness: 300, damping: 30 }} layout style={{ display: 'flex', alignItems: 'center' }}>
+               <div key={idx} id={isToday ? "today-event" : `cal-event-${idx}`} style={{ display: 'flex', alignItems: 'center' }}>
                  {/* Left Date Block */}
-                 <div style={{ 
+                 <motion.div initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true, margin: '-50px' }} transition={{ type: 'spring', stiffness: 300, damping: 30 }} style={{ 
                     width: '90px',
                     display: 'flex',
                     flexDirection: 'column',
@@ -102,11 +102,11 @@ export function Calendar() {
                     <span style={{ fontSize: 'var(--text-sm)', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '2px', opacity: 0.7 }}>{item.month.split(' ')[0]}</span>
                     <span className="heading-fluid" style={{ fontSize: 'var(--text-4xl)', lineHeight: 1, margin: '8px 0', textShadow: isHoliday ? '0 0 20px rgba(255,42,95,0.4)' : 'none' }}>{item.date}</span>
                     <span style={{ fontSize: 'var(--text-xs)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '1px' }}>{item.day}</span>
-                 </div>
+                 </motion.div>
 
                  {/* Right Content Card */}
                  <div style={{ flex: 1 }}>
-                   <FluidCard style={{ padding: '24px' }} headerColor={isHoliday ? '--accent-crimson' : 'transparent'}>
+                   <FluidCard initial={{ opacity: 0, x: 20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true, margin: '-50px' }} transition={{ type: 'spring', stiffness: 300, damping: 30 }} style={{ padding: '24px' }} headerColor={isHoliday ? '--accent-crimson' : 'transparent'}>
                       <h3 style={{ fontSize: 'var(--text-xl)', fontWeight: 800, marginBottom: '16px', color: 'var(--text-main)', lineHeight: 1.2 }}>{item.title}</h3>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
@@ -118,7 +118,7 @@ export function Calendar() {
                       </div>
                    </FluidCard>
                  </div>
-               </motion.div>
+               </div>
             );
         }) : (
             <div style={{ textAlign: 'center', opacity: 0.5, marginTop: '40px', fontWeight: 800 }}>No Events Found in Planner Matrix</div>

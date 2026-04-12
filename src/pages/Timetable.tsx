@@ -188,7 +188,6 @@ export function Timetable() {
       <AnimatePresence mode="wait">
         <motion.div
           key={selectedDay}
-          layout
           initial={{ x: 20 }}
           animate={{ x: 0 }}
           exit={{ x: -20 }}
@@ -216,7 +215,7 @@ export function Timetable() {
             }
             return dayData.map((cls: any, idx: number) => {
               return (
-              <motion.div key={idx} layout style={{ width: '100%' }}>
+              <div key={idx} style={{ width: '100%' }}>
                 <FluidCard style={{ padding: 0, height: 'auto', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }} headerColor={idx % 2 === 0 ? '--accent-cyan' : '--accent-crimson'}>
                    <div style={{ padding: '32px 24px', display: 'flex', flexDirection: 'column', height: '100%' }}>
                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '16px' }}>
@@ -246,7 +245,7 @@ export function Timetable() {
                      </div>
                   </div>
                 </FluidCard>
-              </motion.div>
+              </div>
             );
           });
         })()}
