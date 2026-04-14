@@ -29,7 +29,7 @@ export function Marks() {
   const colors = ['#FF2A5F', '#FF3399', '#BF5AF2', '#5E5CE6', '#0A84FF', '#32ADE6', '#30D158', '#FFD60A', '#FF9F0A'];
 
   const getRingData = (graph: any[]) => {
-      const ringNodes = graph.map((p, idx) => {
+      return graph.map((p, idx) => {
          let derivedMax = p.max;
          if (!derivedMax) {
            if (p.name.includes('CT')) derivedMax = 15;
@@ -45,11 +45,6 @@ export function Marks() {
            fill: colors[idx % colors.length]
          };
       });
-
-      return [
-         { name: 'dummy', percentage: 100, fill: 'transparent', rawName: '', rawVal: 0, derivedMax: 0 },
-         ...ringNodes.reverse()
-      ];
   };
 
   return (
@@ -68,8 +63,17 @@ export function Marks() {
             {data.marks.map((subject, subjectIdx) => {
                const isDense = subject.graph.length > 4;
                const ringSize = isDense ? 8 : 16;
-               const chartData = getRingData(subject.graph);
-               const dummyRemoved = chartData.filter(c => c.name !== 'dummy').reverse();
+               const ringNodes = getRingData(subject.graph);
+
+               // ⚡ Bolt Optimization:
+               // Replaced expensive `chartData.filter(c => c.name !== 'dummy').reverse()`
+               // by directly using `ringNodes` for the legend, and constructing `chartData` manually.
+               const chartData = [
+                  { name: 'dummy', percentage: 100, fill: 'transparent', rawName: '', rawVal: 0, derivedMax: 0 },
+                  ...[...ringNodes].reverse()
+               ];
+               const dummyRemoved = ringNodes;
+
                const isExpanded = expandedIdx === subjectIdx;
                
                return (
