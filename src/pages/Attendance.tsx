@@ -35,10 +35,9 @@ export function Attendance() {
     const map = new Map<string, any>();
     const futureArr = [];
     
-    // Neutralize time to midnight securely
+    // Neutralize time securely
     const now = new Date();
-    now.setHours(0,0,0,0);
-    const nowTime = now.getTime();
+    const currentInt = now.getFullYear() * 10000 + now.getMonth() * 100 + now.getDate();
 
     for (let i = 0; i < data.calendar.length; i++) {
        const c = data.calendar[i];
@@ -48,12 +47,16 @@ export function Attendance() {
        const mIdx = MONTH_NAMES.indexOf(mStr);
        
        if (mIdx !== -1) {
-          const key = `${mStr} '${yStr}-${parseInt(c.date)}`;
+          const key = `${mStr} '${yStr}-${parseInt(c.date, 10)}`;
           map.set(key, c);
           
           if (c.type === 'working' && c.title.toLowerCase().includes('day order')) {
-             const eventDate = new Date(y, mIdx, parseInt(c.date));
-             if (eventDate.getTime() >= nowTime) {
+             // ⚡ Bolt Optimization:
+             // Replaced iterative `new Date()` object instantiation and `.getTime()` calls
+             // with direct numerical comparisons by encoding the components into a single integer.
+             // This eliminates redundant object allocation overhead in O(N) operations.
+             const eventInt = y * 10000 + mIdx * 100 + parseInt(c.date, 10);
+             if (eventInt >= currentInt) {
                 futureArr.push(c);
              }
           }

@@ -48,14 +48,15 @@ export function Dashboard() {
   // macOS Agenda List Tracker
   const upcomingAgenda = useMemo(() => {
       const nowTime = new Date();
-      nowTime.setHours(0,0,0,0);
-      const nowMs = nowTime.getTime();
+      const currentInt = nowTime.getFullYear() * 10000 + nowTime.getMonth() * 100 + nowTime.getDate();
 
       // ⚡ Bolt Optimization:
       // Replaced chained `.filter().slice(0,4)` which needlessly iterated the entire
       // academic calendar array. A simple `for...of` loop with a `break` stops execution
       // immediately after finding 4 upcoming events, avoiding massive redundant date computations.
       // Also hoisted `validMonths` object lookup to prevent recreating the array per iteration.
+      // Replaced `new Date()` object instantiation and `.getTime()` calls with direct numerical
+      // comparisons by encoding the components into a single integer.
       const validMonths: Record<string, number> = { Jan: 0, Feb: 1, Mar: 2, Apr: 3, May: 4, Jun: 5, Jul: 6, Aug: 7, Sep: 8, Oct: 9, Nov: 10, Dec: 11 };
 
       const result = [];
@@ -63,9 +64,11 @@ export function Dashboard() {
          const mStr = c.month.substring(0, 3);
          const yStr = c.month.split("'")[1];
          const y = 2000 + (yStr ? parseInt(yStr, 10) : 25);
+         const m = validMonths[mStr];
+         const d = parseInt(c.date, 10);
          
-         const eventDate = new Date(y, validMonths[mStr], parseInt(c.date, 10));
-         if (eventDate.getTime() >= nowMs) {
+         const eventInt = y * 10000 + m * 100 + d;
+         if (eventInt >= currentInt) {
             result.push(c);
             if (result.length === 4) break;
          }
