@@ -194,16 +194,26 @@ async function fetchAcademicsData(client: any): Promise<{ attendance: any[], mar
               let overallTotal = 0;
 
               nestedTables.find("td").each((_, testCell) => {
-                  const testText = $(testCell).text().trim().split(".00");
-                  if (testText.length >= 2) {
-                      const testNameParts = testText[0].split("/");
-                      if (testNameParts.length >= 2) {
-                          const testTitle = testNameParts[0].trim();
-                          const total = parseFloat(testNameParts[1]) || 0;
-                          const scored = parseFloat(testText[1]) || 0;
+                  const fullText = $(testCell).text().trim();
+                  const parts = fullText.split('/');
+                  
+                  if (parts.length >= 2) {
+                      const testTitle = parts[0].trim();
+                      const rightSide = parts.slice(1).join('/').trim().split(/\s+/);
+                      
+                      if (rightSide.length >= 2) {
+                          const total = parseFloat(rightSide[0]) || 0;
+                          const rawScored = rightSide[1].toUpperCase();
+                          
+                          let scored: number | string = 0;
+                          if (rawScored.includes('ABS')) {
+                              scored = 'abs';
+                          } else {
+                              scored = parseFloat(rawScored) || 0;
+                          }
 
                           graph.push({ name: testTitle, val: scored, max: total });
-                          overallScored += scored;
+                          overallScored += (typeof scored === 'number' ? scored : 0);
                           overallTotal += total;
                       }
                   }
