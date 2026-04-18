@@ -194,26 +194,22 @@ async function fetchAcademicsData(client: any): Promise<{ attendance: any[], mar
               let overallTotal = 0;
 
               nestedTables.find("td").each((_, testCell) => {
-                  const fullText = $(testCell).text().trim();
+                  const rawHtml = $(testCell).html() || '';
+                  // Replace <br> tags with spaces to cleanly separate concatenated lines
+                  const spacedHtml = rawHtml.replace(/<br\s*\/?>/gi, ' ');
+                  const fullText = cheerio.load(spacedHtml).text().replace(/\s+/g, ' ').trim();
                   
-                  // Matches: "FT-III / 15.00 11.10" or "FT-III/15.0011.10" or "FT-III/15.00ABS"
-                  // match[1] = "FT-III "
-                  // match[2] = "15.00"
-                  // match[3] = " 11.10" or "11.10" or "ABS"
-                  const match = fullText.match(/(.*?)\/(\d+(?:\.\d+)?)(.*)/i);
+                  const parts = fullText.split('/');
                   
-                  if (match && match.length >= 4) {
-                      const testTitle = match[1].trim();
-                      const total = parseFloat(match[2]) || 0;
-                      const remainder = match[3].trim().toUpperCase();
+                  if (parts.length >= 2) {
+                      const testTitle = parts[0].trim();
+                      const rightSide = parts.slice(1).join('/').trim().split(/\s+/);
                       
-                      // Extract the scored value from the remainder
-                      const scoredMatch = remainder.match(/(ABS|ABSENT|\d+(?:\.\d+)?)/);
-                      
-                      if (scoredMatch) {
-                          const rawScored = scoredMatch[1];
-                          let scored: number | string = 0;
+                      if (rightSide.length >= 2) {
+                          const total = parseFloat(rightSide[0]) || 0;
+                          const rawScored = rightSide[1].toUpperCase();
                           
+                          let scored: number | string = 0;
                           if (rawScored.includes('ABS')) {
                               scored = 'abs';
                           } else {
