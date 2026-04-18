@@ -186,7 +186,9 @@ async function fetchAcademicsData(client: any): Promise<{ attendance: any[], mar
       }
 
       // HEURISTIC B: MARKS TARGETING (Detecting nested inner tables cleanly)
-      if (tds.length >= 3 && tds.length <= 6) {
+      // Note: Removed the arbitrary 'tds.length <= 6' limit because a subject with 4 components 
+      // produces 7 total nested TDs, causing it to be silently skipped.
+      if (tds.length >= 3) {
           const nestedTables = tds.eq(2).find("table");
           if (nestedTables.length > 0) {
               const graph: any[] = [];
