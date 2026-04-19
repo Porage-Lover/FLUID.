@@ -186,7 +186,9 @@ async function fetchAcademicsData(client: any): Promise<{ attendance: any[], mar
       }
 
       // HEURISTIC B: MARKS TARGETING (Detecting nested inner tables cleanly)
-      if (tds.length >= 3 && tds.length <= 6) {
+      // Note: Removed the arbitrary 'tds.length <= 6' limit because a subject with 4 components 
+      // produces 7 total nested TDs, causing it to be silently skipped.
+      if (tds.length >= 3) {
           const nestedTables = tds.eq(2).find("table");
           if (nestedTables.length > 0) {
               const graph: any[] = [];
@@ -194,16 +196,30 @@ async function fetchAcademicsData(client: any): Promise<{ attendance: any[], mar
               let overallTotal = 0;
 
               nestedTables.find("td").each((_, testCell) => {
-                  const testText = $(testCell).text().trim().split(".00");
-                  if (testText.length >= 2) {
-                      const testNameParts = testText[0].split("/");
-                      if (testNameParts.length >= 2) {
-                          const testTitle = testNameParts[0].trim();
-                          const total = parseFloat(testNameParts[1]) || 0;
-                          const scored = parseFloat(testText[1]) || 0;
+                  const rawHtml = $(testCell).html() || '';
+                  // Replace <br> tags with spaces to cleanly separate concatenated lines
+                  const spacedHtml = rawHtml.replace(/<br\s*\/?>/gi, ' ');
+                  const fullText = cheerio.load(spacedHtml).text().replace(/\s+/g, ' ').trim();
+                  
+                  const parts = fullText.split('/');
+                  
+                  if (parts.length >= 2) {
+                      const testTitle = parts[0].trim();
+                      const rightSide = parts.slice(1).join('/').trim().split(/\s+/);
+                      
+                      if (rightSide.length >= 2) {
+                          const total = parseFloat(rightSide[0]) || 0;
+                          const rawScored = rightSide[1].toUpperCase();
+                          
+                          let scored: number | string = 0;
+                          if (rawScored.includes('ABS')) {
+                              scored = 'abs';
+                          } else {
+                              scored = parseFloat(rawScored) || 0;
+                          }
 
                           graph.push({ name: testTitle, val: scored, max: total });
-                          overallScored += scored;
+                          overallScored += (typeof scored === 'number' ? scored : 0);
                           overallTotal += total;
                       }
                   }

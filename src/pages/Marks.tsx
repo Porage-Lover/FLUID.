@@ -29,19 +29,19 @@ export function Marks() {
   const colors = ['#FF2A5F', '#FF3399', '#BF5AF2', '#5E5CE6', '#0A84FF', '#32ADE6', '#30D158', '#FFD60A', '#FF9F0A'];
 
   const getRingData = (graph: any[]) => {
-      return graph.map((p, idx) => {
-         let derivedMax = p.max;
-         if (!derivedMax) {
-           if (p.name.includes('CT')) derivedMax = 15;
-           else if (p.name.includes('FT')) derivedMax = p.val > 5 ? 15 : 5;
-           else derivedMax = p.val > 15 ? 100 : p.val > 5 ? 15 : 5;
-         }
+      const ringNodes = graph.map((p, idx) => {
+         let derivedMax = p.max || 100; // Trust the API's max, fallback to 100 to prevent NaN crashes
+         
+         const rawValStr = String(p.val).trim().toUpperCase();
+         const isAbsent = rawValStr === 'ABS';
+         const parsedVal = isAbsent ? 0 : (parseFloat(p.val) || 0);
+
          return {
            name: p.name, 
            rawName: p.name,
-           rawVal: p.val,
+           rawVal: isAbsent ? 'ABS' : p.val,
            derivedMax,
-           percentage: derivedMax > 0 ? (p.val / derivedMax) * 100 : 0,
+           percentage: derivedMax > 0 ? (parsedVal / derivedMax) * 100 : 0,
            fill: colors[idx % colors.length]
          };
       });
