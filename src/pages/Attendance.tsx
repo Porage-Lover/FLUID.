@@ -37,8 +37,8 @@ export function Attendance() {
     
     // Neutralize time to midnight securely
     const now = new Date();
-    now.setHours(0,0,0,0);
-    const nowTime = now.getTime();
+    // Pre-calculate today's integer representation (YYYYMMDD) to eliminate Date parsing inside the loop
+    const todayInt = now.getFullYear() * 10000 + now.getMonth() * 100 + now.getDate();
 
     for (let i = 0; i < data.calendar.length; i++) {
        const c = data.calendar[i];
@@ -52,8 +52,8 @@ export function Attendance() {
           map.set(key, c);
           
           if (c.type === 'working' && c.title.toLowerCase().includes('day order')) {
-             const eventDate = new Date(y, mIdx, parseInt(c.date));
-             if (eventDate.getTime() >= nowTime) {
+             const eventDateInt = y * 10000 + mIdx * 100 + parseInt(c.date);
+             if (eventDateInt >= todayInt) {
                 futureArr.push(c);
              }
           }

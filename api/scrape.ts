@@ -426,6 +426,12 @@ function generateLocalTimetable(attendanceData: any[], isBatchTwo: boolean) {
 }
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
+  // 🛡️ Sentinel: Prevent sensitive data and errors from being cached by browsers or edge proxies universally
+  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+  res.setHeader('Pragma', 'no-cache');
+  res.setHeader('Expires', '0');
+  res.setHeader('Surrogate-Control', 'no-store');
+
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
@@ -583,12 +589,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           logger.error('🛡️ Sentinel: Supabase UPSERT blocked natively (Likely RLS configuration missing). Bypassing globally.', { error: 'Database Upsert Error' });
        }
     }
-
-    // 🛡️ Sentinel: Prevent sensitive academic data from being cached by browsers or edge proxies
-    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
-    res.setHeader('Pragma', 'no-cache');
-    res.setHeader('Expires', '0');
-    res.setHeader('Surrogate-Control', 'no-store');
 
     return res.status(200).json({ success: true, data: fetchedPayload, academiaId: secureId });
 
