@@ -182,6 +182,7 @@ export function Login() {
                 type="email"
                 placeholder="netid@srmist.edu.in"
                 value={email}
+                maxLength={100}
                 onChange={(e) => setEmail(e.target.value)}
                 style={{
                   width: '100%',
@@ -208,6 +209,7 @@ export function Login() {
                   type={showPassword ? "text" : "password"}
                   placeholder="••••••••"
                   value={password}
+                  maxLength={100}
                   onChange={(e) => setPassword(e.target.value)}
                   style={{
                     width: '100%',
