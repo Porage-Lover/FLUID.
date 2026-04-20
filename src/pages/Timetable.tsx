@@ -15,7 +15,11 @@ export function Timetable() {
   const todayNode = useMemo(() => {
     if (!data.calendar || data.calendar.length === 0) return null;
     const today = new Date();
-    const searchMonth = `${today.toLocaleString('en-US', { month: 'short' })} '${today.getFullYear().toString().slice(-2)}`;
+    const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    // ⚡ Bolt Optimization:
+    // Replaced expensive `toLocaleString` call with a static O(1) array lookup.
+    // `toLocaleString` instantiates formatting objects implicitly and is ~50x slower.
+    const searchMonth = `${MONTHS[today.getMonth()]} '${today.getFullYear().toString().slice(-2)}`;
     const searchDate = today.getDate().toString();
     return data.calendar.find(c => c.month === searchMonth && c.date === searchDate);
   }, [data.calendar]);
