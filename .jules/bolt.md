@@ -44,3 +44,7 @@
 ## 2026-04-17 - Fast Chronological Filtering Without Memory Allocation
 **Learning:** Re-instantiating `new Date()` inside an O(N) loop (e.g. for traversing calendar structures in Attendance.tsx) causes completely unnecessary CPU allocations overhead, just for monotonic chronological ordering.
 **Action:** Avoid `new Date()` inside loops. Convert target filtering timestamps and input variables directly into purely deterministic integer math (e.g., `YYYYMMDD`) natively outside the loops for `O(1)` lookups and bounds checks inside them without allocations.
+
+## 2026-04-21 - [Date.prototype.toLocaleString Rendering Overhead]
+**Learning:** Found a severe performance overhead in `Calendar.tsx` and `Timetable.tsx` where `Date.prototype.toLocaleString` was being used to extract short month names dynamically on every render cycle. `toLocaleString` is surprisingly expensive as it implicitly instantiates internal formatting objects during every call, accumulating heavy overhead.
+**Action:** Replace `toLocaleString` with a static predefined array of short month strings (`['Jan', 'Feb', ...]`) and index it using `Date.prototype.getMonth()` (`O(1)` constant time). This completely eliminates the formatting instantiation overhead during render loops.
