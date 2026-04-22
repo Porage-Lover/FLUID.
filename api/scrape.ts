@@ -485,6 +485,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       withCredentials: true,
       maxRedirects: 10,
       timeout: 15000, // 🛡️ Sentinel: Prevent serverless function hangs / Resource Exhaustion
+      maxContentLength: 5000000, // 🛡️ Sentinel: Enforce strict payload size limits (5MB) to prevent upstream memory exhaustion (DoS)
+      maxBodyLength: 5000000,
       headers: {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
       }
