@@ -527,7 +527,16 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     // 🛡️ Sentinel: Prevent Server-Side Request Forgery (SSRF) by strictly validating the OAuth redirect URI
-    if (typeof oauthorize_uri !== 'string' || !oauthorize_uri.startsWith('https://academia.srmist.edu.in/')) {
+    let isValidUri = false;
+    if (typeof oauthorize_uri === 'string') {
+      try {
+        const parsedUri = new URL(oauthorize_uri);
+        isValidUri = parsedUri.protocol === 'https:' && parsedUri.hostname === 'academia.srmist.edu.in';
+      } catch {
+        // Invalid URL format
+      }
+    }
+    if (!isValidUri) {
       logger.error('🛡️ Sentinel: Blocked potential SSRF attempt via malformed OAuth URI', { uri: oauthorize_uri });
       return res.status(502).json({ error: 'Invalid upstream gateway response' });
     }

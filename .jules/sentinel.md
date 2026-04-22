@@ -42,3 +42,8 @@
 **Vulnerability:** Backend API `api/scrape.ts` returning sensitive student data (attendance, marks) lacked strict cache prevention headers, allowing browsers and intermediate Vercel edge proxies to potentially cache the cleartext JSON payload.
 **Learning:** Even when requests are over HTTPS and require authentication (or credentials in body), omitting cache headers on responses containing PII can lead to data leakage if devices are shared or edge proxies are misconfigured.
 **Prevention:** Always explicitly set `Cache-Control: no-store`, `Pragma: no-cache`, and `Surrogate-Control: no-store` headers on serverless endpoints returning sensitive user data.
+
+## 2026-04-21 - [Prevent SSRF Bypass via Embedded Credentials]
+**Vulnerability:** The backend endpoint `api/scrape.ts` validated the `oauthorize_uri` for Server-Side Request Forgery (SSRF) using `.startsWith('https://academia.srmist.edu.in/')`. This allowed an attacker to bypass the check by providing a URL with embedded credentials, e.g., `https://academia.srmist.edu.in@evil.com`, causing the server to request a malicious target.
+**Learning:** String-matching methods like `.startsWith()` are insufficient for URL validation, as they do not account for the standard structure of URLs, such as basic authentication parameters, which can completely alter the actual destination host.
+**Prevention:** Always use the native `URL` constructor to reliably parse URLs and strictly validate the `protocol` and `hostname` properties to verify the exact intended destination.
