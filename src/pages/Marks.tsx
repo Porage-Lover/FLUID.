@@ -29,7 +29,7 @@ export function Marks() {
   const colors = ['#FF2A5F', '#FF3399', '#BF5AF2', '#5E5CE6', '#0A84FF', '#32ADE6', '#30D158', '#FFD60A', '#FF9F0A'];
 
   const getRingData = (graph: any[]) => {
-      const ringNodes = graph.map((p, idx) => {
+      return graph.map((p, idx) => {
          let derivedMax = p.max || 100; // Trust the API's max, fallback to 100 to prevent NaN crashes
          
          const rawValStr = String(p.val).trim().toUpperCase();
