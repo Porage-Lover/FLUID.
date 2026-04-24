@@ -46,7 +46,8 @@
       "minimatch": "^10.2.3",
       "smol-toml": "^1.6.1",
       "follow-redirects": "^1.16.0",
-      "@vercel/static-config>ajv": "^8.18.0"
+      "@vercel/static-config>ajv": "^8.18.0",
+      "vite>postcss": "^8.5.10"
     }
   }
 }
