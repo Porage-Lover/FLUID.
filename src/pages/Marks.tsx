@@ -76,6 +76,12 @@ export function Marks() {
 
                const isExpanded = expandedIdx === subjectIdx;
                
+               // ⚡ Bolt Optimization:
+               // Hoisted the `.split('/')` string operation out of the JSX render return.
+               // Previously, `subject.total.split('/')` was called twice directly inside the JSX,
+               // causing redundant array allocations and string parsing on every render cycle.
+               const [totalEarned, totalMax] = subject.total.split('/');
+
                return (
                    <motion.div
                        initial={{ opacity: 0, y: 20 }}
@@ -122,8 +128,8 @@ export function Marks() {
                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', flexShrink: 0 }}>
                                 <span style={{ fontSize: 'var(--text-xs)', fontWeight: 800, textTransform: 'uppercase', opacity: 0.4, letterSpacing: '3px', marginBottom: '4px' }}>Total</span>
                                 <span style={{ fontSize: 'clamp(28px, 5vw, 48px)', fontWeight: 300, color: 'var(--text-main)', display: 'flex', alignItems: 'baseline', gap: '4px', letterSpacing: '-2px' }}>
-                                   {subject.total.split('/')[0]}
-                                   <span style={{ fontSize: 'clamp(12px, 2vw, 18px)', opacity: 0.3, fontWeight: 400, letterSpacing: '0' }}>/{subject.total.split('/')[1]}</span>
+                                   {totalEarned}
+                                   <span style={{ fontSize: 'clamp(12px, 2vw, 18px)', opacity: 0.3, fontWeight: 400, letterSpacing: '0' }}>/{totalMax}</span>
                                 </span>
                            </div>
 
