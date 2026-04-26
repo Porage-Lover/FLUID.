@@ -44,3 +44,7 @@
 ## 2026-04-17 - Fast Chronological Filtering Without Memory Allocation
 **Learning:** Re-instantiating `new Date()` inside an O(N) loop (e.g. for traversing calendar structures in Attendance.tsx) causes completely unnecessary CPU allocations overhead, just for monotonic chronological ordering.
 **Action:** Avoid `new Date()` inside loops. Convert target filtering timestamps and input variables directly into purely deterministic integer math (e.g., `YYYYMMDD`) natively outside the loops for `O(1)` lookups and bounds checks inside them without allocations.
+
+## 2026-04-26 - [Date.toLocaleString Performance Bottleneck]
+**Learning:** Found a performance bottleneck where `Date.prototype.toLocaleString('en-US', { month: 'short' })` was used inside React render cycles (e.g. `Calendar.tsx`, `Timetable.tsx`). `toLocaleString` implicitly instantiates expensive formatting objects and has significant overhead, running roughly ~150-200x slower than static lookups.
+**Action:** Replace `Date.prototype.toLocaleString` for simple extractions (like short month names) with static array lookups (`['Jan', 'Feb', ...][date.getMonth()]`) for a static, O(1) extraction without allocation overhead.
