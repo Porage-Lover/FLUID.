@@ -10,7 +10,9 @@ export function Calendar() {
   const { data } = useData();
   
   const today = new Date();
-  const searchMonth = `${today.toLocaleString('en-US', { month: 'short' })} '${today.getFullYear().toString().slice(-2)}`;
+  // ⚡ Bolt Optimization: Replacing `toLocaleString` with a static array lookup.
+  // This avoids implicitly instantiating expensive Intl formatting objects inside the render cycle.
+  const searchMonth = `${['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][today.getMonth()]} '${today.getFullYear().toString().slice(-2)}`;
   const searchDate = today.getDate().toString();
 
   // Phase 1: Instantly jump to the origin (5 items before today) right after mount, 
