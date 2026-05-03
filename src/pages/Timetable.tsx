@@ -15,7 +15,8 @@ export function Timetable() {
   const todayNode = useMemo(() => {
     if (!data.calendar || data.calendar.length === 0) return null;
     const today = new Date();
-    const searchMonth = `${today.toLocaleString('en-US', { month: 'short' })} '${today.getFullYear().toString().slice(-2)}`;
+    // ⚡ Bolt Optimization: Replaced expensive toLocaleString with O(1) static array lookup to prevent implicit formatting object instantiation in render loops.
+    const searchMonth = `${['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][today.getMonth()]} '${today.getFullYear().toString().slice(-2)}`;
     const searchDate = today.getDate().toString();
     return data.calendar.find(c => c.month === searchMonth && c.date === searchDate);
   }, [data.calendar]);
