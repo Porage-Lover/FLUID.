@@ -477,6 +477,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   // Build the live SRM username format natively
   const fullUsername = regNo.includes('@') ? regNo : `${regNo}@srmist.edu.in`;
 
+  // 🛡️ Sentinel: Enforce strict domain validation to prevent external SSO proxy abuse
+  if (!fullUsername.toLowerCase().endsWith('@srmist.edu.in')) {
+    logger.error('🛡️ Sentinel: Invalid domain detected in username', { username: fullUsername.substring(0, 20) });
+    return res.status(400).json({ error: 'Invalid domain. Email must end with @srmist.edu.in' });
+  }
+
   try {
     const jar = new CookieJar();
     // Vercel Serverless Axios engine natively supporting tough-cookie persistence sweeps

@@ -47,3 +47,8 @@
 **Vulnerability:** The backend endpoint `api/scrape.ts` validated the `oauthorize_uri` for Server-Side Request Forgery (SSRF) using `.startsWith('https://academia.srmist.edu.in/')`. This allowed an attacker to bypass the check by providing a URL with embedded credentials, e.g., `https://academia.srmist.edu.in@evil.com`, causing the server to request a malicious target.
 **Learning:** String-matching methods like `.startsWith()` are insufficient for URL validation, as they do not account for the standard structure of URLs, such as basic authentication parameters, which can completely alter the actual destination host.
 **Prevention:** Always use the native `URL` constructor to reliably parse URLs and strictly validate the `protocol` and `hostname` properties to verify the exact intended destination.
+
+## 2024-05-24 - [Enforce Strict Domain Validation for Authentication]
+**Vulnerability:** The application relied on `email.includes('@srmist.edu.in')` on the frontend and lacked domain validation on the backend. This could allow attackers to bypass UI checks using addresses like `evil@srmist.edu.in.evil.com` and abuse the backend API as an open proxy for third-party SSO.
+**Learning:** Frontend validation using loose string matching (`.includes`) can be trivially bypassed. Additionally, missing backend authorization limits allows malicious payloads to reach upstream authentication services.
+**Prevention:** Always enforce strict domain validation natively on backend APIs (e.g., `.toLowerCase().endsWith('@srmist.edu.in')`) before passing credentials upstream, preventing unauthorized users or domains from using the API.

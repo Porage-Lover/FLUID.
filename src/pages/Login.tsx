@@ -26,7 +26,7 @@ export function Login() {
     setErr('');
 
     try {
-      if (!email.includes('@srmist.edu.in')) throw new Error("Invalid University Mail ID. Please use @srmist.edu.in");
+      if (!email.toLowerCase().endsWith('@srmist.edu.in')) throw new Error("Invalid University Mail ID. Please use @srmist.edu.in");
 
       const response = await axios.post('/api/scrape', {
         regNo: email,
