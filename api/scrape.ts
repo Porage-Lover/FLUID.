@@ -474,6 +474,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(400).json({ error: 'Invalid registration number format' });
   }
 
+  if (regNo.includes('@') && !regNo.toLowerCase().endsWith('@srmist.edu.in')) {
+    logger.error('🛡️ Sentinel: Unauthorized domain in regNo', { regNo: regNo.substring(0, 10) });
+    return res.status(400).json({ error: 'Invalid email domain' });
+  }
+
   // Build the live SRM username format natively
   const fullUsername = regNo.includes('@') ? regNo : `${regNo}@srmist.edu.in`;
 
