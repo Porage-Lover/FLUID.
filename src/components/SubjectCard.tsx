@@ -48,6 +48,11 @@ export function SubjectCard({ subject }: SubjectCardProps) {
     ];
   }, [subject.graph]);
 
+  // ⚡ Bolt Optimization:
+  // Hoisted repeated string `split()` operations into variables before the JSX return.
+  // This avoids redundant allocations and processing inside the component render cycle.
+  const [totalEarned, totalMax] = subject.total.split('/');
+
   return (
     <motion.div layout variants={{ hidden: { y: 20, opacity: 0 }, show: { y: 0, opacity: 1, transition: { type: "spring", stiffness: 400, damping: 24 } } }}>
       <FluidCard style={{ padding: '0', overflow: 'hidden' }} headerColor="--accent-purple">
@@ -60,7 +65,7 @@ export function SubjectCard({ subject }: SubjectCardProps) {
           </div>
           <div style={{ textAlign: 'right' }}>
              <div style={{ fontSize: 'var(--text-3xl)', fontWeight: 900, color: 'var(--accent-cyan)', letterSpacing: '-1px', textShadow: '0 0 15px rgba(29,199,209,0.3)' }}>
-               {subject.total.split('/')[0]}<span style={{ fontSize: 'var(--text-lg)', opacity: 0.5, color: 'var(--text-main)', textShadow: 'none' }}>/{subject.total.split('/')[1]}</span>
+               {totalEarned}<span style={{ fontSize: 'var(--text-lg)', opacity: 0.5, color: 'var(--text-main)', textShadow: 'none' }}>/{totalMax}</span>
              </div>
           </div>
         </div>

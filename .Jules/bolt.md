@@ -44,3 +44,7 @@
 ## 2026-04-17 - Fast Chronological Filtering Without Memory Allocation
 **Learning:** Re-instantiating `new Date()` inside an O(N) loop (e.g. for traversing calendar structures in Attendance.tsx) causes completely unnecessary CPU allocations overhead, just for monotonic chronological ordering.
 **Action:** Avoid `new Date()` inside loops. Convert target filtering timestamps and input variables directly into purely deterministic integer math (e.g., `YYYYMMDD`) natively outside the loops for `O(1)` lookups and bounds checks inside them without allocations.
+
+## 2026-04-19 - [O(N) String Allocation Anti-Pattern in React renders]
+**Learning:** Found a minor performance inefficiency where `.split('/')` operations on strings were being called repeatedly inline within the JSX render loop in `SubjectCard.tsx` and `Marks.tsx`, particularly inside `.map()` iterations. This causes unnecessary and duplicate string allocations and array creations on every render cycle.
+**Action:** Always hoist repeated string splitting or parsing operations into variable destructuring (`const [a, b] = str.split('/')`) before the `return` statement, rather than evaluating them directly inside the JSX tags.
