@@ -74,6 +74,11 @@ export function Marks() {
                ];
                const dummyRemoved = ringNodes;
 
+               // ⚡ Bolt Optimization:
+               // Hoisted string `split()` operations into variables before the JSX return within the loop.
+               // This prevents O(N) redundant string allocations and array creations.
+               const [totalEarned, totalMax] = subject.total.split('/');
+
                const isExpanded = expandedIdx === subjectIdx;
                
                return (
@@ -122,8 +127,8 @@ export function Marks() {
                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', flexShrink: 0 }}>
                                 <span style={{ fontSize: 'var(--text-xs)', fontWeight: 800, textTransform: 'uppercase', opacity: 0.4, letterSpacing: '3px', marginBottom: '4px' }}>Total</span>
                                 <span style={{ fontSize: 'clamp(28px, 5vw, 48px)', fontWeight: 300, color: 'var(--text-main)', display: 'flex', alignItems: 'baseline', gap: '4px', letterSpacing: '-2px' }}>
-                                   {subject.total.split('/')[0]}
-                                   <span style={{ fontSize: 'clamp(12px, 2vw, 18px)', opacity: 0.3, fontWeight: 400, letterSpacing: '0' }}>/{subject.total.split('/')[1]}</span>
+                                   {totalEarned}
+                                   <span style={{ fontSize: 'clamp(12px, 2vw, 18px)', opacity: 0.3, fontWeight: 400, letterSpacing: '0' }}>/{totalMax}</span>
                                 </span>
                            </div>
 
