@@ -470,12 +470,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   // 🛡️ Sentinel: Input Sanitization - Validate that regNo contains only allowed characters
   // This prevents injection of arbitrary characters or malformed payloads into downstream requests
   if (!/^[a-zA-Z0-9.@_-]+$/.test(regNo)) {
-    logger.error('🛡️ Sentinel: Invalid character detected in regNo payload', { regNo: regNo.substring(0, 10) });
+    logger.error('🛡️ Sentinel: Invalid character detected in regNo payload');
     return res.status(400).json({ error: 'Invalid registration number format' });
   }
 
   if (regNo.includes('@') && !regNo.toLowerCase().endsWith('@srmist.edu.in')) {
-    logger.error('🛡️ Sentinel: Unauthorized domain in regNo', { regNo: regNo.substring(0, 10) });
+    logger.error('🛡️ Sentinel: Unauthorized domain in regNo');
     return res.status(400).json({ error: 'Invalid email domain' });
   }
 
