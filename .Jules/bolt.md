@@ -48,3 +48,7 @@
 ## 2026-04-19 - [O(N) String Allocation Anti-Pattern in React renders]
 **Learning:** Found a minor performance inefficiency where `.split('/')` operations on strings were being called repeatedly inline within the JSX render loop in `SubjectCard.tsx` and `Marks.tsx`, particularly inside `.map()` iterations. This causes unnecessary and duplicate string allocations and array creations on every render cycle.
 **Action:** Always hoist repeated string splitting or parsing operations into variable destructuring (`const [a, b] = str.split('/')`) before the `return` statement, rather than evaluating them directly inside the JSX tags.
+
+## 2024-05-08 - [Avoid Implicit Formatting Instantiations in Render]
+**Learning:** Using `Date.prototype.toLocaleString('en-US', { month: 'short' })` within React render cycles or `useMemo` hooks is highly inefficient. It implicitly instantiates the `Intl.DateTimeFormat` API which has severe initialization overhead and latency.
+**Action:** Replace dynamic locale string generation for static known domains (like extracting the 3-letter month abbreviation) with a direct index lookup from a static array (`['Jan', 'Feb', ...][date.getMonth()]`). This executes in static O(1) time and avoids memory allocations and instantiation overheads during rendering.
