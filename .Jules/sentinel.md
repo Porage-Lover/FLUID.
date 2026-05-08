@@ -52,3 +52,8 @@
 **Vulnerability:** The backend `api/scrape.ts` allowed any email domain to be used for authentication.
 **Learning:** Missing domain validation on user credentials allows attackers to bypass frontend UI checks and potentially abuse the backend API as an open proxy for third-party SSO.
 **Prevention:** Always enforce strict domain validation on user credentials directly at the API gateway layer, using `.toLowerCase().endsWith()` for case-insensitive checks.
+
+## 2026-04-21 - [Prevent PII Leakage in Logs]
+**Vulnerability:** The backend endpoint `api/scrape.ts` was writing substrings of the sensitive user identifier (`regNo`) into application error logs when validation failed.
+**Learning:** Even partial substrings of Personally Identifiable Information (PII) or credentials must never be written to logs, as aggregating this metadata across systems can reconstruct identities and violate data protection regulations.
+**Prevention:** Always omit user identifiers from log metadata entirely. Ensure verification via tools like `grep` on logging calls (e.g., `logger.error`, `console.log`) to confirm PII isolation.
