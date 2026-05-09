@@ -48,3 +48,7 @@
 ## 2026-04-19 - [O(N) String Allocation Anti-Pattern in React renders]
 **Learning:** Found a minor performance inefficiency where `.split('/')` operations on strings were being called repeatedly inline within the JSX render loop in `SubjectCard.tsx` and `Marks.tsx`, particularly inside `.map()` iterations. This causes unnecessary and duplicate string allocations and array creations on every render cycle.
 **Action:** Always hoist repeated string splitting or parsing operations into variable destructuring (`const [a, b] = str.split('/')`) before the `return` statement, rather than evaluating them directly inside the JSX tags.
+
+## 2026-05-09 - [Expensive toLocaleString calls in render loop]
+**Learning:** Found a severe performance overhead inside `Calendar.tsx` and `Timetable.tsx` where `Date.prototype.toLocaleString()` was being used inside the main React render flow to extract short month names. This implicitly instantiates expensive formatting objects, taking ~9000ms for 100k iterations compared to ~2ms for a static array lookup.
+**Action:** Avoid using `toLocaleString()` inside React render cycles for static metadata extraction. Instead, use an O(1) static array lookup (e.g. `['Jan', 'Feb', ...][date.getMonth()]`) to completely bypass formatting overhead.
