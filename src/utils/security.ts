@@ -11,7 +11,7 @@ let moduleLevelKey: string | null = null;
 const getSecretKey = (): string => {
   // Use ts-ignore to allow accessing process.env in the test environment without breaking the Vite build
   const envKey = (typeof import.meta !== 'undefined' && import.meta.env?.VITE_OBFUSCATION_KEY) ||
-                 // @ts-ignore
+                 // @ts-expect-error test-env-only
                  (typeof process !== 'undefined' && process.env?.VITE_OBFUSCATION_KEY);
 
   if (envKey) return envKey;
@@ -26,9 +26,12 @@ const getSecretKey = (): string => {
   if (!sessionKey) {
      if (typeof crypto !== 'undefined' && crypto.randomUUID) {
        sessionKey = crypto.randomUUID();
+     } else if (typeof crypto !== 'undefined' && crypto.getRandomValues) {
+       const array = new Uint8Array(16);
+       crypto.getRandomValues(array);
+       sessionKey = Array.from(array, byte => byte.toString(16).padStart(2, '0')).join('');
      } else {
-       // Note: we can use Math.random since this is for obfuscation only
-       sessionKey = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+       throw new Error('Cryptographically secure PRNG not available for key generation');
      }
 
      if (typeof sessionStorage !== 'undefined') {
