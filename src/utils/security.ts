@@ -26,6 +26,10 @@ const getSecretKey = (): string => {
   if (!sessionKey) {
      if (typeof crypto !== 'undefined' && crypto.randomUUID) {
        sessionKey = crypto.randomUUID();
+     } else if (typeof crypto !== 'undefined' && crypto.getRandomValues) {
+       const array = new Uint8Array(16);
+       crypto.getRandomValues(array);
+       sessionKey = Array.from(array, b => b.toString(16).padStart(2, '0')).join('');
      } else {
        // Note: we can use Math.random since this is for obfuscation only
        sessionKey = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
