@@ -57,3 +57,8 @@
 **Vulnerability:** The backend endpoint `api/scrape.ts` was writing substrings of the sensitive user identifier (`regNo`) into application error logs when validation failed.
 **Learning:** Even partial substrings of Personally Identifiable Information (PII) or credentials must never be written to logs, as aggregating this metadata across systems can reconstruct identities and violate data protection regulations.
 **Prevention:** Always omit user identifiers from log metadata entirely. Ensure verification via tools like `grep` on logging calls (e.g., `logger.error`, `console.log`) to confirm PII isolation.
+
+## 2026-04-21 - [Secure Random Number Generation for Session Obfuscation]
+**Vulnerability:** The application used `Math.random()` as a fallback for generating `sessionKey` in `src/utils/security.ts` when `crypto.randomUUID` was unavailable.
+**Learning:** `Math.random()` is not a cryptographically secure pseudo-random number generator (CSPRNG). Using it for security-sensitive operations (even casual obfuscation like XORing session data) makes the generated key highly predictable and vulnerable to attacks, compromising the underlying data.
+**Prevention:** Always use a CSPRNG like `crypto.getRandomValues()` as a fallback if `crypto.randomUUID()` is missing. Never rely on `Math.random()` for any form of data encryption, obfuscation, or session key generation.
