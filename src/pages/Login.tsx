@@ -42,7 +42,8 @@ export function Login() {
       window.location.href = '/dashboard';
 
     } catch (e: any) {
-      console.error("Login failure", e);
+      // 🛡️ Sentinel: Never log the raw Axios error object as e.config.data leaks plaintext passwords to the console
+      console.error("Login failure", e.message || 'Unknown error');
       // Defensively parse nested error structures thrown natively by Vercel edge proxy timeouts
       let traceMsg = 'Authentication Failed';
       const rawError = e.response?.data?.error;
