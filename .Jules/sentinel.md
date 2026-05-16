@@ -62,3 +62,8 @@
 **Vulnerability:** The application used `Math.random()` as a fallback for generating `sessionKey` in `src/utils/security.ts` when `crypto.randomUUID` was unavailable.
 **Learning:** `Math.random()` is not a cryptographically secure pseudo-random number generator (CSPRNG). Using it for security-sensitive operations (even casual obfuscation like XORing session data) makes the generated key highly predictable and vulnerable to attacks, compromising the underlying data.
 **Prevention:** Always use a CSPRNG like `crypto.getRandomValues()` as a fallback if `crypto.randomUUID()` is missing. Never rely on `Math.random()` for any form of data encryption, obfuscation, or session key generation.
+
+## 2024-05-24 - [Prevent Credential Leakage in Axios Error Logs]
+**Vulnerability:** The frontend `src/pages/Login.tsx` was logging the raw Axios error object (`e`) to the console upon authentication failure. Since the original request payload included the user's plaintext password, it was exposed within the `e.config.data` property of the error object.
+**Learning:** Default error objects from HTTP clients like Axios often attach the full request configuration (including headers and body payloads) to the error instance for debugging purposes, inadvertently leaking sensitive credentials to client-side logs.
+**Prevention:** Never log raw error objects from HTTP clients if the request payload contains PII or credentials. Always destructure or explicitly log safe properties like `e.message` or `e.response?.status` instead.
