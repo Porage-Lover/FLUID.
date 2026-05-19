@@ -67,3 +67,8 @@
 **Vulnerability:** The frontend `src/pages/Login.tsx` was logging the raw Axios error object (`e`) to the console upon authentication failure. Since the original request payload included the user's plaintext password, it was exposed within the `e.config.data` property of the error object.
 **Learning:** Default error objects from HTTP clients like Axios often attach the full request configuration (including headers and body payloads) to the error instance for debugging purposes, inadvertently leaking sensitive credentials to client-side logs.
 **Prevention:** Never log raw error objects from HTTP clients if the request payload contains PII or credentials. Always destructure or explicitly log safe properties like `e.message` or `e.response?.status` instead.
+
+## 2026-05-19 - [Fix Vulnerable Transitive Dependencies]
+**Vulnerability:** Transitive dependencies `ws` and `brace-expansion` had known vulnerabilities (Uninitialized memory disclosure and DoS via large numeric range).
+**Learning:** Global package updates might not always resolve deeply nested transitive vulnerabilities within third-party lockfiles. Using version-bound `pnpm.overrides` ensures explicit dependency patch requirements are forced across all importers.
+**Prevention:** Use `pnpm audit` as a standard CI/CD pre-flight check and employ scoped `pnpm.overrides` to forcefully upgrade unsafe transitive boundaries when upstream maintainers lag.
