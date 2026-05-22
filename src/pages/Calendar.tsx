@@ -107,7 +107,10 @@ export function Calendar() {
                     position: 'relative'
                  }}>
                     {isToday && <motion.div animate={{ scale: [1, 1.2, 1], opacity: [0.5, 1, 0.5] }} transition={{ repeat: Infinity, duration: 2 }} style={{ position: 'absolute', top: '10px', right: '-6px', width: '10px', height: '10px', borderRadius: '50%', backgroundColor: 'var(--accent-crimson)', boxShadow: '0 0 10px var(--accent-crimson)', zIndex: 10 }} />}
-                    <span style={{ fontSize: 'var(--text-sm)', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '2px', opacity: 0.7 }}>{item.month.split(' ')[0]}</span>
+                    {/* ⚡ Bolt Optimization:
+                        Replaced `.split(' ')[0]` with `.indexOf(' ')` + `.substring()` to extract the month
+                        without intermediate array memory allocations during the render loop. */}
+                    <span style={{ fontSize: 'var(--text-sm)', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '2px', opacity: 0.7 }}>{item.month.indexOf(' ') !== -1 ? item.month.substring(0, item.month.indexOf(' ')) : item.month}</span>
                     <span className="heading-fluid" style={{ fontSize: 'var(--text-4xl)', lineHeight: 1, margin: '8px 0', textShadow: isHoliday ? '0 0 20px rgba(255,42,95,0.4)' : 'none' }}>{item.date}</span>
                     <span style={{ fontSize: 'var(--text-xs)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '1px' }}>{item.day}</span>
                  </motion.div>

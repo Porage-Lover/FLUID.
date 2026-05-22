@@ -68,7 +68,12 @@ export function Dashboard() {
       const result = [];
       for (const c of (data.calendar || [])) {
          const mStr = c.month.substring(0, 3);
-         const yStr = c.month.split("'")[1];
+
+         // ⚡ Bolt Optimization:
+         // Replaced `.split("'")[1]` with `.indexOf("'")` + `.substring()` to extract the year string
+         // without intermediate array memory allocations during iterative loop processing.
+         const quoteIdx = c.month.indexOf("'");
+         const yStr = quoteIdx !== -1 ? c.month.substring(quoteIdx + 1) : "";
          const y = 2000 + (yStr ? parseInt(yStr, 10) : 25);
          const mIdx = validMonths[mStr];
          const dNum = parseInt(c.date, 10);
