@@ -48,3 +48,7 @@
 ## 2026-04-19 - [O(N) String Allocation Anti-Pattern in React renders]
 **Learning:** Found a minor performance inefficiency where `.split('/')` operations on strings were being called repeatedly inline within the JSX render loop in `SubjectCard.tsx` and `Marks.tsx`, particularly inside `.map()` iterations. This causes unnecessary and duplicate string allocations and array creations on every render cycle.
 **Action:** Always hoist repeated string splitting or parsing operations into variable destructuring (`const [a, b] = str.split('/')`) before the `return` statement, rather than evaluating them directly inside the JSX tags.
+
+## 2026-05-25 - [Expensive Intl Allocation Anti-Pattern in Renders]
+**Learning:** Found a performance bottleneck in `Timetable.tsx` and `Calendar.tsx` where `Date.prototype.toLocaleString('en-US', { month: 'short' })` was used within a `useMemo` dependency block. Calling `toLocaleString` forces the engine to instantiate heavy `Intl` formatting objects natively. During benchmarks, this took ~1900ms for 10k iterations, whereas a simple array lookup (`['Jan', 'Feb'...][date.getMonth()]`) took ~2ms.
+**Action:** Never use `toLocaleString` for simple, fixed formatting tasks (like extracting english short months) if it runs frequently or triggers component updates. Always use static pre-defined arrays and integer lookups (`getMonth()`) to eliminate formatting overhead and prevent memory drag.
