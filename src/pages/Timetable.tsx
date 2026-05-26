@@ -4,6 +4,11 @@ import { FluidCard } from '../components/FluidCard';
 import { useData } from '../context/DataContext';
 import { ScrollHideHeader } from '../components/ScrollHideHeader';
 
+// ⚡ Bolt Optimization:
+// Replaced expensive `Date.prototype.toLocaleString` allocation
+// with a direct static array lookup to prevent unnecessary format object creation.
+const MONTH_NAMES = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
 export function Timetable() {
   const [selectedDay, setSelectedDay] = useState<number | 'holiday'>(() => {
      const d = new Date().getDay();
@@ -15,7 +20,7 @@ export function Timetable() {
   const todayNode = useMemo(() => {
     if (!data.calendar || data.calendar.length === 0) return null;
     const today = new Date();
-    const searchMonth = `${today.toLocaleString('en-US', { month: 'short' })} '${today.getFullYear().toString().slice(-2)}`;
+    const searchMonth = `${MONTH_NAMES[today.getMonth()]} '${today.getFullYear().toString().slice(-2)}`;
     const searchDate = today.getDate().toString();
     return data.calendar.find(c => c.month === searchMonth && c.date === searchDate);
   }, [data.calendar]);
