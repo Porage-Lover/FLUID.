@@ -8,6 +8,12 @@ import { ScrollHideHeader } from '../components/ScrollHideHeader';
 import { triggerHaptic } from '../utils/haptics';
 import { RadialBarChart, RadialBar, ResponsiveContainer, PolarAngleAxis } from 'recharts';
 
+// ⚡ Bolt Optimization:
+// Hoisted regular expression literals out of the component to prevent redundant recompilation
+// overhead during renders, `useMemo` hooks, and particularly inside `.map()` array iterations.
+const TIME_FORMAT_REGEX = /(\d+):(\d+)\s+(AM|PM)/i;
+const SUBJECT_NAME_CLEAN_REGEX = /\s*\((Theory|Practical)\)\s*/i;
+
 export function Dashboard() {
   const navigate = useNavigate();
   const { data, logout } = useData();
@@ -25,7 +31,7 @@ export function Dashboard() {
             const currentMins = now.getHours() * 60 + now.getMinutes();
             
             for (const cls of todaySchedule) {
-               const match = cls.et.match(/(\d+):(\d+)\s+(AM|PM)/i);
+               const match = cls.et.match(TIME_FORMAT_REGEX);
                if (match) {
                   let h = parseInt(match[1]);
                   const m = parseInt(match[2]);
@@ -112,7 +118,7 @@ export function Dashboard() {
             {upNextClass ? (
                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginTop: 'auto' }}>
                   <div>
-                    <h2 style={{ fontSize: 'var(--text-xl)', fontWeight: 800, margin: '0 0 4px 0', lineHeight: 1.1 }}>{upNextClass.name?.replace(/\s*\((Theory|Practical)\)\s*/i, '')}</h2>
+                    <h2 style={{ fontSize: 'var(--text-xl)', fontWeight: 800, margin: '0 0 4px 0', lineHeight: 1.1 }}>{upNextClass.name?.replace(SUBJECT_NAME_CLEAN_REGEX, '')}</h2>
                     <p style={{ margin: 0, fontSize: 'var(--text-sm)', color: 'var(--text-muted)', fontWeight: 600 }}>{upNextClass.st} — {upNextClass.exactRoom}</p>
                   </div>
                   <div style={{ padding: '12px', borderRadius: '50%', background: 'rgba(255,255,255,0.05)' }}><ArrowRight size={18} color="var(--text-main)" /></div>

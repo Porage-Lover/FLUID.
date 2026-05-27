@@ -4,6 +4,12 @@ import { FluidCard } from '../components/FluidCard';
 import { useData } from '../context/DataContext';
 import { ScrollHideHeader } from '../components/ScrollHideHeader';
 
+// ⚡ Bolt Optimization:
+// Hoisted regular expression literals out of the component to prevent redundant recompilation
+// overhead during renders, `useMemo` hooks, and particularly inside `.map()` array iterations.
+const ROOM_FORMAT_REGEX = /^[A-Z]{2,3}\s*\d{2,3}$/i;
+const SUBJECT_NAME_CLEAN_REGEX = /\s*\((Theory|Practical)\)\s*/i;
+
 export function Timetable() {
   const [selectedDay, setSelectedDay] = useState<number | 'holiday'>(() => {
      const d = new Date().getDay();
@@ -94,9 +100,9 @@ export function Timetable() {
              let foundRoom: string | undefined = undefined;
              const ar = attendanceRecord as any;
 
-             if (ar.room && typeof ar.room === 'string' && (ar.room.includes('TP') || ar.room.includes('LAB') || /^[A-Z]{2,3}\s*\d{2,3}$/i.test(ar.room))) {
+             if (ar.room && typeof ar.room === 'string' && (ar.room.includes('TP') || ar.room.includes('LAB') || ROOM_FORMAT_REGEX.test(ar.room))) {
                  foundRoom = ar.room;
-             } else if (ar.roomNo && typeof ar.roomNo === 'string' && (ar.roomNo.includes('TP') || ar.roomNo.includes('LAB') || /^[A-Z]{2,3}\s*\d{2,3}$/i.test(ar.roomNo))) {
+             } else if (ar.roomNo && typeof ar.roomNo === 'string' && (ar.roomNo.includes('TP') || ar.roomNo.includes('LAB') || ROOM_FORMAT_REGEX.test(ar.roomNo))) {
                  foundRoom = ar.roomNo;
              }
 
@@ -219,7 +225,7 @@ export function Timetable() {
                 <FluidCard style={{ padding: 0, height: 'auto', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }} headerColor={idx % 2 === 0 ? '--accent-cyan' : '--accent-crimson'}>
                    <div style={{ padding: '32px 24px', display: 'flex', flexDirection: 'column', height: '100%' }}>
                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '16px' }}>
-                        <h3 style={{ fontSize: 'var(--text-2xl)', fontWeight: 800, color: 'var(--text-main)', lineHeight: 1.1, paddingRight: '12px' }}>{cls.name?.replace(/\s*\((Theory|Practical)\)\s*/i, '')}</h3>
+                        <h3 style={{ fontSize: 'var(--text-2xl)', fontWeight: 800, color: 'var(--text-main)', lineHeight: 1.1, paddingRight: '12px' }}>{cls.name?.replace(SUBJECT_NAME_CLEAN_REGEX, '')}</h3>
                         {cls.isPractical ? (
                            <span style={{ fontSize: 'var(--text-xs)', fontWeight: 900, padding: '4px 8px', borderRadius: '8px', backgroundColor: 'rgba(255, 42, 95, 0.15)', color: 'var(--accent-crimson)', border: '1px solid var(--accent-crimson)', textTransform: 'uppercase', letterSpacing: '1px' }}>Practical</span>
                         ) : (
