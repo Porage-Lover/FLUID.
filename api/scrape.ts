@@ -474,13 +474,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(400).json({ error: 'Invalid registration number format' });
   }
 
-  if (regNo.includes('@') && !regNo.toLowerCase().endsWith('@srmist.edu.in')) {
+  // Build the live SRM username format natively before validation to ensure canonical forms
+  const fullUsername = regNo.includes('@') ? regNo : `${regNo}@srmist.edu.in`;
+
+  if (!fullUsername.toLowerCase().endsWith('@srmist.edu.in')) {
     logger.error('🛡️ Sentinel: Unauthorized domain in regNo');
     return res.status(400).json({ error: 'Invalid email domain' });
   }
-
-  // Build the live SRM username format natively
-  const fullUsername = regNo.includes('@') ? regNo : `${regNo}@srmist.edu.in`;
 
   try {
     const jar = new CookieJar();
@@ -594,7 +594,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     // 🛡️ Sentinel: Generate a secure hash to prevent IDOR vulnerabilities
     // instead of storing plaintext emails that can be manipulated in localStorage
     // Convert to lower case to ensure case-insensitive IDOR protections and no duplicate cache entries
-    const secureId = crypto.createHmac('sha256', supabaseKey || statelessFallbackSecret).update(regNo.toLowerCase()).digest('hex');
+    const secureId = crypto.createHmac('sha256', supabaseKey || statelessFallbackSecret).update(fullUsername.toLowerCase()).digest('hex');
 
     if (supabase) {
        const { error: dbError } = await supabase
