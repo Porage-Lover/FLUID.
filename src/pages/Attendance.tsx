@@ -10,6 +10,9 @@ import { triggerHaptic } from '../utils/haptics';
 const MONTH_NAMES = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 const WEEK_DAYS = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
 
+// ⚡ Bolt Optimization: Hoisted regex literal to prevent redundant compilation during O(N) mapping.
+const DAY_ORDER_REGEX = /Day Order (\d)/i;
+
 export function Attendance() {
   const { data } = useData();
 
@@ -76,7 +79,7 @@ export function Attendance() {
       const dayEvent = calendarEventMap.get(dateKey);
 
       if (dayEvent) {
-          const dayOrderMatch = dayEvent.title.match(/Day Order (\d)/i);
+          const dayOrderMatch = dayEvent.title.match(DAY_ORDER_REGEX);
           if (dayOrderMatch) {
               const dayOrderStr = dayOrderMatch[1];
               const subjectsThatDay = data.timetable[dayOrderStr];
