@@ -72,3 +72,8 @@
 **Vulnerability:** Transitive dependencies `ws` and `brace-expansion` had known vulnerabilities (Uninitialized memory disclosure and DoS via large numeric range).
 **Learning:** Global package updates might not always resolve deeply nested transitive vulnerabilities within third-party lockfiles. Using version-bound `pnpm.overrides` ensures explicit dependency patch requirements are forced across all importers.
 **Prevention:** Use `pnpm audit` as a standard CI/CD pre-flight check and employ scoped `pnpm.overrides` to forcefully upgrade unsafe transitive boundaries when upstream maintainers lag.
+
+## 2024-05-24 - [Fix IDOR and Domain Validation Bypass in API Gateway]
+**Vulnerability:** The backend `api/scrape.ts` generated its secure hash (`secureId`) for the cache using the raw `regNo` input from the request body. Concurrently, the domain validation explicitly checked `regNo.toLowerCase().endsWith('@srmist.edu.in')` but this validation occurred *after* appending the domain fallback and allowing execution to proceed. An attacker could provide `regNo` as `attacker@evil.com` and use the IDOR to query other hashes due to fragmentation.
+**Learning:** Checking the raw `regNo` when the business logic actually falls back to appending the default domain, and hashing the raw input instead of the normalized one, creates inconsistencies. An attacker can use these inconsistencies to bypass validation checks and fragment the cache identifiers.
+**Prevention:** Always perform domain validation on the final, normalized identifier string (e.g. `fullUsername.toLowerCase().endsWith()`) rather than raw input. Similarly, derive cryptographic cache identifiers (`secureId`) from the same canonical, normalized user string.
