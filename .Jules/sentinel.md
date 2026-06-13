@@ -72,3 +72,8 @@
 **Vulnerability:** Transitive dependencies `ws` and `brace-expansion` had known vulnerabilities (Uninitialized memory disclosure and DoS via large numeric range).
 **Learning:** Global package updates might not always resolve deeply nested transitive vulnerabilities within third-party lockfiles. Using version-bound `pnpm.overrides` ensures explicit dependency patch requirements are forced across all importers.
 **Prevention:** Use `pnpm audit` as a standard CI/CD pre-flight check and employ scoped `pnpm.overrides` to forcefully upgrade unsafe transitive boundaries when upstream maintainers lag.
+
+## 2024-05-24 - [Fix IDOR via Cache Fragmentation]
+**Vulnerability:** The backend endpoint `api/scrape.ts` derived the secure cache identifier (`secureId`) for Supabase using the raw, un-normalized `regNo` input instead of the fully canonical `fullUsername`. This led to cache fragmentation (the same user being stored under different hashes depending on whether they included `@srmist.edu.in` in their username input or not). More critically, it allowed domain validation to be bypassed by appending a valid domain suffix to an input that lacked an `@`, causing mismatched IDs and potential cache poisoning or IDOR bypasses.
+**Learning:** Security bounds, cryptographic identifiers, and database primary keys must always be derived from a canonicalized, singular source of truth. Relying on raw client input for identifiers creates fragmentation and logic flaws.
+**Prevention:** Always ensure that domain validation and unique cryptographic cache identifiers (`secureId`) are derived from a fully normalized, canonical user string (like `fullUsername.toLowerCase()`), strictly after all fallback logic and string parsing have been applied.
