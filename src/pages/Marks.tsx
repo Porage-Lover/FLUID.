@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useData } from '../context/DataContext';
 import { ScrollHideHeader } from '../components/ScrollHideHeader';
 import { TargetGradePredictor } from '../components/TargetGradePredictor';
@@ -22,30 +22,61 @@ const CustomTooltip = ({ active, payload }: any) => {
   return null;
 };
 
+const colors = ['#FF2A5F', '#FF3399', '#BF5AF2', '#5E5CE6', '#0A84FF', '#32ADE6', '#30D158', '#FFD60A', '#FF9F0A'];
+
+const getRingData = (graph: any[]) => {
+    return graph.map((p, idx) => {
+       const derivedMax = p.max || 100; // Trust the API's max, fallback to 100 to prevent NaN crashes
+
+       const rawValStr = String(p.val).trim().toUpperCase();
+       const isAbsent = rawValStr === 'ABS';
+       const parsedVal = isAbsent ? 0 : (parseFloat(p.val) || 0);
+
+       return {
+         name: p.name,
+         rawName: p.name,
+         rawVal: isAbsent ? 'ABS' : p.val,
+         derivedMax,
+         percentage: derivedMax > 0 ? (parsedVal / derivedMax) * 100 : 0,
+         fill: colors[idx % colors.length]
+       };
+    });
+};
+
 export function Marks() {
   const { data } = useData();
   const [expandedIdx, setExpandedIdx] = useState<number | null>(null);
 
-  const colors = ['#FF2A5F', '#FF3399', '#BF5AF2', '#5E5CE6', '#0A84FF', '#32ADE6', '#30D158', '#FFD60A', '#FF9F0A'];
+  // ⚡ Bolt Optimization:
+  // Memoized the extraction, calculation, and mapping of `ringNodes`, `chartData`,
+  // and `split()` operations out of the main rendering loop. Previously these ran
+  // O(N) operations and array allocations on every render cycle.
+  const processedMarksData = useMemo(() => {
+     return data.marks.map((subject, subjectIdx) => {
+         const isDense = subject.graph.length > 4;
+         const ringSize = isDense ? 8 : 16;
+         const ringNodes = getRingData(subject.graph);
 
-  const getRingData = (graph: any[]) => {
-      return graph.map((p, idx) => {
-         let derivedMax = p.max || 100; // Trust the API's max, fallback to 100 to prevent NaN crashes
-         
-         const rawValStr = String(p.val).trim().toUpperCase();
-         const isAbsent = rawValStr === 'ABS';
-         const parsedVal = isAbsent ? 0 : (parseFloat(p.val) || 0);
+         const chartData = [
+            { name: 'dummy', percentage: 100, fill: 'transparent', rawName: '', rawVal: 0, derivedMax: 0 },
+            ...[...ringNodes].reverse()
+         ];
+         const dummyRemoved = ringNodes;
+
+         const [totalEarned, totalMax] = subject.total.split('/');
 
          return {
-           name: p.name, 
-           rawName: p.name,
-           rawVal: isAbsent ? 'ABS' : p.val,
-           derivedMax,
-           percentage: derivedMax > 0 ? (parsedVal / derivedMax) * 100 : 0,
-           fill: colors[idx % colors.length]
+             ...subject,
+             originalIdx: subjectIdx,
+             isDense,
+             ringSize,
+             chartData,
+             dummyRemoved,
+             totalEarned,
+             totalMax
          };
-      });
-  };
+     });
+  }, [data.marks]);
 
   return (
     <div style={{ maxWidth: '900px', margin: '0 auto', padding: '0 24px 120px 24px' }}>
@@ -60,26 +91,8 @@ export function Marks() {
         </div>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '28px' }}>
-            {data.marks.map((subject, subjectIdx) => {
-               const isDense = subject.graph.length > 4;
-               const ringSize = isDense ? 8 : 16;
-               const ringNodes = getRingData(subject.graph);
-
-               // ⚡ Bolt Optimization:
-               // Replaced expensive `chartData.filter(c => c.name !== 'dummy').reverse()`
-               // by directly using `ringNodes` for the legend, and constructing `chartData` manually.
-               const chartData = [
-                  { name: 'dummy', percentage: 100, fill: 'transparent', rawName: '', rawVal: 0, derivedMax: 0 },
-                  ...[...ringNodes].reverse()
-               ];
-               const dummyRemoved = ringNodes;
-
-               // ⚡ Bolt Optimization:
-               // Hoisted string `split()` operations into variables before the JSX return within the loop.
-               // This prevents O(N) redundant string allocations and array creations.
-               const [totalEarned, totalMax] = subject.total.split('/');
-
-               const isExpanded = expandedIdx === subjectIdx;
+            {processedMarksData.map((subject) => {
+               const isExpanded = expandedIdx === subject.originalIdx;
                
                return (
                    <motion.div
@@ -88,7 +101,7 @@ export function Marks() {
                        viewport={{ once: true, margin: '-50px' }}
                        key={subject.code}
                        transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-                       onClick={() => setExpandedIdx(isExpanded ? null : subjectIdx)}
+                       onClick={() => setExpandedIdx(isExpanded ? null : subject.originalIdx)}
                        className="fluid-card"
                        style={{
                            padding: '0',
@@ -113,7 +126,7 @@ export function Marks() {
                                
                                {/* Pill Legends */}
                                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
-                                   {dummyRemoved.map((item, i) => (
+                                   {subject.dummyRemoved.map((item: any, i: number) => (
                                        <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '8px 12px', background: 'rgba(255,255,255,0.03)', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.04)' }}>
                                            <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: item.fill, boxShadow: `0 0 10px ${item.fill}` }} />
                                            <span style={{ fontSize: 'var(--text-xs)', fontWeight: 700, color: 'var(--text-muted)' }}>{item.rawName}</span>
@@ -127,8 +140,8 @@ export function Marks() {
                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', flexShrink: 0 }}>
                                 <span style={{ fontSize: 'var(--text-xs)', fontWeight: 800, textTransform: 'uppercase', opacity: 0.4, letterSpacing: '3px', marginBottom: '4px' }}>Total</span>
                                 <span style={{ fontSize: 'clamp(28px, 5vw, 48px)', fontWeight: 300, color: 'var(--text-main)', display: 'flex', alignItems: 'baseline', gap: '4px', letterSpacing: '-2px' }}>
-                                   {totalEarned}
-                                   <span style={{ fontSize: 'clamp(12px, 2vw, 18px)', opacity: 0.3, fontWeight: 400, letterSpacing: '0' }}>/{totalMax}</span>
+                                   {subject.totalEarned}
+                                   <span style={{ fontSize: 'clamp(12px, 2vw, 18px)', opacity: 0.3, fontWeight: 400, letterSpacing: '0' }}>/{subject.totalMax}</span>
                                 </span>
                            </div>
 
@@ -137,10 +150,10 @@ export function Marks() {
                                <ResponsiveContainer width="100%" height="100%">
                                    <RadialBarChart 
                                       cx="50%" cy="50%" 
-                                      innerRadius={isDense ? "15%" : "30%"} 
+                                      innerRadius={subject.isDense ? "15%" : "30%"}
                                       outerRadius="100%" 
-                                      barSize={ringSize} 
-                                      data={chartData}
+                                      barSize={subject.ringSize}
+                                      data={subject.chartData}
                                       startAngle={90} endAngle={-270}
                                    >
                                       <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(255,255,255,0.02)' }} />
