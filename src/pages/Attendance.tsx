@@ -8,6 +8,7 @@ import { triggerHaptic } from '../utils/haptics';
 
 // --- Constants ---
 const MONTH_NAMES = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+const MONTH_MAP: Record<string, number> = { Jan: 0, Feb: 1, Mar: 2, Apr: 3, May: 4, Jun: 5, Jul: 6, Aug: 7, Sep: 8, Oct: 9, Nov: 10, Dec: 11 };
 const WEEK_DAYS = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
 
 export function Attendance() {
@@ -45,7 +46,9 @@ export function Attendance() {
        const mStr = c.month.substring(0, 3);
        const yStr = c.month.split("'")[1];
        const y = 2000 + (yStr ? parseInt(yStr) : 25);
-       const mIdx = MONTH_NAMES.indexOf(mStr);
+
+       // ⚡ Bolt Optimization: Replace O(N) array indexOf with O(1) object map lookup inside the calendar array loop.
+       const mIdx = MONTH_MAP[mStr] ?? -1;
        
        if (mIdx !== -1) {
           const key = `${mStr} '${yStr}-${parseInt(c.date)}`;

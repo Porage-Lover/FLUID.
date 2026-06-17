@@ -48,3 +48,7 @@
 ## 2026-04-19 - [O(N) String Allocation Anti-Pattern in React renders]
 **Learning:** Found a minor performance inefficiency where `.split('/')` operations on strings were being called repeatedly inline within the JSX render loop in `SubjectCard.tsx` and `Marks.tsx`, particularly inside `.map()` iterations. This causes unnecessary and duplicate string allocations and array creations on every render cycle.
 **Action:** Always hoist repeated string splitting or parsing operations into variable destructuring (`const [a, b] = str.split('/')`) before the `return` statement, rather than evaluating them directly inside the JSX tags.
+
+## 2026-04-20 - [O(N) Array Search Avoidance in Matrix Rendering]
+**Learning:** Found a performance bottleneck in `Attendance.tsx` where an `indexOf` call on an array (`MONTH_NAMES`) was executed inside an O(M) loop for processing the calendar metadata structure, resulting in O(N*M) algorithmic complexity. Array searches for specific string lookup during render loops consume excessive CPU cycles when processing large sets.
+**Action:** Replace sequential array searches (`indexOf`) in loops with an O(1) object lookup or map representation (`MONTH_MAP`) built statically outside the loop.
