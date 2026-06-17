@@ -72,3 +72,8 @@
 **Vulnerability:** Transitive dependencies `ws` and `brace-expansion` had known vulnerabilities (Uninitialized memory disclosure and DoS via large numeric range).
 **Learning:** Global package updates might not always resolve deeply nested transitive vulnerabilities within third-party lockfiles. Using version-bound `pnpm.overrides` ensures explicit dependency patch requirements are forced across all importers.
 **Prevention:** Use `pnpm audit` as a standard CI/CD pre-flight check and employ scoped `pnpm.overrides` to forcefully upgrade unsafe transitive boundaries when upstream maintainers lag.
+
+## 2024-06-17 - [Cache Fragmentation and IDOR via Unnormalized Identifiers]
+**Vulnerability:** The backend `api/scrape.ts` derived the user's cryptographic cache identifier (`secureId`) using the raw request payload `regNo` instead of the fully normalized, canonical `fullUsername`.
+**Learning:** Performing domain normalization safely (e.g., appending a default domain if absent) resolves the functional username format, but if subsequent cryptographic checks or cache key derivations still use the raw, pre-normalized input, attackers can craft logically equivalent but textually different inputs to bypass rate limits, fragment caches, or potentially circumvent authorization bounds.
+**Prevention:** Always ensure that any cryptographic hashing, caching, or authorization logic acts upon the final normalized string rather than raw user input to maintain functional correctness and security properties.
