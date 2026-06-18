@@ -72,3 +72,8 @@
 **Vulnerability:** Transitive dependencies `ws` and `brace-expansion` had known vulnerabilities (Uninitialized memory disclosure and DoS via large numeric range).
 **Learning:** Global package updates might not always resolve deeply nested transitive vulnerabilities within third-party lockfiles. Using version-bound `pnpm.overrides` ensures explicit dependency patch requirements are forced across all importers.
 **Prevention:** Use `pnpm audit` as a standard CI/CD pre-flight check and employ scoped `pnpm.overrides` to forcefully upgrade unsafe transitive boundaries when upstream maintainers lag.
+
+## 2024-06-18 - Fix Cache Fragmentation and IDOR in Cache Key Generation
+**Vulnerability:** Cryptographic cache identifiers were derived from raw request inputs (`regNo`) rather than the normalized `fullUsername`.
+**Learning:** Different raw representations of the same user (e.g., "john" vs "john@srmist.edu.in") generated different hashes, leading to cache fragmentation and potential IDOR/cache bypass.
+**Prevention:** Always generate cryptographic cache identifiers from fully normalized, canonical data representations.
