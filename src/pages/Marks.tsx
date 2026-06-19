@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import { useData } from '../context/DataContext';
 import { ScrollHideHeader } from '../components/ScrollHideHeader';
 import { TargetGradePredictor } from '../components/TargetGradePredictor';
@@ -26,11 +26,11 @@ export function Marks() {
   const { data } = useData();
   const [expandedIdx, setExpandedIdx] = useState<number | null>(null);
 
-  const colors = ['#FF2A5F', '#FF3399', '#BF5AF2', '#5E5CE6', '#0A84FF', '#32ADE6', '#30D158', '#FFD60A', '#FF9F0A'];
 
-  const getRingData = (graph: any[]) => {
+  const getRingData = useCallback((graph: any[]) => {
+      const colors = ['#FF2A5F', '#FF3399', '#BF5AF2', '#5E5CE6', '#0A84FF', '#32ADE6', '#30D158', '#FFD60A', '#FF9F0A'];
       return graph.map((p, idx) => {
-         let derivedMax = p.max || 100; // Trust the API's max, fallback to 100 to prevent NaN crashes
+         const derivedMax = p.max || 100; // Trust the API's max, fallback to 100 to prevent NaN crashes
          
          const rawValStr = String(p.val).trim().toUpperCase();
          const isAbsent = rawValStr === 'ABS';
@@ -45,7 +45,24 @@ export function Marks() {
            fill: colors[idx % colors.length]
          };
       });
-  };
+  }, []);
+
+  // ⚡ Bolt Optimization: Memoizing chart data calculation and string operations to prevent O(N) array mapping on every re-render (e.g., when toggling expanded state).
+  const processedMarks = useMemo(() => data.marks.map((subject) => {
+     const isDense = subject.graph.length > 4;
+     const ringSize = isDense ? 8 : 16;
+     const ringNodes = getRingData(subject.graph);
+
+     const chartData = [
+        { name: 'dummy', percentage: 100, fill: 'transparent', rawName: '', rawVal: 0, derivedMax: 0 },
+        ...[...ringNodes].reverse()
+     ];
+     const dummyRemoved = ringNodes;
+
+     const [totalEarned, totalMax] = subject.total.split('/');
+
+     return { ...subject, isDense, ringSize, ringNodes, chartData, dummyRemoved, totalEarned, totalMax };
+  }), [data.marks, getRingData]);
 
   return (
     <div style={{ maxWidth: '900px', margin: '0 auto', padding: '0 24px 120px 24px' }}>
@@ -60,25 +77,7 @@ export function Marks() {
         </div>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '28px' }}>
-            {data.marks.map((subject, subjectIdx) => {
-               const isDense = subject.graph.length > 4;
-               const ringSize = isDense ? 8 : 16;
-               const ringNodes = getRingData(subject.graph);
-
-               // ⚡ Bolt Optimization:
-               // Replaced expensive `chartData.filter(c => c.name !== 'dummy').reverse()`
-               // by directly using `ringNodes` for the legend, and constructing `chartData` manually.
-               const chartData = [
-                  { name: 'dummy', percentage: 100, fill: 'transparent', rawName: '', rawVal: 0, derivedMax: 0 },
-                  ...[...ringNodes].reverse()
-               ];
-               const dummyRemoved = ringNodes;
-
-               // ⚡ Bolt Optimization:
-               // Hoisted string `split()` operations into variables before the JSX return within the loop.
-               // This prevents O(N) redundant string allocations and array creations.
-               const [totalEarned, totalMax] = subject.total.split('/');
-
+            {processedMarks.map((subject, subjectIdx) => {
                const isExpanded = expandedIdx === subjectIdx;
                
                return (
@@ -113,7 +112,7 @@ export function Marks() {
                                
                                {/* Pill Legends */}
                                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
-                                   {dummyRemoved.map((item, i) => (
+                                   {subject.dummyRemoved.map((item, i) => (
                                        <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '8px 12px', background: 'rgba(255,255,255,0.03)', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.04)' }}>
                                            <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: item.fill, boxShadow: `0 0 10px ${item.fill}` }} />
                                            <span style={{ fontSize: 'var(--text-xs)', fontWeight: 700, color: 'var(--text-muted)' }}>{item.rawName}</span>
@@ -127,8 +126,8 @@ export function Marks() {
                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', flexShrink: 0 }}>
                                 <span style={{ fontSize: 'var(--text-xs)', fontWeight: 800, textTransform: 'uppercase', opacity: 0.4, letterSpacing: '3px', marginBottom: '4px' }}>Total</span>
                                 <span style={{ fontSize: 'clamp(28px, 5vw, 48px)', fontWeight: 300, color: 'var(--text-main)', display: 'flex', alignItems: 'baseline', gap: '4px', letterSpacing: '-2px' }}>
-                                   {totalEarned}
-                                   <span style={{ fontSize: 'clamp(12px, 2vw, 18px)', opacity: 0.3, fontWeight: 400, letterSpacing: '0' }}>/{totalMax}</span>
+                                   {subject.totalEarned}
+                                   <span style={{ fontSize: 'clamp(12px, 2vw, 18px)', opacity: 0.3, fontWeight: 400, letterSpacing: '0' }}>/{subject.totalMax}</span>
                                 </span>
                            </div>
 
@@ -137,14 +136,14 @@ export function Marks() {
                                <ResponsiveContainer width="100%" height="100%">
                                    <RadialBarChart 
                                       cx="50%" cy="50%" 
-                                      innerRadius={isDense ? "15%" : "30%"} 
+                                      innerRadius={subject.isDense ? "15%" : "30%"}
                                       outerRadius="100%" 
-                                      barSize={ringSize} 
-                                      data={chartData}
+                                      barSize={subject.ringSize}
+                                      data={subject.chartData}
                                       startAngle={90} endAngle={-270}
                                    >
                                       <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(255,255,255,0.02)' }} />
-                                      <RadialBar background={{ fill: 'rgba(255,255,255,0.03)' }} cornerRadius={ringSize} dataKey="percentage" />
+                                      <RadialBar background={{ fill: 'rgba(255,255,255,0.03)' }} cornerRadius={subject.ringSize} dataKey="percentage" />
                                    </RadialBarChart>
                                </ResponsiveContainer>
                            </div>

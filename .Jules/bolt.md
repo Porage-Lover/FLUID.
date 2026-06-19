@@ -48,3 +48,6 @@
 ## 2026-04-19 - [O(N) String Allocation Anti-Pattern in React renders]
 **Learning:** Found a minor performance inefficiency where `.split('/')` operations on strings were being called repeatedly inline within the JSX render loop in `SubjectCard.tsx` and `Marks.tsx`, particularly inside `.map()` iterations. This causes unnecessary and duplicate string allocations and array creations on every render cycle.
 **Action:** Always hoist repeated string splitting or parsing operations into variable destructuring (`const [a, b] = str.split('/')`) before the `return` statement, rather than evaluating them directly inside the JSX tags.
+## 2024-05-18 - Memoizing Array Computations in Render Loop
+**Learning:** Performing O(N) array mappings, `.reverse()` operations, and allocating new objects directly inside a React component's return statement (e.g., inside `data.map`) causes massive redundant computations on every re-render and breaks memoization.
+**Action:** Always extract heavy array transformations (like `getRingData` and `.reverse()`) and repeated string operations (like `.split('/')`) out of the render loop into a `useMemo` hook to precompute values, avoiding recreating arrays on every tick.
