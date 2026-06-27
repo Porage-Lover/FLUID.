@@ -594,7 +594,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     // 🛡️ Sentinel: Generate a secure hash to prevent IDOR vulnerabilities
     // instead of storing plaintext emails that can be manipulated in localStorage
     // Convert to lower case to ensure case-insensitive IDOR protections and no duplicate cache entries
-    const secureId = crypto.createHmac('sha256', supabaseKey || statelessFallbackSecret).update(regNo.toLowerCase()).digest('hex');
+    const secureId = crypto.createHmac('sha256', supabaseKey || statelessFallbackSecret).update(fullUsername.toLowerCase()) /* 🛡️ Sentinel: Fix cache fragmentation by using normalized fullUsername */.digest('hex');
 
     if (supabase) {
        const { error: dbError } = await supabase
