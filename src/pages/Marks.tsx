@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useData } from '../context/DataContext';
 import { ScrollHideHeader } from '../components/ScrollHideHeader';
 import { TargetGradePredictor } from '../components/TargetGradePredictor';
@@ -26,11 +26,12 @@ export function Marks() {
   const { data } = useData();
   const [expandedIdx, setExpandedIdx] = useState<number | null>(null);
 
-  const colors = ['#FF2A5F', '#FF3399', '#BF5AF2', '#5E5CE6', '#0A84FF', '#32ADE6', '#30D158', '#FFD60A', '#FF9F0A'];
+  const colors = useMemo(() => ['#FF2A5F', '#FF3399', '#BF5AF2', '#5E5CE6', '#0A84FF', '#32ADE6', '#30D158', '#FFD60A', '#FF9F0A'], []);
 
-  const getRingData = (graph: any[]) => {
+  const getRingData = useMemo(() => {
+    return (graph: any[]) => {
       return graph.map((p, idx) => {
-         let derivedMax = p.max || 100; // Trust the API's max, fallback to 100 to prevent NaN crashes
+         const derivedMax = p.max || 100; // Trust the API's max, fallback to 100 to prevent NaN crashes
          
          const rawValStr = String(p.val).trim().toUpperCase();
          const isAbsent = rawValStr === 'ABS';
@@ -45,7 +46,37 @@ export function Marks() {
            fill: colors[idx % colors.length]
          };
       });
-  };
+    };
+  }, [colors]);
+
+  const processedMarks = useMemo(() => {
+     // ⚡ Bolt Optimization: Memoized expensive array operations.
+     // Pre-computing heavy array mappings, `.reverse()` operations, and string splits for all subjects
+     // to prevent redundant O(N) memory allocations and CPU cycles on every render, especially when
+     // local state changes (e.g. toggling expandedIdx).
+     return data.marks.map((subject: any) => {
+        const isDense = subject.graph.length > 4;
+        const ringSize = isDense ? 8 : 16;
+        const ringNodes = getRingData(subject.graph);
+
+        const chartData = [
+           { name: 'dummy', percentage: 100, fill: 'transparent', rawName: '', rawVal: 0, derivedMax: 0 },
+           ...[...ringNodes].reverse()
+        ];
+        const dummyRemoved = ringNodes;
+        const [totalEarned, totalMax] = subject.total.split('/');
+
+        return {
+          ...subject,
+          isDense,
+          ringSize,
+          chartData,
+          dummyRemoved,
+          totalEarned,
+          totalMax
+        };
+     });
+  }, [data.marks, getRingData]);
 
   return (
     <div style={{ maxWidth: '900px', margin: '0 auto', padding: '0 24px 120px 24px' }}>
@@ -60,25 +91,8 @@ export function Marks() {
         </div>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '28px' }}>
-            {data.marks.map((subject, subjectIdx) => {
-               const isDense = subject.graph.length > 4;
-               const ringSize = isDense ? 8 : 16;
-               const ringNodes = getRingData(subject.graph);
-
-               // ⚡ Bolt Optimization:
-               // Replaced expensive `chartData.filter(c => c.name !== 'dummy').reverse()`
-               // by directly using `ringNodes` for the legend, and constructing `chartData` manually.
-               const chartData = [
-                  { name: 'dummy', percentage: 100, fill: 'transparent', rawName: '', rawVal: 0, derivedMax: 0 },
-                  ...[...ringNodes].reverse()
-               ];
-               const dummyRemoved = ringNodes;
-
-               // ⚡ Bolt Optimization:
-               // Hoisted string `split()` operations into variables before the JSX return within the loop.
-               // This prevents O(N) redundant string allocations and array creations.
-               const [totalEarned, totalMax] = subject.total.split('/');
-
+            {processedMarks.map((subject: any, subjectIdx: number) => {
+               const { isDense, ringSize, chartData, dummyRemoved, totalEarned, totalMax } = subject;
                const isExpanded = expandedIdx === subjectIdx;
                
                return (
