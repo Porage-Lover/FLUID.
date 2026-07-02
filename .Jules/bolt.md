@@ -48,3 +48,6 @@
 ## 2026-04-19 - [O(N) String Allocation Anti-Pattern in React renders]
 **Learning:** Found a minor performance inefficiency where `.split('/')` operations on strings were being called repeatedly inline within the JSX render loop in `SubjectCard.tsx` and `Marks.tsx`, particularly inside `.map()` iterations. This causes unnecessary and duplicate string allocations and array creations on every render cycle.
 **Action:** Always hoist repeated string splitting or parsing operations into variable destructuring (`const [a, b] = str.split('/')`) before the `return` statement, rather than evaluating them directly inside the JSX tags.
+## 2026-04-20 - [O(N) Render Array Mapping Anti-Pattern]
+**Learning:** Found a severe performance bottleneck in `Marks.tsx` where `.map()`, `.reverse()`, and string `.split()` operations were being performed inside the render loop on every single render cycle. This caused massive redundant heap allocations and React render blocking.
+**Action:** Hoist static helpers outside the component and use `useMemo` to precompute and cache the derived array state. Let the UI presentation layer dynamically access the precomputed properties to ensure O(1) rendering efficiency.
