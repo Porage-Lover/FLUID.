@@ -199,7 +199,8 @@ async function fetchAcademicsData(client: any): Promise<{ attendance: any[], mar
                   const rawHtml = $(testCell).html() || '';
                   // Replace <br> tags with spaces to cleanly separate concatenated lines
                   const spacedHtml = rawHtml.replace(/<br\s*\/?>/gi, ' ');
-                  const fullText = cheerio.load(spacedHtml).text().replace(/\s+/g, ' ').trim();
+                  // ⚡ Bolt Optimization: Avoid expensive cheerio.load inside loop by using regex to strip tags natively
+                  const fullText = spacedHtml.replace(/<[^>]*>?/gm, '').replace(/\s+/g, ' ').trim();
                   
                   const parts = fullText.split('/');
                   
