@@ -51,3 +51,7 @@
 ## 2026-04-20 - [O(N) Render Array Mapping Anti-Pattern]
 **Learning:** Found a severe performance bottleneck in `Marks.tsx` where `.map()`, `.reverse()`, and string `.split()` operations were being performed inside the render loop on every single render cycle. This caused massive redundant heap allocations and React render blocking.
 **Action:** Hoist static helpers outside the component and use `useMemo` to precompute and cache the derived array state. Let the UI presentation layer dynamically access the precomputed properties to ensure O(1) rendering efficiency.
+
+## 2024-07-05 - [cheerio.load() in Loops]
+**Learning:** Calling `cheerio.load()` repeatedly inside loops (like `.each()` iterations over table cells) causes massive CPU overhead by reconstructing full DOM trees on every iteration.
+**Action:** For simple tag stripping inside loops, use native regex replacements (e.g., `str.replace(/<[^>]*>?/gm, '')`) instead of instantiating Cheerio parsers to avoid unnecessary DOM allocations.
