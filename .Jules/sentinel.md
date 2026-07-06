@@ -77,3 +77,8 @@
 **Vulnerability:** Transitive dependency `js-yaml` had a known vulnerability (Quadratic-complexity DoS in merge key handling via repeated aliases).
 **Learning:** Global package updates might not always resolve deeply nested transitive vulnerabilities within third-party lockfiles. Using version-bound `pnpm.overrides` ensures explicit dependency patch requirements are forced across all importers.
 **Prevention:** Use `pnpm audit` as a standard CI/CD pre-flight check and employ scoped `pnpm.overrides` to forcefully upgrade unsafe transitive boundaries when upstream maintainers lag.
+
+## 2026-05-25 - [Prevent Cache Fragmentation and IDOR]
+**Vulnerability:** The cryptographic cache identifier was derived from the raw request input (`regNo`) rather than the fully normalized canonical user string. This could lead to cache fragmentation or bypasses if different raw inputs evaluate to the same canonical user.
+**Learning:** Always normalize authentication inputs fully before using them as the basis for secure cache keys or authorization checks.
+**Prevention:** Ensure cryptographic hashes use the finalized, canonical username (e.g., `fullUsername.toLowerCase()`) rather than the raw payload variable.
