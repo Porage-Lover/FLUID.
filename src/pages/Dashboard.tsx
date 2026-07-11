@@ -8,6 +8,8 @@ import { ScrollHideHeader } from '../components/ScrollHideHeader';
 import { triggerHaptic } from '../utils/haptics';
 import { RadialBarChart, RadialBar, ResponsiveContainer, PolarAngleAxis } from 'recharts';
 
+const TIME_FORMAT_REGEX = /(\d+):(\d+)\s+(AM|PM)/i;
+
 export function Dashboard() {
   const navigate = useNavigate();
   const { data, logout } = useData();
@@ -25,7 +27,7 @@ export function Dashboard() {
             const currentMins = now.getHours() * 60 + now.getMinutes();
             
             for (const cls of todaySchedule) {
-               const match = cls.et.match(/(\d+):(\d+)\s+(AM|PM)/i);
+               const match = cls.et.match(TIME_FORMAT_REGEX);
                if (match) {
                   let h = parseInt(match[1]);
                   const m = parseInt(match[2]);
