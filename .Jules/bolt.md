@@ -59,3 +59,6 @@
 ## 2026-04-25 - [O(1) Map Lookup for Small Arrays]
 **Learning:** Found a minor performance inefficiency where `Array.prototype.indexOf` was used inside a rendering mapping loop (e.g., matching months strings in Calendar loops) instead of a constant-time mapping structure (`Record`). Since the array isn't large this is mainly a micro-optimization but correctly extracting dictionary lookups as module-level constants prevents recreation inside `useMemo` closures and avoids minor loop iterations.
 **Action:** Replace `array.indexOf` inside loops with O(1) object property mapping (e.g. `VALID_MONTHS[mStr] ?? -1`). Keep the dictionary allocations in the module's global scope, not dynamically reconstructed inside the component hook.
+## 2024-05-18 - [Hoist Dictionary Allocations]
+**Learning:** Defining static dictionaries (like month mappings) inside components or `useMemo` hooks forces unnecessary re-allocations on every execution context, degrading performance.
+**Action:** Always hoist static lookup dictionaries and constant configurations to the module's global scope outside of React components.

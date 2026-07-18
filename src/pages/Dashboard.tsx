@@ -8,6 +8,9 @@ import { ScrollHideHeader } from '../components/ScrollHideHeader';
 import { triggerHaptic } from '../utils/haptics';
 import { RadialBarChart, RadialBar, ResponsiveContainer, PolarAngleAxis } from 'recharts';
 
+// ⚡ Bolt Optimization: Hoisted dictionary to module scope to avoid reallocation during renders
+const VALID_MONTHS: Record<string, number> = { Jan: 0, Feb: 1, Mar: 2, Apr: 3, May: 4, Jun: 5, Jul: 6, Aug: 7, Sep: 8, Oct: 9, Nov: 10, Dec: 11 };
+
 export function Dashboard() {
   const navigate = useNavigate();
   const { data, logout } = useData();
@@ -63,14 +66,13 @@ export function Dashboard() {
       // Replaced iterative `new Date(...)` instantiation and `.getTime()` calls inside the O(N) loop
       // with a direct pre-calculated numerical comparison `todayInt` (YYYYMMDD). This eliminates
       // object allocation and parsing overheads.
-      const validMonths: Record<string, number> = { Jan: 0, Feb: 1, Mar: 2, Apr: 3, May: 4, Jun: 5, Jul: 6, Aug: 7, Sep: 8, Oct: 9, Nov: 10, Dec: 11 };
 
       const result = [];
       for (const c of (data.calendar || [])) {
          const mStr = c.month.substring(0, 3);
          const yStr = c.month.split("'")[1];
          const y = 2000 + (yStr ? parseInt(yStr, 10) : 25);
-         const mIdx = validMonths[mStr];
+         const mIdx = VALID_MONTHS[mStr];
          const dNum = parseInt(c.date, 10);
          
          const dateInt = y * 10000 + mIdx * 100 + dNum;
