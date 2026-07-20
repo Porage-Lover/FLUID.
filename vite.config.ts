@@ -6,6 +6,6 @@ export default defineConfig({
   plugins: [react()],
   build: {
     modulePreload: false,
-    sourcemap: true,
+    sourcemap: false,
   }
 })
