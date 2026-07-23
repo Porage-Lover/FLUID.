@@ -82,3 +82,8 @@
 **Vulnerability:** Cryptographic cache identifiers in `api/scrape.ts` were derived from raw request inputs (`regNo`), potentially leading to cache fragmentation and IDOR vulnerabilities.
 **Learning:** When conditional logic normalizes user inputs (like appending a default domain), all subsequent cryptographic operations and cache key generation must use the final canonical string. Relying on raw inputs creates inconsistencies.
 **Prevention:** Always ensure that hashing and identifier generation strictly utilize fully normalized, canonical representations of user identities (e.g., `fullUsername.toLowerCase()`) rather than the raw inputs.
+
+## 2024-05-24 - Fix Vulnerable Transitive Dependencies
+**Vulnerability:** Transitive dependency `fast-uri` had a known vulnerability (host confusion via literal backslash authority delimiter).
+**Learning:** Global package updates might not always resolve deeply nested transitive vulnerabilities within third-party lockfiles. Using version-bound `pnpm.overrides` ensures explicit dependency patch requirements are forced across all importers.
+**Prevention:** Use `pnpm audit` as a standard CI/CD pre-flight check and employ scoped `pnpm.overrides` to forcefully upgrade unsafe transitive boundaries when upstream maintainers lag.
