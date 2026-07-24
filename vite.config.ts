@@ -6,6 +6,6 @@ export default defineConfig({
   plugins: [react()],
   build: {
     modulePreload: false,
-    sourcemap: true,
+    sourcemap: false, // 🛡️ Sentinel: Disabled production sourcemaps to prevent source code and logic leakage
   }
 })
