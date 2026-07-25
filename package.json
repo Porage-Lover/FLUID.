@@ -19,7 +19,7 @@
     "lucide-react": "^0.577.0",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
-    "react-router-dom": "^7.13.1",
+    "react-router-dom": "^7.18.1",
     "recharts": "^3.8.0",
     "shaders": "^2.2.42",
     "three": "^0.183.2",
@@ -47,11 +47,18 @@
       "smol-toml": "^1.6.1",
       "follow-redirects": "^1.16.0",
       "@vercel/static-config>ajv": "^8.18.0",
-      "vite>postcss": "^8.5.10",
+      "vite>postcss": "^8.5.18",
       "fast-uri": "^4.1.1",
       "ws@<8.20.1": ">=8.20.1",
-      "brace-expansion@<5.0.6": ">=5.0.6"
+      "brace-expansion@<5.0.8": "^5.0.8"
+      ,"tar@<=7.5.20": "^7.5.21"
+      ,"react-router@<8.3.0": "^8.3.0"
+      ,"tar@<=7.5.20": "^7.5.21"
+      ,"react-router@<8.3.0": "^8.3.0"
+      ,"react-router@<8.3.0": "^8.3.0"
       ,"js-yaml": "^4.2.0"
     }
   }
 }
+
+// 🛡️ Sentinel: Upgraded react-router-dom, postcss, brace-expansion, and tar to resolve HIGH/MODERATE severity vulnerabilities (CSRF, Path Traversal, DoS).

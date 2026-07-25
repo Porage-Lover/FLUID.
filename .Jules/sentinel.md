@@ -87,3 +87,8 @@
 **Vulnerability:** Transitive dependency `fast-uri` had a known vulnerability (host confusion via literal backslash authority delimiter).
 **Learning:** Global package updates might not always resolve deeply nested transitive vulnerabilities within third-party lockfiles. Using version-bound `pnpm.overrides` ensures explicit dependency patch requirements are forced across all importers.
 **Prevention:** Use `pnpm audit` as a standard CI/CD pre-flight check and employ scoped `pnpm.overrides` to forcefully upgrade unsafe transitive boundaries when upstream maintainers lag.
+
+## 2024-05-24 - [Fix Vulnerable Transitive Dependencies]
+**Vulnerability:** Transitive dependencies `react-router`, `postcss`, `tar`, and `brace-expansion` had known vulnerabilities (CSRF bypass, Path traversal, DoS).
+**Learning:** Global package updates might not always resolve deeply nested transitive vulnerabilities within third-party lockfiles. Using version-bound `pnpm.overrides` ensures explicit dependency patch requirements are forced across all importers.
+**Prevention:** Use `pnpm audit` as a standard CI/CD pre-flight check and employ scoped `pnpm.overrides` to forcefully upgrade unsafe transitive boundaries when upstream maintainers lag.
