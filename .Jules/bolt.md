@@ -62,3 +62,6 @@
 ## 2024-05-18 - [Hoist Dictionary Allocations]
 **Learning:** Defining static dictionaries (like month mappings) inside components or `useMemo` hooks forces unnecessary re-allocations on every execution context, degrading performance.
 **Action:** Always hoist static lookup dictionaries and constant configurations to the module's global scope outside of React components.
+## 2024-07-28 - [Hoist Regex Allocations in Render Loops]
+**Learning:** Defining inline regular expressions inside React components or render loops forces the JavaScript engine to recompile the regex on every execution context, degrading rendering performance unnecessarily.
+**Action:** Common regex operations for day order matching, room validation, time formatting, and subject name cleaning should be hoisted as module-level constants (DAY_ORDER_REGEX, ROOM_FORMAT_REGEX, TIME_FORMAT_REGEX, SUBJECT_NAME_CLEAN_REGEX) across components to prevent redundant recompilation during renders and loops.
