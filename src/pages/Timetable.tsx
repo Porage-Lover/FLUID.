@@ -3,6 +3,9 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { FluidCard } from '../components/FluidCard';
 import { useData } from '../context/DataContext';
 import { ScrollHideHeader } from '../components/ScrollHideHeader';
+// ⚡ Bolt Optimization: Hoisted regular expressions to module scope to prevent redundant recompilation.
+const DAY_ORDER_REGEX = /Day Order (\d+)/i;
+const SUBJECT_NAME_CLEAN_REGEX = /\s*\((Theory|Practical)\)\s*/i;
 
 export function Timetable() {
   const [selectedDay, setSelectedDay] = useState<number | 'holiday'>(() => {
@@ -34,7 +37,7 @@ export function Timetable() {
       if (todayNode.type === 'holiday') {
         setSelectedDay('holiday');
       } else if (todayNode.type === 'working') {
-        const match = todayNode.title.match(/Day Order (\d+)/);
+        const match = todayNode.title.match(DAY_ORDER_REGEX);
         if (match) setSelectedDay(parseInt(match[1]));
       }
     }
@@ -219,7 +222,7 @@ export function Timetable() {
                 <FluidCard style={{ padding: 0, height: 'auto', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }} headerColor={idx % 2 === 0 ? '--accent-cyan' : '--accent-crimson'}>
                    <div style={{ padding: '32px 24px', display: 'flex', flexDirection: 'column', height: '100%' }}>
                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '16px' }}>
-                        <h3 style={{ fontSize: 'var(--text-2xl)', fontWeight: 800, color: 'var(--text-main)', lineHeight: 1.1, paddingRight: '12px' }}>{cls.name?.replace(/\s*\((Theory|Practical)\)\s*/i, '')}</h3>
+                        <h3 style={{ fontSize: 'var(--text-2xl)', fontWeight: 800, color: 'var(--text-main)', lineHeight: 1.1, paddingRight: '12px' }}>{cls.name?.replace(SUBJECT_NAME_CLEAN_REGEX, '')}</h3>
                         {cls.isPractical ? (
                            <span style={{ fontSize: 'var(--text-xs)', fontWeight: 900, padding: '4px 8px', borderRadius: '8px', backgroundColor: 'rgba(255, 42, 95, 0.15)', color: 'var(--accent-crimson)', border: '1px solid var(--accent-crimson)', textTransform: 'uppercase', letterSpacing: '1px' }}>Practical</span>
                         ) : (
