@@ -62,3 +62,6 @@
 ## 2024-05-18 - [Hoist Dictionary Allocations]
 **Learning:** Defining static dictionaries (like month mappings) inside components or `useMemo` hooks forces unnecessary re-allocations on every execution context, degrading performance.
 **Action:** Always hoist static lookup dictionaries and constant configurations to the module's global scope outside of React components.
+## 2024-08-02 - [O(N) Regex Evaluations Inside Render Loops]
+**Learning:** Found a performance inefficiency where `.replace(/\s*\((Theory|Practical)\)\s*/i, '')` was repeatedly executed inline within JSX render loops (e.g., inside `map()` or conditionally rendered elements). This redundant evaluation forces unnecessary string allocations and regex parsing during every component re-render.
+**Action:** Precompute expensive string manipulation logic (like regex replacements) directly within the `useMemo` hook that derives the component's state data, exposing the `cleanName` property. This removes O(N) allocation overhead per render cycle, converting it to an O(1) property lookup.
