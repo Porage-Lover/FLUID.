@@ -38,11 +38,13 @@ export function Dashboard() {
                   const endMins = h * 60 + m;
                   
                   if (endMins > currentMins) {
-                     return cls;
+                     // ⚡ Bolt Optimization: Precomputed string manipulations to prevent repeated regex evaluation on every render.
+                     return { ...cls, cleanName: cls.name?.replace(/\s*\((Theory|Practical)\)\s*/i, '') };
                   }
                }
             }
-            return todaySchedule[0]; // fallback
+            // ⚡ Bolt Optimization: Precomputed string manipulations to prevent repeated regex evaluation on every render.
+            return { ...todaySchedule[0], cleanName: todaySchedule[0].name?.replace(/\s*\((Theory|Practical)\)\s*/i, '') }; // fallback
          }
      }
      return null;
@@ -114,7 +116,7 @@ export function Dashboard() {
             {upNextClass ? (
                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginTop: 'auto' }}>
                   <div>
-                    <h2 style={{ fontSize: 'var(--text-xl)', fontWeight: 800, margin: '0 0 4px 0', lineHeight: 1.1 }}>{upNextClass.name?.replace(/\s*\((Theory|Practical)\)\s*/i, '')}</h2>
+                    <h2 style={{ fontSize: 'var(--text-xl)', fontWeight: 800, margin: '0 0 4px 0', lineHeight: 1.1 }}>{upNextClass.cleanName || upNextClass.name}</h2>
                     <p style={{ margin: 0, fontSize: 'var(--text-sm)', color: 'var(--text-muted)', fontWeight: 600 }}>{upNextClass.st} — {upNextClass.exactRoom}</p>
                   </div>
                   <div style={{ padding: '12px', borderRadius: '50%', background: 'rgba(255,255,255,0.05)' }}><ArrowRight size={18} color="var(--text-main)" /></div>

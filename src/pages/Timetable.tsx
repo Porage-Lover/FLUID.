@@ -111,7 +111,10 @@ export function Timetable() {
 
           if (exactRoom === 'Campus') exactRoom = 'TBD (Update Scraper)';
 
-          return { ...cls, exactRoom, isPractical };
+          // ⚡ Bolt Optimization: Precomputed string manipulations to prevent repeated regex evaluation on every render.
+          const cleanName = cls.name?.replace(/\s*\((Theory|Practical)\)\s*/i, '');
+
+          return { ...cls, exactRoom, isPractical, cleanName };
        });
     });
     return processed;
@@ -219,7 +222,7 @@ export function Timetable() {
                 <FluidCard style={{ padding: 0, height: 'auto', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }} headerColor={idx % 2 === 0 ? '--accent-cyan' : '--accent-crimson'}>
                    <div style={{ padding: '32px 24px', display: 'flex', flexDirection: 'column', height: '100%' }}>
                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '16px' }}>
-                        <h3 style={{ fontSize: 'var(--text-2xl)', fontWeight: 800, color: 'var(--text-main)', lineHeight: 1.1, paddingRight: '12px' }}>{cls.name?.replace(/\s*\((Theory|Practical)\)\s*/i, '')}</h3>
+                        <h3 style={{ fontSize: 'var(--text-2xl)', fontWeight: 800, color: 'var(--text-main)', lineHeight: 1.1, paddingRight: '12px' }}>{cls.cleanName || cls.name}</h3>
                         {cls.isPractical ? (
                            <span style={{ fontSize: 'var(--text-xs)', fontWeight: 900, padding: '4px 8px', borderRadius: '8px', backgroundColor: 'rgba(255, 42, 95, 0.15)', color: 'var(--accent-crimson)', border: '1px solid var(--accent-crimson)', textTransform: 'uppercase', letterSpacing: '1px' }}>Practical</span>
                         ) : (

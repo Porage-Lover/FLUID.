@@ -62,3 +62,6 @@
 ## 2024-05-18 - [Hoist Dictionary Allocations]
 **Learning:** Defining static dictionaries (like month mappings) inside components or `useMemo` hooks forces unnecessary re-allocations on every execution context, degrading performance.
 **Action:** Always hoist static lookup dictionaries and constant configurations to the module's global scope outside of React components.
+## $(date +%Y-%m-%d) - Precompute string modifications in loops
+**Learning:** Repeatedly executing inline regex string replacements (e.g., `.replace()`) inside component render loops (like `.map()`) can cause measurable CPU and heap allocation overhead by recomputing on every render iteration.
+**Action:** When working with static lists or data from the server, always try to precompute formatted strings or strip modifiers using `useMemo` hooks or during the initial data transformation phase, rather than calculating them dynamically on every render frame.
