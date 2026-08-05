@@ -62,3 +62,7 @@
 ## 2024-05-18 - [Hoist Dictionary Allocations]
 **Learning:** Defining static dictionaries (like month mappings) inside components or `useMemo` hooks forces unnecessary re-allocations on every execution context, degrading performance.
 **Action:** Always hoist static lookup dictionaries and constant configurations to the module's global scope outside of React components.
+
+## 2024-08-05 - Hoist Regular Expressions in Hot Loops
+**Learning:** Compiling regex patterns dynamically inside hot loops or `useMemo` hooks (e.g. `processedTimetable` map loops) causes unnecessary garbage collection and performance degradation.
+**Action:** Always hoist stateless regular expressions (without the `g` flag) to the module's global scope, evaluating them via O(1) object references inside render iterations.

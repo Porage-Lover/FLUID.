@@ -4,6 +4,9 @@ import { FluidCard } from '../components/FluidCard';
 import { useData } from '../context/DataContext';
 import { ScrollHideHeader } from '../components/ScrollHideHeader';
 
+// ⚡ Bolt Optimization: Hoisted regular expression to module scope to prevent redundant recompilation in hot loop
+const ROOM_REGEX = /^[A-Z]{2,3}\s*\d{2,3}$/i;
+
 export function Timetable() {
   const [selectedDay, setSelectedDay] = useState<number | 'holiday'>(() => {
      const d = new Date().getDay();
@@ -94,9 +97,9 @@ export function Timetable() {
              let foundRoom: string | undefined = undefined;
              const ar = attendanceRecord as any;
 
-             if (ar.room && typeof ar.room === 'string' && (ar.room.includes('TP') || ar.room.includes('LAB') || /^[A-Z]{2,3}\s*\d{2,3}$/i.test(ar.room))) {
+             if (ar.room && typeof ar.room === 'string' && (ar.room.includes('TP') || ar.room.includes('LAB') || ROOM_REGEX.test(ar.room))) {
                  foundRoom = ar.room;
-             } else if (ar.roomNo && typeof ar.roomNo === 'string' && (ar.roomNo.includes('TP') || ar.roomNo.includes('LAB') || /^[A-Z]{2,3}\s*\d{2,3}$/i.test(ar.roomNo))) {
+             } else if (ar.roomNo && typeof ar.roomNo === 'string' && (ar.roomNo.includes('TP') || ar.roomNo.includes('LAB') || ROOM_REGEX.test(ar.roomNo))) {
                  foundRoom = ar.roomNo;
              }
 
