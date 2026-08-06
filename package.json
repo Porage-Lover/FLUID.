@@ -50,8 +50,8 @@
       "vite>postcss": "^8.5.18",
       "fast-uri": "^4.1.2",
       "ws@<8.20.1": ">=8.20.1",
-      "brace-expansion@<5.0.6": ">=5.0.6",
-      "js-yaml": "^4.2.0"
+      "js-yaml": "^4.2.0",
+      "brace-expansion": "^5.0.9"
     }
   }
 }
