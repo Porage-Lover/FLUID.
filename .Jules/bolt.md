@@ -66,3 +66,6 @@
 ## 2024-08-05 - Hoist Regular Expressions in Hot Loops
 **Learning:** Compiling regex patterns dynamically inside hot loops or `useMemo` hooks (e.g. `processedTimetable` map loops) causes unnecessary garbage collection and performance degradation.
 **Action:** Always hoist stateless regular expressions (without the `g` flag) to the module's global scope, evaluating them via O(1) object references inside render iterations.
+## 2024-08-06 - Replacing toLocaleString with fast array lookup
+**Learning:** `new Date().toLocaleString` is significantly slower than standard date logic like array-lookups. Repeatedly invoking it within renders or loops creates high CPU overhead.
+**Action:** Use pre-defined constant arrays for month mappings (`MONTH_NAMES`) mapped to `Date.getMonth()` instead of `toLocaleString` to drastically reduce lookup time.

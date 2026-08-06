@@ -6,11 +6,15 @@ import { Calendar as CalendarIcon } from 'lucide-react';
 import { triggerHaptic } from '../utils/haptics';
 import { ScrollHideHeader } from '../components/ScrollHideHeader';
 
+// ⚡ Bolt Optimization: Hoisted dictionary to module scope to avoid reallocation during renders
+const MONTH_NAMES = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
 export function Calendar() {
   const { data } = useData();
   
   const today = new Date();
-  const searchMonth = `${today.toLocaleString('en-US', { month: 'short' })} '${today.getFullYear().toString().slice(-2)}`;
+  // ⚡ Bolt Optimization: Replaced expensive toLocaleString with fast array lookup for month resolution
+  const searchMonth = `${MONTH_NAMES[today.getMonth()]} '${(today.getFullYear() % 100).toString().padStart(2, '0')}`;
   const searchDate = today.getDate().toString();
 
   // Phase 1: Instantly jump to the origin (5 items before today) right after mount, 
