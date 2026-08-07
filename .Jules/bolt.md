@@ -69,3 +69,6 @@
 ## 2024-08-06 - Replacing toLocaleString with fast array lookup
 **Learning:** `new Date().toLocaleString` is significantly slower than standard date logic like array-lookups. Repeatedly invoking it within renders or loops creates high CPU overhead.
 **Action:** Use pre-defined constant arrays for month mappings (`MONTH_NAMES`) mapped to `Date.getMonth()` instead of `toLocaleString` to drastically reduce lookup time.
+## 2024-08-07 - Hoist Regular Expressions in Hot Loops (Dashboards & Timetables)
+**Learning:** Found a performance bottleneck where regular expressions (`/(\d+):(\d+)\s+(AM|PM)/i` and `/\s*\((Theory|Practical)\)\s*/i`) were instantiated inline inside rendering components (`Dashboard.tsx` and `Timetable.tsx`) and loops (`todaySchedule` iteration and `processedTimetable` mapping).
+**Action:** Always hoist stateless regular expressions (without the `g` flag) to the module's global scope to prevent recompilation in hot loops and render cycles, ensuring fast O(1) object references.
