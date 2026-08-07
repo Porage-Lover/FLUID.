@@ -7,6 +7,9 @@ import { ScrollHideHeader } from '../components/ScrollHideHeader';
 // ⚡ Bolt Optimization: Hoisted regular expression to module scope to prevent redundant recompilation in hot loop
 const ROOM_REGEX = /^[A-Z]{2,3}\s*\d{2,3}$/i;
 
+// ⚡ Bolt Optimization: Hoisted dictionary to module scope to avoid reallocation during renders
+const MONTH_NAMES = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
 export function Timetable() {
   const [selectedDay, setSelectedDay] = useState<number | 'holiday'>(() => {
      const d = new Date().getDay();
@@ -18,7 +21,8 @@ export function Timetable() {
   const todayNode = useMemo(() => {
     if (!data.calendar || data.calendar.length === 0) return null;
     const today = new Date();
-    const searchMonth = `${today.toLocaleString('en-US', { month: 'short' })} '${today.getFullYear().toString().slice(-2)}`;
+    // ⚡ Bolt Optimization: Replaced expensive toLocaleString with fast array lookup for month resolution
+    const searchMonth = `${MONTH_NAMES[today.getMonth()]} '${(today.getFullYear() % 100).toString().padStart(2, '0')}`;
     const searchDate = today.getDate().toString();
     return data.calendar.find(c => c.month === searchMonth && c.date === searchDate);
   }, [data.calendar]);
