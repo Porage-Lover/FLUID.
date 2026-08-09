@@ -7,6 +7,9 @@ import { ScrollHideHeader } from '../components/ScrollHideHeader';
 // ⚡ Bolt Optimization: Hoisted regular expression to module scope to prevent redundant recompilation in hot loop
 const ROOM_REGEX = /^[A-Z]{2,3}\s*\d{2,3}$/i;
 
+// ⚡ Bolt Optimization: Hoisted regular expression to module scope to prevent redundant recompilation in hot loop
+const DAY_ORDER_REGEX = /Day Order (\d+)/;
+
 // ⚡ Bolt Optimization: Hoisted dictionary to module scope to avoid reallocation during renders
 const MONTH_NAMES = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
@@ -41,7 +44,7 @@ export function Timetable() {
       if (todayNode.type === 'holiday') {
         setSelectedDay('holiday');
       } else if (todayNode.type === 'working') {
-        const match = todayNode.title.match(/Day Order (\d+)/);
+        const match = DAY_ORDER_REGEX.exec(todayNode.title);
         if (match) setSelectedDay(parseInt(match[1]));
       }
     }
