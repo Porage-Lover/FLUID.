@@ -69,3 +69,6 @@
 ## 2024-08-06 - Replacing toLocaleString with fast array lookup
 **Learning:** `new Date().toLocaleString` is significantly slower than standard date logic like array-lookups. Repeatedly invoking it within renders or loops creates high CPU overhead.
 **Action:** Use pre-defined constant arrays for month mappings (`MONTH_NAMES`) mapped to `Date.getMonth()` instead of `toLocaleString` to drastically reduce lookup time.
+## 2024-08-10 - Hoist String Replace Regex in Hot Loops
+**Learning:** Recompiling regular expressions explicitly inside string `.replace()` methods within rendering loops (e.g. mapping over class schedules) causes unnecessary memory allocations and garbage collection per iteration.
+**Action:** Extract stateless regular expressions (without the global flag) used in string substitutions to module-scoped constants, preventing redundant compilation on every render cycle.

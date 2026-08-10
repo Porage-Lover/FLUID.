@@ -10,6 +10,9 @@ const ROOM_REGEX = /^[A-Z]{2,3}\s*\d{2,3}$/i;
 // ⚡ Bolt Optimization: Hoisted dictionary to module scope to avoid reallocation during renders
 const MONTH_NAMES = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
+// ⚡ Bolt Optimization: Hoisted regular expression to module scope to prevent redundant recompilation in hot loop
+const CLASS_NAME_CLEANUP_REGEX = /\s*\((Theory|Practical)\)\s*/i;
+
 export function Timetable() {
   const [selectedDay, setSelectedDay] = useState<number | 'holiday'>(() => {
      const d = new Date().getDay();
@@ -226,7 +229,7 @@ export function Timetable() {
                 <FluidCard style={{ padding: 0, height: 'auto', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }} headerColor={idx % 2 === 0 ? '--accent-cyan' : '--accent-crimson'}>
                    <div style={{ padding: '32px 24px', display: 'flex', flexDirection: 'column', height: '100%' }}>
                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '16px' }}>
-                        <h3 style={{ fontSize: 'var(--text-2xl)', fontWeight: 800, color: 'var(--text-main)', lineHeight: 1.1, paddingRight: '12px' }}>{cls.name?.replace(/\s*\((Theory|Practical)\)\s*/i, '')}</h3>
+                        <h3 style={{ fontSize: 'var(--text-2xl)', fontWeight: 800, color: 'var(--text-main)', lineHeight: 1.1, paddingRight: '12px' }}>{cls.name?.replace(CLASS_NAME_CLEANUP_REGEX, '')}</h3>
                         {cls.isPractical ? (
                            <span style={{ fontSize: 'var(--text-xs)', fontWeight: 900, padding: '4px 8px', borderRadius: '8px', backgroundColor: 'rgba(255, 42, 95, 0.15)', color: 'var(--accent-crimson)', border: '1px solid var(--accent-crimson)', textTransform: 'uppercase', letterSpacing: '1px' }}>Practical</span>
                         ) : (
