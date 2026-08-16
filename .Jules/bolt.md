@@ -69,3 +69,6 @@
 ## 2024-08-06 - Replacing toLocaleString with fast array lookup
 **Learning:** `new Date().toLocaleString` is significantly slower than standard date logic like array-lookups. Repeatedly invoking it within renders or loops creates high CPU overhead.
 **Action:** Use pre-defined constant arrays for month mappings (`MONTH_NAMES`) mapped to `Date.getMonth()` instead of `toLocaleString` to drastically reduce lookup time.
+## 2024-05-18 - Inline Regex Rendering Overhead
+**Learning:** Evaluating regular expressions directly inside JSX (`.replace(/\s*\((Theory|Practical)\)\s*/i, '')`) triggers recompilation and redundant string processing on every component re-render, leading to unnecessary CPU overhead and garbage collection pauses. Utilizing `String.prototype.match()` with inline regexes in render loops compounds this issue due to internal Symbol lookups.
+**Action:** Always hoist static regular expressions to the module scope (or outside the component function) to prevent reallocation. Precompute any string transformations (like stripping prefixes/suffixes) inside `useMemo` hooks or during initial data fetching, and serve the cleaned strings directly to JSX components. Replace `.match()` with `RegExp.prototype.exec()` when a single match is expected to avoid internal overhead.
