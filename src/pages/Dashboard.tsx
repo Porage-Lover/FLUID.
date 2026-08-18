@@ -11,6 +11,10 @@ import { RadialBarChart, RadialBar, ResponsiveContainer, PolarAngleAxis } from '
 // ⚡ Bolt Optimization: Hoisted dictionary to module scope to avoid reallocation during renders
 const VALID_MONTHS: Record<string, number> = { Jan: 0, Feb: 1, Mar: 2, Apr: 3, May: 4, Jun: 5, Jul: 6, Aug: 7, Sep: 8, Oct: 9, Nov: 10, Dec: 11 };
 
+// ⚡ Bolt Optimization: Hoisted regexes to module scope to prevent reallocation in hot loops/renders
+const TIME_REGEX = /(\d+):(\d+)\s+(AM|PM)/i;
+const TYPE_STRIP_REGEX = /\s*\((Theory|Practical)\)\s*/i;
+
 export function Dashboard() {
   const navigate = useNavigate();
   const { data, logout } = useData();
@@ -28,7 +32,8 @@ export function Dashboard() {
             const currentMins = now.getHours() * 60 + now.getMinutes();
             
             for (const cls of todaySchedule) {
-               const match = cls.et.match(/(\d+):(\d+)\s+(AM|PM)/i);
+               // ⚡ Bolt Optimization: Replaced .match() with .exec() and hoisted regex to avoid internal Symbol lookups and recompilation
+               const match = TIME_REGEX.exec(cls.et);
                if (match) {
                   let h = parseInt(match[1]);
                   const m = parseInt(match[2]);
@@ -38,11 +43,14 @@ export function Dashboard() {
                   const endMins = h * 60 + m;
                   
                   if (endMins > currentMins) {
-                     return cls;
+                     // ⚡ Bolt Optimization: Precompute repeated string processing inside useMemo to prevent regex overhead in render loop
+                     return { ...cls, cleanName: cls.name?.replace(TYPE_STRIP_REGEX, '') };
                   }
                }
             }
-            return todaySchedule[0]; // fallback
+            const fallback = todaySchedule[0]; // fallback
+            // ⚡ Bolt Optimization: Precompute repeated string processing inside useMemo to prevent regex overhead in render loop
+            return { ...fallback, cleanName: fallback.name?.replace(TYPE_STRIP_REGEX, '') };
          }
      }
      return null;
@@ -114,7 +122,7 @@ export function Dashboard() {
             {upNextClass ? (
                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginTop: 'auto' }}>
                   <div>
-                    <h2 style={{ fontSize: 'var(--text-xl)', fontWeight: 800, margin: '0 0 4px 0', lineHeight: 1.1 }}>{upNextClass.name?.replace(/\s*\((Theory|Practical)\)\s*/i, '')}</h2>
+                    <h2 style={{ fontSize: 'var(--text-xl)', fontWeight: 800, margin: '0 0 4px 0', lineHeight: 1.1 }}>{upNextClass.cleanName}</h2>
                     <p style={{ margin: 0, fontSize: 'var(--text-sm)', color: 'var(--text-muted)', fontWeight: 600 }}>{upNextClass.st} — {upNextClass.exactRoom}</p>
                   </div>
                   <div style={{ padding: '12px', borderRadius: '50%', background: 'rgba(255,255,255,0.05)' }}><ArrowRight size={18} color="var(--text-main)" /></div>
