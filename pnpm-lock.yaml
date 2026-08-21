@@ -17,6 +17,7 @@ overrides:
   brace-expansion: ^5.0.9
   react-router: ^7.18.2
   nanoid: ^3.3.18
+  tar: ^7.5.21
 
 importers:
 
@@ -1831,8 +1832,8 @@ packages:
     resolution: {integrity: sha512-qpCAvRl9stuOHveKsn7HncJRvv501qIacKzQlO/+Lwxc9+0q2wLyv4Dfvt80/DPn2pqOBsJdDiogXGR9+OvwRw==}
     engines: {node: '>=8'}
 
-  tar@7.5.19:
-    resolution: {integrity: sha512-4LeEWl96twnS2Q7Bz4MGqgazLqO+hJN63GZxXoIqh1T3VweYD997gbU1ItNsQafqqXTXd5WFyFdReLtwvRBNiw==}
+  tar@7.5.22:
+    resolution: {integrity: sha512-MFO/QzvtAOmJbkhOaCTvbGcFN9L9b+JunIsDwaKljSOdcLMea3NJ1k9Usz/rjdfSXTq4dfzfeS7W4p4YOAAHeA==}
     engines: {node: '>=18'}
 
   three@0.183.2:
@@ -2330,7 +2331,7 @@ snapshots:
       node-fetch: 2.6.9
       nopt: 8.1.0
       semver: 7.8.5
-      tar: 7.5.19
+      tar: 7.5.22
     transitivePeerDependencies:
       - encoding
       - supports-color
@@ -3672,7 +3673,7 @@ snapshots:
     dependencies:
       has-flag: 4.0.0
 
-  tar@7.5.19:
+  tar@7.5.22:
     dependencies:
       '@isaacs/fs-minipass': 4.0.1
       chownr: 3.0.0
