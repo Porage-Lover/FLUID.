@@ -11,6 +11,10 @@ const MONTH_NAMES = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Se
 const WEEK_DAYS = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
 
 const VALID_MONTHS: Record<string, number> = { Jan: 0, Feb: 1, Mar: 2, Apr: 3, May: 4, Jun: 5, Jul: 6, Aug: 7, Sep: 8, Oct: 9, Nov: 10, Dec: 11 };
+
+// ⚡ Bolt Optimization: Hoisted stateless regex to module scope to prevent reallocation in hot loops
+const DAY_ORDER_REGEX = /Day Order (\d+)/i;
+
 export function Attendance() {
   const { data } = useData();
 
@@ -78,7 +82,8 @@ export function Attendance() {
       const dayEvent = calendarEventMap.get(dateKey);
 
       if (dayEvent) {
-          const dayOrderMatch = dayEvent.title.match(/Day Order (\d)/i);
+          // ⚡ Bolt Optimization: Use .exec() with hoisted regex to avoid internal Symbol lookups
+          const dayOrderMatch = DAY_ORDER_REGEX.exec(dayEvent.title);
           if (dayOrderMatch) {
               const dayOrderStr = dayOrderMatch[1];
               const subjectsThatDay = data.timetable[dayOrderStr];
