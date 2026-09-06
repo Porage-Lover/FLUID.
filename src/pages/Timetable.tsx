@@ -10,6 +10,7 @@ const TYPE_STRIP_REGEX = /\s*\((Theory|Practical)\)\s*/i;
 
 // ⚡ Bolt Optimization: Hoisted dictionary to module scope to avoid reallocation during renders
 const MONTH_NAMES = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+const DAY_ORDER_REGEX = /Day Order (\d+)/i;
 
 export function Timetable() {
   const [selectedDay, setSelectedDay] = useState<number | 'holiday'>(() => {
@@ -42,7 +43,8 @@ export function Timetable() {
       if (todayNode.type === 'holiday') {
         setSelectedDay('holiday');
       } else if (todayNode.type === 'working') {
-        const match = todayNode.title.match(/Day Order (\d+)/);
+        // ⚡ Bolt Optimization: Replaced .match() with .exec() and hoisted regex to avoid internal Symbol lookups and recompilation
+        const match = DAY_ORDER_REGEX.exec(todayNode.title);
         if (match) setSelectedDay(parseInt(match[1]));
       }
     }
