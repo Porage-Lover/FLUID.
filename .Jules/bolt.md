@@ -72,3 +72,7 @@
 ## 2024-05-18 - Inline Regex Rendering Overhead
 **Learning:** Evaluating regular expressions directly inside JSX (`.replace(/\s*\((Theory|Practical)\)\s*/i, '')`) triggers recompilation and redundant string processing on every component re-render, leading to unnecessary CPU overhead and garbage collection pauses. Utilizing `String.prototype.match()` with inline regexes in render loops compounds this issue due to internal Symbol lookups.
 **Action:** Always hoist static regular expressions to the module scope (or outside the component function) to prevent reallocation. Precompute any string transformations (like stripping prefixes/suffixes) inside `useMemo` hooks or during initial data fetching, and serve the cleaned strings directly to JSX components. Replace `.match()` with `RegExp.prototype.exec()` when a single match is expected to avoid internal overhead.
+
+## 2026-04-26 - [String Allocation Anti-Pattern in Loops]
+**Learning:** Evaluating `.toLowerCase()` combined with `.includes()` on strings inside hot loops or React render loops creates unnecessary string allocations and garbage collection overhead.
+**Action:** Replace dynamic string case conversions inside loops with pre-compiled, hoisted case-insensitive regular expressions (e.g. `/pattern/i.test(str)`). This completely eliminates the need to allocate new memory for lowercase string variants during iterations.

@@ -57,7 +57,8 @@ export function Attendance() {
           const key = `${mStr} '${yStr}-${parseInt(c.date)}`;
           map.set(key, c);
           
-          if (c.type === 'working' && c.title.toLowerCase().includes('day order')) {
+          // ⚡ Bolt Optimization: Replaced O(N) string allocation (.toLowerCase) inside loops with hoisted case-insensitive regex
+          if (c.type === 'working' && DAY_ORDER_REGEX.test(c.title)) {
              const eventDateInt = y * 10000 + mIdx * 100 + parseInt(c.date);
              if (eventDateInt >= todayInt) {
                 futureArr.push(c);
@@ -448,7 +449,8 @@ export function Attendance() {
                        {calendarDaysArray.map(dayNum => {
                           const dateKey = `${currentMStr} '${currentYStr}-${dayNum}`;
                           const rawEvent = calendarEventMap.get(dateKey);
-                          const isWorkingDay = rawEvent?.type === 'working' && rawEvent?.title?.toLowerCase().includes('day order');
+                          // ⚡ Bolt Optimization: Replaced O(N) string allocation (.toLowerCase) in render loop with hoisted case-insensitive regex
+                          const isWorkingDay = rawEvent?.type === 'working' && (rawEvent?.title ? DAY_ORDER_REGEX.test(rawEvent.title) : false);
                           
                           const simState = daySimulations[dateKey]; // 'attend' | 'bunk' | undefined
                           
