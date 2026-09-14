@@ -11,6 +11,8 @@ const TYPE_STRIP_REGEX = /\s*\((Theory|Practical)\)\s*/i;
 // ⚡ Bolt Optimization: Hoisted dictionary to module scope to avoid reallocation during renders
 const MONTH_NAMES = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 const DAY_ORDER_REGEX = /Day Order (\d+)/i;
+// ⚡ Bolt Optimization: Pre-compile case-insensitive regex for faster practical check to avoid string allocation overhead in render array mapping
+const PRACTICAL_REGEX = /practical/i;
 
 export function Timetable() {
   const [selectedDay, setSelectedDay] = useState<number | 'holiday'>(() => {
@@ -89,7 +91,8 @@ export function Timetable() {
 
        processed[dayNumber] = dayData.map((cls: any) => {
           let exactRoom = cls.room || 'TBD';
-          let isPractical = cls.type === 'Practical' || cls.name?.toLowerCase().includes('practical');
+          // ⚡ Bolt Optimization: Replace inline string allocation and method chaining with pre-compiled regex evaluation for faster processing in hot loop
+          let isPractical = cls.type === 'Practical' || PRACTICAL_REGEX.test(cls.name || '');
 
           const catObj = attendanceMap.get(cls.code);
           const attendanceRecord = catObj ? (isPractical ? (catObj.practical || catObj.default) : (catObj.theory || catObj.default)) : undefined;
