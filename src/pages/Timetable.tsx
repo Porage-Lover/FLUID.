@@ -7,6 +7,8 @@ import { ScrollHideHeader } from '../components/ScrollHideHeader';
 // ⚡ Bolt Optimization: Hoisted regular expression to module scope to prevent redundant recompilation in hot loop
 const ROOM_REGEX = /^[A-Z]{2,3}\s*\d{2,3}$/i;
 const TYPE_STRIP_REGEX = /\s*\((Theory|Practical)\)\s*/i;
+// ⚡ Bolt Optimization: Hoisted regex for case-insensitive tests to avoid inline string allocation overhead
+const PRACTICAL_TEST_REGEX = /practical/i;
 
 // ⚡ Bolt Optimization: Hoisted dictionary to module scope to avoid reallocation during renders
 const MONTH_NAMES = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
@@ -89,7 +91,8 @@ export function Timetable() {
 
        processed[dayNumber] = dayData.map((cls: any) => {
           let exactRoom = cls.room || 'TBD';
-          let isPractical = cls.type === 'Practical' || cls.name?.toLowerCase().includes('practical');
+          // ⚡ Bolt Optimization: Replaced .toLowerCase().includes() with pre-compiled regex to prevent string allocations in render map loop
+          let isPractical = cls.type === 'Practical' || (cls.name ? PRACTICAL_TEST_REGEX.test(cls.name) : false);
 
           const catObj = attendanceMap.get(cls.code);
           const attendanceRecord = catObj ? (isPractical ? (catObj.practical || catObj.default) : (catObj.theory || catObj.default)) : undefined;
