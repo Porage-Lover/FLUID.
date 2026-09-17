@@ -26,7 +26,7 @@ const COLORS = ['#FF2A5F', '#FF3399', '#BF5AF2', '#5E5CE6', '#0A84FF', '#32ADE6'
 
 const getRingData = (graph: any[]) => {
     return graph.map((p, idx) => {
-       let derivedMax = p.max || 100; // Trust the API's max, fallback to 100 to prevent NaN crashes
+       const derivedMax = p.max || 100; // Trust the API's max, fallback to 100 to prevent NaN crashes
 
        const rawValStr = String(p.val).trim().toUpperCase();
        const isAbsent = rawValStr === 'ABS';
