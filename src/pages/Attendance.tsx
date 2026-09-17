@@ -12,6 +12,8 @@ const WEEK_DAYS = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
 
 const VALID_MONTHS: Record<string, number> = { Jan: 0, Feb: 1, Mar: 2, Apr: 3, May: 4, Jun: 5, Jul: 6, Aug: 7, Sep: 8, Oct: 9, Nov: 10, Dec: 11 };
 
+// ⚡ Bolt Optimization: Hoisted pre-compiled regular expression to module scope to prevent redundant string allocations and garbage collection overhead from .toLowerCase() inside hot loops
+const DAY_ORDER_SEARCH_REGEX = /day order/i;
 // ⚡ Bolt Optimization: Hoisted regular expression to module scope to prevent redundant recompilation in hot loop
 const DAY_ORDER_REGEX = /Day Order (\d)/i;
 
@@ -57,7 +59,8 @@ export function Attendance() {
           const key = `${mStr} '${yStr}-${parseInt(c.date)}`;
           map.set(key, c);
           
-          if (c.type === 'working' && c.title.toLowerCase().includes('day order')) {
+          // ⚡ Bolt Optimization: Replaced expensive .toLowerCase().includes() with pre-compiled regex test to eliminate unnecessary string allocations
+          if (c.type === 'working' && (c.title ? DAY_ORDER_SEARCH_REGEX.test(c.title) : false)) {
              const eventDateInt = y * 10000 + mIdx * 100 + parseInt(c.date);
              if (eventDateInt >= todayInt) {
                 futureArr.push(c);
@@ -448,7 +451,8 @@ export function Attendance() {
                        {calendarDaysArray.map(dayNum => {
                           const dateKey = `${currentMStr} '${currentYStr}-${dayNum}`;
                           const rawEvent = calendarEventMap.get(dateKey);
-                          const isWorkingDay = rawEvent?.type === 'working' && rawEvent?.title?.toLowerCase().includes('day order');
+                          // ⚡ Bolt Optimization: Replaced optional chaining string manipulation with hoisted regex ternary to ensure strict boolean returns and avoid GC overhead inside render loop
+                          const isWorkingDay = rawEvent?.type === 'working' && (rawEvent?.title ? DAY_ORDER_SEARCH_REGEX.test(rawEvent.title) : false);
                           
                           const simState = daySimulations[dateKey]; // 'attend' | 'bunk' | undefined
                           
