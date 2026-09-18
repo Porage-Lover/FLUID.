@@ -14,6 +14,8 @@ const VALID_MONTHS: Record<string, number> = { Jan: 0, Feb: 1, Mar: 2, Apr: 3, M
 
 // ⚡ Bolt Optimization: Hoisted regular expression to module scope to prevent redundant recompilation in hot loop
 const DAY_ORDER_REGEX = /Day Order (\d)/i;
+// ⚡ Bolt Optimization: Hoisted case-insensitive regex to avoid string allocations from .toLowerCase().includes() in loops
+const DAY_ORDER_TEST_REGEX = /day order/i;
 
 export function Attendance() {
   const { data } = useData();
@@ -57,7 +59,8 @@ export function Attendance() {
           const key = `${mStr} '${yStr}-${parseInt(c.date)}`;
           map.set(key, c);
           
-          if (c.type === 'working' && c.title.toLowerCase().includes('day order')) {
+          // ⚡ Bolt Optimization: Replace chained string methods with hoisted regex test for O(1) matching in loop
+          if (c.type === 'working' && (c.title ? DAY_ORDER_TEST_REGEX.test(c.title) : false)) {
              const eventDateInt = y * 10000 + mIdx * 100 + parseInt(c.date);
              if (eventDateInt >= todayInt) {
                 futureArr.push(c);
@@ -448,7 +451,8 @@ export function Attendance() {
                        {calendarDaysArray.map(dayNum => {
                           const dateKey = `${currentMStr} '${currentYStr}-${dayNum}`;
                           const rawEvent = calendarEventMap.get(dateKey);
-                          const isWorkingDay = rawEvent?.type === 'working' && rawEvent?.title?.toLowerCase().includes('day order');
+                          // ⚡ Bolt Optimization: Replace chained string methods with hoisted regex test to prevent GC thrashing during render cycle
+                          const isWorkingDay = rawEvent?.type === 'working' && (rawEvent?.title ? DAY_ORDER_TEST_REGEX.test(rawEvent.title) : false);
                           
                           const simState = daySimulations[dateKey]; // 'attend' | 'bunk' | undefined
                           
