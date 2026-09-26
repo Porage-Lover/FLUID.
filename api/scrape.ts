@@ -38,6 +38,13 @@ const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
 // for local proxy mode without using guessable/hardcoded public secrets.
 const statelessFallbackSecret = crypto.randomBytes(32).toString('hex');
 
+// ⚡ Bolt Optimization: Hoisted regular expressions to module scope to avoid reallocation and O(N) string transformations
+const COURSE_CODE_REGEX = /course code/i;
+const COURSE_TITLE_REGEX = /course title/i;
+const SUBJECT_CODE_REGEX = /subject code/i;
+const WEEKEND_REGEX = /sat|sun/i;
+const CONCURRENT_REGEX = /concurrent/i;
+
 if (!supabaseUrl || !supabaseKey) {
   logger.error('🛡️ Sentinel: Missing Supabase Service Role Key');
 }
@@ -98,7 +105,8 @@ async function fetchAcademicsData(client: any): Promise<{ attendance: any[], mar
   cleanedHtml = cleanedHtml.replace(/\\\//g, '/').replace(/\\-/g, '-').replace(/\\"/g, '"').replace(/\\'/g, "'").replace(/\\n/g, '').replace(/\\r/g, '').replace(/\\t/g, '');
 
   // 🛡️ Sentinel: If our resulting DOM tree literally possesses 0 Academic metrics, brutally throw to expose what SRM returned.
-  if (!cleanedHtml.toLowerCase().includes("course code") && !cleanedHtml.toLowerCase().includes("course title")) {
+  // ⚡ Bolt Optimization: Replaced O(N) string allocation (toLowerCase().includes) with hoisted RegExp test
+  if (!COURSE_CODE_REGEX.test(cleanedHtml) && !COURSE_TITLE_REGEX.test(cleanedHtml)) {
       throw new Error(`DOM_PARSE_FAILURE: Decoded HTML stripped of expected metric tables! Debug Hex Output: ${cleanedHtml.substring(0, 350)}`);
   }
 
@@ -137,7 +145,8 @@ async function fetchAcademicsData(client: any): Promise<{ attendance: any[], mar
 
       const codeText = tds.eq(0).text().replace(/\u00a0/g, ' ').replace(/Regular/gi, "").trim();
       // Bypass standard header rows smoothly without failing on elective asterisks (*) or hyphenated unio course patterns
-      if (!codeText || codeText.toLowerCase().includes("course code") || codeText.toLowerCase().includes("subject code")) return;
+      // ⚡ Bolt Optimization: Replaced O(N) string allocation (toLowerCase().includes) with hoisted RegExp test
+      if (!codeText || COURSE_CODE_REGEX.test(codeText) || SUBJECT_CODE_REGEX.test(codeText)) return;
 
       // Clean up course code for hashing references
       const courseCodeClean = codeText.toUpperCase().replace(/[\n\r*]/g, '').trim();
@@ -334,7 +343,8 @@ async function fetchCalendarData(client: any): Promise<any[]> {
              } else {
                 let titleStr = event.trim();
                 if (!titleStr) {
-                   const isWeekend = day.toLowerCase().includes('sat') || day.toLowerCase().includes('sun');
+                   // ⚡ Bolt Optimization: Replaced O(N) string allocation (toLowerCase().includes) with hoisted RegExp test
+                   const isWeekend = day ? WEEKEND_REGEX.test(day) : false;
                    titleStr = isWeekend ? 'Weekend - Holiday' : 'Holiday';
                 }
                 calendarEvents.push({ date, day, title: titleStr, tag: 'Off Day', type: 'holiday', month });
@@ -521,7 +531,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     // Determine payload bounds
     const data = signinResp.data;
-    if (data?.error?.msg || typeof data === 'string' && data.toLowerCase().includes('concurrent')) {
+    // ⚡ Bolt Optimization: Replaced O(N) string allocation (toLowerCase().includes) with hoisted RegExp test
+    if (data?.error?.msg || typeof data === 'string' && CONCURRENT_REGEX.test(data)) {
       return res.status(401).json({ error: data?.error?.msg || 'Concurrent session limit reached. Terminate past sessions.' });
     }
 
