@@ -42,7 +42,7 @@
   },
   "pnpm": {
     "overrides": {
-      "undici": "^6.28.0",
+      "undici": "^6.28.1",
       "minimatch": "^10.2.3",
       "smol-toml": "^1.7.1",
       "follow-redirects": "^1.16.0",
