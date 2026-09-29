@@ -8,6 +8,8 @@ import { ScrollHideHeader } from '../components/ScrollHideHeader';
 const ROOM_REGEX = /^[A-Z]{2,3}\s*\d{2,3}$/i;
 const TYPE_STRIP_REGEX = /\s*\((Theory|Practical)\)\s*/i;
 const PRACTICAL_REGEX = /practical/i;
+const THEORY_EXACT_REGEX = /^theory$/i;
+const PRACTICAL_EXACT_REGEX = /^practical$/i;
 
 // ⚡ Bolt Optimization: Hoisted dictionary to module scope to avoid reallocation during renders
 const MONTH_NAMES = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
@@ -64,9 +66,11 @@ export function Timetable() {
          catObj = { default: record };
          map.set(record.code, catObj);
       }
-      const cat = record.category?.toLowerCase();
-      if (cat === 'theory') catObj.theory = record;
-      else if (cat === 'practical') catObj.practical = record;
+      // ⚡ Bolt Optimization: Replaced string allocations (.toLowerCase) with precompiled RegExp tests
+      if (record.category) {
+        if (THEORY_EXACT_REGEX.test(record.category)) catObj.theory = record;
+        else if (PRACTICAL_EXACT_REGEX.test(record.category)) catObj.practical = record;
+      }
     });
     return map;
   }, [data.attendance]);
@@ -117,7 +121,8 @@ export function Timetable() {
              else if (ar.roomNo && cls.room === 'Campus') exactRoom = ar.roomNo;
 
              if (ar.category && typeof ar.category === 'string' && !cls.type) {
-                 isPractical = ar.category.toLowerCase() === 'practical';
+                 // ⚡ Bolt Optimization: Replaced string allocation (.toLowerCase) with precompiled RegExp test
+                 isPractical = PRACTICAL_EXACT_REGEX.test(ar.category);
              }
           }
 
