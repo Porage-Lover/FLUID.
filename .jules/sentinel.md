@@ -1,0 +1,4 @@
+## 2025-05-18 - [Dependency Security] Upgrading `follow-redirects`
+**Vulnerability:** Found high-severity vulnerabilities (e.g. GHSA-8r9p-f939-6h3c) in `follow-redirects@1.16.0` where custom credentials in headers with specific characters could be exposed across cross-origin redirects due to improper regex escaping and array-form header handling.
+**Learning:** `axios` explicitly relies on `follow-redirects` under the hood. Upgrades must address both root vulnerabilities (like regex bugs) and package resolutions within the workspace ecosystem to securely protect authentication flows, especially for tools handling sensitive proxy redirects.
+**Prevention:** Regularly audit dependencies including implicit downstream resolution logic. Secure custom header transmission by relying on built-in security features directly verified against known vulnerabilities or applying pnpm overrides strictly when needed.
