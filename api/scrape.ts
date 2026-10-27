@@ -44,6 +44,7 @@ const COURSE_TITLE_REGEX = /course title/i;
 const SUBJECT_CODE_REGEX = /subject code/i;
 const WEEKEND_REGEX = /sat|sun/i;
 const CONCURRENT_REGEX = /concurrent/i;
+const STRONG_REGEX = /<strong>(.*?)<\/strong>/i; // ⚡ Bolt Optimization: Hoisted regex for name and batch parsing
 
 if (!supabaseUrl || !supabaseKey) {
   logger.error('🛡️ Sentinel: Missing Supabase Service Role Key');
@@ -117,14 +118,16 @@ async function fetchAcademicsData(client: any): Promise<{ attendance: any[], mar
   const nameIdx = cleanedHtml.indexOf('Name:');
   if (nameIdx !== -1) {
      const nameStr = cleanedHtml.substring(nameIdx, nameIdx + 200);
-     const m = nameStr.match(/<strong>(.*?)<\/strong>/i);
+     // ⚡ Bolt Optimization: Replaced .match() with .exec() and hoisted regex to avoid internal Symbol lookups and recompilation
+     const m = STRONG_REGEX.exec(nameStr);
      if (m) studentName = m[1].replace(/<[^>]+>/g, '').trim();
   }
 
   const batchIdx = cleanedHtml.indexOf('Batch');
   if (batchIdx !== -1) {
      const batchStr = cleanedHtml.substring(batchIdx, batchIdx + 100);
-     const match = batchStr.match(/<strong>(.*?)<\/strong>/i);
+     // ⚡ Bolt Optimization: Replaced .match() with .exec() and hoisted regex to avoid internal Symbol lookups and recompilation
+     const match = STRONG_REGEX.exec(batchStr);
      if (match) isBatchTwo = match[1].includes('2');
      else isBatchTwo = batchStr.includes('2');
   }
