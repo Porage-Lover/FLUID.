@@ -45,7 +45,7 @@
       "undici": "^6.28.1",
       "minimatch": "^10.2.3",
       "smol-toml": "^1.7.1",
-      "follow-redirects": "^1.16.0",
+      "follow-redirects": "^1.16.2",
       "@vercel/static-config>ajv": "^8.18.0",
       "vite>postcss": "^8.5.18",
       "ws@<8.20.1": ">=8.20.1",
